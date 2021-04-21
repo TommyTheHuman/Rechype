@@ -1,0 +1,5 @@
+#splitPane{
+    -fx-box-border: transparent;
+    -fx-background-insets: 0, 0;
+    -fx-padding: 0;
+}
