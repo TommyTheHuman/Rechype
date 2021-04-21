@@ -5,8 +5,8 @@ import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
 
 public class Neo4jDriver {
+    private static Neo4jDriver obj=new Neo4jDriver();
     private final Driver driver;
-    private static Neo4jDriver istance=new Neo4jDriver();
 
     private Neo4jDriver(){
         String uri=""; //config
@@ -19,8 +19,8 @@ public class Neo4jDriver {
         return driver;
     }
 
-    public Neo4jDriver getInstance(){
-        return istance;
+    public static Neo4jDriver getObject(){
+        return obj;
     }
 
     public void closeDriver(){

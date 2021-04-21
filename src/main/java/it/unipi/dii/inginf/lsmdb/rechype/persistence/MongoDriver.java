@@ -8,19 +8,24 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  */
 
 
 public class MongoDriver {
+    private static final MongoDriver obj=new MongoDriver();
     private final MongoClient client;
     private final MongoDatabase defaultDatabase;
-    private static MongoDriver instance=new MongoDriver();
 
     private MongoDriver(){
         client = MongoClients.create("mongodb://localhost:27017");
-        defaultDatabase = client.getDatabase(""); //default by config
+        defaultDatabase = client.getDatabase("cleaningDati"); //default by config
+        Logger logger = Logger.getLogger("org.mongodb.driver");
+        logger.setLevel(Level.WARNING);
     }
 
     public MongoCollection getCollection(Collections c){
@@ -38,7 +43,7 @@ public class MongoDriver {
         return coll;
     }
 
-    public MongoDriver getInstance(){ return instance; }
+    public static MongoDriver getObject(){ return obj; }
 
     public void closeConnection(){
         client.close();
