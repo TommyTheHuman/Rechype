@@ -17,13 +17,13 @@ import java.util.logging.Logger;
 
 
 public class MongoDriver {
-    private static final MongoDriver obj=new MongoDriver();
+    private static final MongoDriver obj = new MongoDriver();
     private final MongoClient client;
     private final MongoDatabase defaultDatabase;
 
     private MongoDriver(){
         client = MongoClients.create("mongodb://localhost:27017");
-        defaultDatabase = client.getDatabase("cleaningDati"); //default by config
+        defaultDatabase = client.getDatabase("cleaningData"); //default by config
         Logger logger = Logger.getLogger("org.mongodb.driver");
         logger.setLevel(Level.WARNING);
     }

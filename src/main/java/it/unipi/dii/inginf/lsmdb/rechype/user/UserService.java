@@ -8,8 +8,8 @@ package it.unipi.dii.inginf.lsmdb.rechype.user;
 public interface UserService {
 
     boolean login(String user, String pass);
+    boolean register(String username, String password, String confPassword, String country);
 
-    //boolean register(...);
 }
 
 
