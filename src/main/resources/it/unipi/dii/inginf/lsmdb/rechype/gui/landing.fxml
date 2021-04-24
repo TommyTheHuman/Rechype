@@ -29,12 +29,13 @@
                         <Label layoutX="76.0" layoutY="62.0" text="Password" />
                         <Label layoutX="76.0" layoutY="119.0" text="Confirm password" />
                         <Label layoutX="74.0" layoutY="235.0" text="Country" />
+                        <Label fx:id="regMsg" layoutX="71.0" layoutY="299.0" prefHeight="17.0" prefWidth="161.0" />
                         <Button fx:id="registerBtn" layoutX="122.0" layoutY="326.0" mnemonicParsing="false" text="Register" />
                         <PasswordField fx:id="regPassword" layoutX="76.0" layoutY="85.0" />
                         <PasswordField fx:id="regConfirmPassword" layoutX="76.0" layoutY="143.0" />
                         <TextField fx:id="regUsername" layoutX="76.0" layoutY="25.0" />
-                        <ComboBox layoutX="74.0" layoutY="259.0" prefHeight="25.0" prefWidth="161.0" promptText="Italy" />
-                        <TextField layoutX="75.0" layoutY="206.0" />
+                        <ComboBox fx:id="regCountry" layoutX="72.0" layoutY="258.0" prefHeight="25.0" prefWidth="161.0" promptText="Choose your country" />
+                        <TextField fx:id="regAge" layoutX="75.0" layoutY="206.0" />
                         <Label layoutX="78.0" layoutY="182.0" text="Age" />
                      </children>
                   </AnchorPane>

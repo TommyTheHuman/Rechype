@@ -7,8 +7,8 @@ class UserServiceImpl implements UserService {
         return userDao.checkLogin(user, pass);
     }
 
-    public boolean register(String username, String password, String confPassword, String country){
-        return userDao.checkRegistration(username, password, confPassword, country);
+    public boolean register(String username, String password, String confPassword, String country, int age){
+        return userDao.checkRegistration(username, password, confPassword, country, age);
     }
 
 

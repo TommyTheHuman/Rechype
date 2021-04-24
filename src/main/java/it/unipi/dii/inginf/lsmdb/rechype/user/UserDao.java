@@ -28,7 +28,7 @@ class UserDao {
         return false;
     }
 
-    public boolean checkRegistration(String username, String password, String confPassword, String country){
+    public boolean checkRegistration(String username, String password, String confPassword, String country, int age){
         // DA FARE: controlli sui campi e conferma pass
 
         try(MongoCursor<Document> cursor =
@@ -47,7 +47,7 @@ class UserDao {
 
         // DA FARE: verificare la variabile di ritorno
         try {
-            Document doc = new Document("_id", username).append("password", password).append("country", country);
+            Document doc = new Document("_id", username).append("password", password).append("country", country).append("age", age);
             MongoCollection<Document> collection = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
             collection.insertOne(doc);
         }catch(MongoException me){
