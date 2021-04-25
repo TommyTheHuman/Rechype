@@ -4,7 +4,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.apache.logging.log4j.LogManager;
 
 public class Main extends Application {
 
@@ -19,7 +18,6 @@ public class Main extends Application {
     private static final UserServiceFactory factory=UserServiceFactory.create();
 
     public static void main(String[] args){
-
         launch(args);
         UserService userService=factory.getService();
 

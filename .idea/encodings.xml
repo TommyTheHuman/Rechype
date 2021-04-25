@@ -3,6 +3,7 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/it/unipi/dii/inginf/lsmdb/rechype/config" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources/it/unipi/dii/inginf/lsmdb/rechype/gui" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources/it/unipi/dii/inginf/lsmdb/rechype/log4j2" charset="UTF-8" />
   </component>

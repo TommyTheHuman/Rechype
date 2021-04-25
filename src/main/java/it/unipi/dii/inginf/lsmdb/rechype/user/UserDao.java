@@ -3,14 +3,10 @@ package it.unipi.dii.inginf.lsmdb.rechype.user;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import com.mongodb.client.result.InsertOneResult;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
 import static com.mongodb.client.model.Filters.eq;
 
-import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
-
-import javax.print.Doc;
 
 class UserDao {
 

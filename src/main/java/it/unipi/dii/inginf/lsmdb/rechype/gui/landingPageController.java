@@ -15,8 +15,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import org.apache.logging.log4j.LogManager;
-import org.w3c.dom.Text;
 
 import java.net.URL;
 import java.util.*;
