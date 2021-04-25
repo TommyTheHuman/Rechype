@@ -10,7 +10,4 @@ class UserServiceImpl implements UserService {
     public boolean register(String username, String password, String confPassword, String country, int age){
         return userDao.checkRegistration(username, password, confPassword, country, age);
     }
-
-
-
 }
