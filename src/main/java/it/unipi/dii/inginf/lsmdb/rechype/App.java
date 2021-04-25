@@ -22,9 +22,6 @@ public class App extends Application {
     public static void main(String[] args){
 
         launch(args);
-        UserService userService=factory.getService();
-        if(userService.login("prova", "prova")){
-            System.out.println("eureka!");
-        }
+
     }
 }
