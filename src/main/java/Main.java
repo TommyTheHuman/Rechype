@@ -10,7 +10,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("it/unipi/dii/inginf/lsmdb/rechype/gui/landing.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("landing.fxml"));
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
@@ -22,10 +22,6 @@ public class Main extends Application {
 
         launch(args);
         UserService userService=factory.getService();
-        if(userService.login("prova", "prova")){
-            LogManager.getLogger().info("Ciao");
-            System.out.println("eureka!");
-        }
 
     }
 }

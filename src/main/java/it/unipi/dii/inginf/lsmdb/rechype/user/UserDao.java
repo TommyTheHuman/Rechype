@@ -6,6 +6,8 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.result.InsertOneResult;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
 import static com.mongodb.client.model.Filters.eq;
+
+import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
 
 import javax.print.Doc;
@@ -21,30 +23,25 @@ class UserDao {
                 }
             }
         }catch(MongoException me){
-            //serve una eccezione?
-            //log
+
             System.out.println("mannaggia");
         }
         return false;
     }
 
     public boolean checkRegistration(String username, String password, String confPassword, String country, int age){
-        // DA FARE: controlli sui campi e conferma pass
-
+        boolean ok=true;
         try(MongoCursor<Document> cursor =
                     MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(eq("_id", username)).iterator()){
             if(cursor.hasNext()){
                 if(username.equals(cursor.next().get("_id").toString())){
                     // Already exist this username
-                    return false;
+                    ok = false;
                 }
             }
         }catch(MongoException me){
-            //serve una eccezione?
-            //log
-            System.out.println("mannaggia");
-        }
 
+        }
         // DA FARE: verificare la variabile di ritorno
         try {
             Document doc = new Document("_id", username).append("password", password).append("country", country).append("age", age);
@@ -53,10 +50,8 @@ class UserDao {
         }catch(MongoException me){
 
         }
+        return ok;
 
-
-
-        return false;
     }
 
 

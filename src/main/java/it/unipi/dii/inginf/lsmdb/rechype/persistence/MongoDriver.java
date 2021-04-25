@@ -23,9 +23,7 @@ public class MongoDriver {
 
     private MongoDriver(){
         client = MongoClients.create("mongodb://localhost:27017");
-        defaultDatabase = client.getDatabase("cleaningData"); //default by config
-        Logger logger = Logger.getLogger("org.mongodb.driver");
-        logger.setLevel(Level.WARNING);
+        defaultDatabase = client.getDatabase("cleaningDati"); //default by config
     }
 
     public MongoCollection getCollection(Collections c){
