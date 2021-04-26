@@ -6,11 +6,13 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.result.InsertOneResult;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
 import static com.mongodb.client.model.Filters.eq;
+import static org.neo4j.driver.Values.parameters;
 
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
 import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
 import org.neo4j.driver.Session;
+import org.neo4j.driver.TransactionWork;
 import org.neo4j.driver.exceptions.DiscoveryException;
 import org.neo4j.driver.exceptions.Neo4jException;
 import org.neo4j.driver.exceptions.SessionExpiredException;
@@ -81,6 +83,11 @@ class UserDao {
             }
         }
         try(Session session = Neo4jDriver.getObject().getDriver().session()) {
+            session.writeTransaction((TransactionWork<Void>) tx->{
+                tx.run("CREATE (ee:Person { username: $username, country: $country, level: $level })", parameters("username", username, "country", country, "level", 0));
+                return  null;
+            });
+
 
         }catch (TransientException | DiscoveryException | SessionExpiredException ex){
             //timer evaluation, dovremmo fare un timer generale e lasciare quelli di default
@@ -89,7 +96,7 @@ class UserDao {
             //another error occurs it's not necessary to continue
         }
 
-        return ok;
+        return "cazzi";
 
     }
 

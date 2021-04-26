@@ -143,8 +143,6 @@ public class landingPageController implements Initializable {
         regUsername.setText("");
         regPassword.setText("");
         regConfirmPassword.setText("");
-        //regCountry.setValue(null);
-        regCountry.valueProperty().set(null);
         regAge.setText("");
         regMsg.setText("");
     }
