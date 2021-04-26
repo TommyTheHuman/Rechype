@@ -23,7 +23,7 @@ public class MongoDriver {
 
     private MongoDriver(){
         client = MongoClients.create("mongodb://localhost:27017");
-        defaultDatabase = client.getDatabase("cleaningDati"); //default by config
+        defaultDatabase = client.getDatabase("cleaningData"); //default by config
     }
 
     public MongoCollection getCollection(Collections c){

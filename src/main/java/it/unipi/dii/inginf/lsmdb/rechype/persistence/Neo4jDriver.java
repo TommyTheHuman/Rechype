@@ -9,9 +9,9 @@ public class Neo4jDriver {
     private final Driver driver;
 
     private Neo4jDriver(){
-        String uri=""; //config
-        String user="";
-        String pass="";
+        String uri="bolt://localhost:11003"; //config
+        String user="neo4j";
+        String pass="rechype";
         driver= GraphDatabase.driver(uri, AuthTokens.basic(user, pass));
     }
 
