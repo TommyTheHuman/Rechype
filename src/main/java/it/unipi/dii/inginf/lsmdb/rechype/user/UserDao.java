@@ -11,8 +11,13 @@ import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
 import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
 import org.neo4j.driver.Session;
+import org.neo4j.driver.exceptions.DiscoveryException;
+import org.neo4j.driver.exceptions.Neo4jException;
+import org.neo4j.driver.exceptions.SessionExpiredException;
+import org.neo4j.driver.exceptions.TransientException;
 
 import javax.print.Doc;
+import java.io.IOException;
 import java.util.Date;
 
 class UserDao {
@@ -68,26 +73,20 @@ class UserDao {
                 break;
             } catch (MongoException me) {
                 elapsedTime = (new Date()).getTime() - startTime;
-                if (elapsedTime > 900) {//configTime
+                if (elapsedTime > 900) { //MongoDriver.getObject().getTimer()
                     LogManager.getLogger(UserDao.class.getName()).error("MongoDB: user insert failed");
                     return "Abort";
                 }
                 LogManager.getLogger(UserDao.class.getName()).error("Error inserting user in users collection");
             }
         }
-        //try on Neo4j
-        while (true) {
-            try(Session session = Neo4jDriver.getObject().getDriver().session()) {
-                MongoCollection<Document> collection = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
-                collection.insertOne(doc);
-            } catch (MongoException me) {
-                elapsedTime = (new Date()).getTime() - startTime;
-                if (elapsedTime > 900) {//configTime
-                    LogManager.getLogger(UserDao.class.getName()).error("MongoDB: user insert failed");
-                    return "Abort";
-                }
-                LogManager.getLogger(UserDao.class.getName()).error("Error inserting user in users collection");
-            }
+        try(Session session = Neo4jDriver.getObject().getDriver().session()) {
+
+        }catch (TransientException | DiscoveryException | SessionExpiredException ex){
+            //timer evaluation, dovremmo fare un timer generale e lasciare quelli di default
+        }
+        catch (Neo4jException ne){
+            //another error occurs it's not necessary to continue
         }
 
         return ok;
