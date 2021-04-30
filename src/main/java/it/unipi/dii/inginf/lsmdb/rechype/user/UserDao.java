@@ -34,7 +34,7 @@ class UserDao {
             }
         }catch(MongoException me){
 
-            System.out.println("mannaggia");
+            LogManager.getLogger(UserDao.class.getName()).error("MongoDB: error occurred");
         }
         return false;
     }
@@ -91,12 +91,14 @@ class UserDao {
 
         }catch (TransientException | DiscoveryException | SessionExpiredException ex){
             //timer evaluation, dovremmo fare un timer generale e lasciare quelli di default
+            System.out.println("primo");
         }
         catch (Neo4jException ne){
             //another error occurs it's not necessary to continue
+            System.out.println("secondo");
         }
 
-        return "cazzi";
+        return "registrato";
 
     }
 

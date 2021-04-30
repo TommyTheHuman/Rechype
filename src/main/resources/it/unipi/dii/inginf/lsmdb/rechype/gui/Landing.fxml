@@ -30,12 +30,12 @@
                         <Label layoutX="76.0" layoutY="119.0" text="Confirm password" />
                         <Label layoutX="74.0" layoutY="235.0" text="Country" />
                         <Label fx:id="regMsg" layoutX="71.0" layoutY="299.0" prefHeight="17.0" prefWidth="161.0" />
-                        <Button fx:id="registerBtn" layoutX="122.0" layoutY="326.0" mnemonicParsing="false" text="Register" />
+                        <TextField fx:id="regUsername" layoutX="76.0" layoutY="25.0" />
                         <PasswordField fx:id="regPassword" layoutX="76.0" layoutY="85.0" />
                         <PasswordField fx:id="regConfirmPassword" layoutX="76.0" layoutY="143.0" />
-                        <TextField fx:id="regUsername" layoutX="76.0" layoutY="25.0" />
-                        <ComboBox fx:id="regCountry" layoutX="72.0" layoutY="258.0" prefHeight="25.0" prefWidth="161.0" promptText="Choose your country" />
                         <TextField fx:id="regAge" layoutX="75.0" layoutY="206.0" />
+                        <ComboBox fx:id="regCountry" layoutX="72.0" layoutY="258.0" prefHeight="25.0" prefWidth="161.0" promptText="Choose your country" />
+                        <Button fx:id="registerBtn" layoutX="122.0" layoutY="326.0" mnemonicParsing="false" text="Register" />
                         <Label layoutX="78.0" layoutY="182.0" text="Age" />
                      </children>
                   </AnchorPane>
@@ -43,9 +43,10 @@
                      <children>
                         <Label layoutX="76.0" layoutY="145.0" text="Username" />
                         <Label layoutX="76.0" layoutY="205.0" text="Password" />
-                        <Button fx:id="loginBtn" layoutX="122.0" layoutY="326.0" mnemonicParsing="false" text="Login" />
-                        <PasswordField fx:id="loginPassword" layoutX="73.0" layoutY="228.0" />
                         <TextField fx:id="loginUsername" layoutX="73.0" layoutY="162.0" />
+                        <PasswordField fx:id="loginPassword" layoutX="73.0" layoutY="228.0" />
+                        <Button fx:id="loginBtn" layoutX="122.0" layoutY="326.0" mnemonicParsing="false" text="Login" />
+                        <Label fx:id="loginMsg" layoutX="74.0" layoutY="264.0" prefHeight="43.0" prefWidth="149.0" />
                      </children>
                      <opaqueInsets>
                         <Insets />

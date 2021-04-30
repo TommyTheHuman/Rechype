@@ -2,7 +2,6 @@ package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 
 
-import it.unipi.dii.inginf.lsmdb.rechype.Main;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
 
@@ -18,7 +17,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.ResourceBundle;
@@ -41,6 +39,7 @@ public class landingPageController implements Initializable {
     @FXML private Button loginBtn;
     @FXML private TextField loginUsername;
     @FXML private PasswordField loginPassword;
+    @FXML private Label loginMsg;
 
     private UserServiceFactory userServiceFactory;
     private UserService userService;
@@ -75,9 +74,10 @@ public class landingPageController implements Initializable {
                 String username = loginUsername.getText();
                 String password = loginPassword.getText();
                 if(userService.login(username, password)){
-                    regUsername.setText("LOGGATO");
+                    Main.changeScene("HomePage");
                 }else{
-                    regUsername.setText("NON LOGGATO");
+                    loginMsg.setText("Username or password \nare incorrect");
+                    loginMsg.setStyle("-fx-text-fill: red;");
                 }
 
             }
@@ -111,17 +111,9 @@ public class landingPageController implements Initializable {
                     }
                 }
 
-                if(result.equals("cazzi")){
-
-                    try {
-                        Main.changeScene("HomeTest");
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
+                if(result.equals("registrato")){
+                    Main.changeScene("HomePage");
                 }
-                //userService.register(username, password, confPassword, "italy");
-
             }
         });
 
