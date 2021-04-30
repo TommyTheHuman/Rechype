@@ -2,8 +2,10 @@ package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 
 
+import it.unipi.dii.inginf.lsmdb.rechype.Main;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -15,9 +17,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import org.apache.logging.log4j.LogManager;
-import org.w3c.dom.Text;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.ResourceBundle;
@@ -85,6 +86,7 @@ public class landingPageController implements Initializable {
         registerBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                String result = new String();
                 String username = regUsername.getText();
                 String password = regPassword.getText();
                 String confPassword = regConfirmPassword.getText();
@@ -105,8 +107,18 @@ public class landingPageController implements Initializable {
                         regMsg.setText("You must insert the same password in both fields");
                         regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");
                     }else {
-                        userService.register(username, password, confPassword, country, ageNum);
+                        result = userService.register(username, password, confPassword, country, ageNum);
                     }
+                }
+
+                if(result.equals("cazzi")){
+
+                    try {
+                        Main.changeScene("HomeTest");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
                 }
                 //userService.register(username, password, confPassword, "italy");
 
