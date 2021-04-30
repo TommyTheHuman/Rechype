@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane AnchorPane.leftAnchor="239" prefHeight="36.0" prefWidth="668.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <AnchorPane prefHeight="41.0" prefWidth="668.0" AnchorPane.leftAnchor="0.0">
+         <children>
+            <ImageView fitHeight="36.0" fitWidth="38.0" layoutX="162.0" layoutY="3.0" pickOnBounds="true" preserveRatio="true" />
+            <TextField layoutX="200.0" layoutY="8.0" />
+            <CheckBox layoutX="77.0" layoutY="12.0" mnemonicParsing="false" prefHeight="9.0" prefWidth="64.0" text="Recipes" />
+            <CheckBox layoutY="12.0" mnemonicParsing="false" prefHeight="9.0" prefWidth="64.0" text="Drinks" />
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
