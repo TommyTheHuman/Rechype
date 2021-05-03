@@ -11,8 +11,10 @@ public class Neo4jDriver {
     private static Neo4jDriver obj=new Neo4jDriver();
     private final Driver driver;
     public static final String MAX_TRANSACTION_RETRY_TIME = "max.transaction.retry.time";
+    private final long timer;
 
     private Neo4jDriver(){
+        timer=DBConfigurations.getObject().timerNeo4j;
         Config.ConfigBuilder builder = Config.builder();
         builder.withMaxTransactionRetryTime(DBConfigurations.getObject().timerNeo4j, TimeUnit.MILLISECONDS); //config + exception
         Config config=builder.build();
