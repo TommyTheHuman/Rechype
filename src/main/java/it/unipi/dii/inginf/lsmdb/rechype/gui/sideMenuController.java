@@ -35,8 +35,10 @@ public class sideMenuController implements Initializable {
 
     @FXML private Button logOut;
     @FXML private Text userName;
-
-
+    @FXML private Hyperlink personalProfile;
+    @FXML private Hyperlink myRecipes;
+    @FXML private Hyperlink homePageBtn;
+    @FXML private Hyperlink addRecipe;
 
 
 
@@ -50,6 +52,38 @@ public class sideMenuController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 Main.changeScene("Landing");
+
+            }
+        });
+
+        personalProfile.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Main.changeScene("MyProfile");
+
+            }
+        });
+
+        myRecipes.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Main.changeScene("MyRecipes");
+
+            }
+        });
+
+        addRecipe.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Main.changeScene("RecipeAdd");
+
+            }
+        });
+
+        homePageBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Main.changeScene("HomePage");
 
             }
         });
