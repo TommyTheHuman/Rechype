@@ -82,25 +82,23 @@ class UserDao {
                 LogManager.getLogger(UserDao.class.getName()).error("Error inserting user in users collection");
             }
         }
+        try(Session session = Neo4jDriver.getObject().getDriver().session()) {
+            session.writeTransaction((TransactionWork<Void>) tx->{
+                tx.run("CREATE (ee:Person { username: $username, country: $country, level: $level })", parameters("username", username, "country", country, "level", 0));
+                return  null;
+            });
 
-        //try on Neo4j
-        while(true) {
-            try (Session session = Neo4jDriver.getObject().getDriver().session()) {
-                session.writeTransaction((TransactionWork<Void>) tx -> {
-                    tx.run("CREATE (ee:Person { username: $username, country: $country, level: $level })", parameters("username", username, "country", country, "level", 0));
-                    return null;
-                });
-            } catch (TransientException | DiscoveryException | SessionExpiredException ex) { //tipi di errori non fatali
-                //controllo se il timer è scaduto in tal caso non ripeto il ciclo e la transazione
-                //se il timer è scaduto elimino anche il dato su mongodb, in tal caso break;
-            } catch (Neo4jException ne) {
-                //errori fatali, non continua il retry
-                //elimino anche il dato su mongodb per la consistency
-                break;
-            }
+
+        }catch (TransientException | DiscoveryException | SessionExpiredException ex){
+            //timer evaluation, dovremmo fare un timer generale e lasciare quelli di default
+            System.out.println("primo");
+        }
+        catch (Neo4jException ne){
+            //another error occurs it's not necessary to continue
+            System.out.println("secondo");
         }
 
-        return "ok";
+        return "registrato";
 
     }
 

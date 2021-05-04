@@ -1,18 +1,17 @@
 package it.unipi.dii.inginf.lsmdb.rechype.persistence;
 
-//mettere un file di config per la configurazione degli ip e dei parametri
-
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Class that defines and configures the connection to the MongoDb cluster
  */
 
 
@@ -20,23 +19,30 @@ public class MongoDriver {
     private static final MongoDriver obj = new MongoDriver();
     private final MongoClient client;
     private final MongoDatabase defaultDatabase;
+    private final long timer;
 
     private MongoDriver(){
-        client = MongoClients.create("mongodb://localhost:27017");
-        defaultDatabase = client.getDatabase("cleaningData"); //default by config
+            timer=DBConfigurations.getObject().timerMongo;
+            client = MongoClients.create(DBConfigurations.getObject().MongoUri);
+            defaultDatabase = client.getDatabase(DBConfigurations.getObject().defaultDBMongo);
+    }
+
+    public long getTimer(){
+        return timer;
     }
 
     public MongoCollection getCollection(Collections c){
         return defaultDatabase.getCollection(c.toString());
     }
 
+    //this function allows to access to databases different from the default one
     public MongoCollection getCollection(String DB, Collections c) {
         MongoCollection coll = null;
         try {
             MongoDatabase mongoDB = client.getDatabase(DB);
             coll = (MongoCollection) mongoDB.getCollection(c.name);
         }catch(MongoException me) {
-            //logger
+            LogManager.getLogger(MongoDriver.class.getName()).fatal("MongoDB: collection not retrieved");
         }
         return coll;
     }

@@ -4,6 +4,7 @@ package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -15,8 +16,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import org.apache.logging.log4j.LogManager;
-import org.w3c.dom.Text;
 
 import java.net.URL;
 import java.util.*;
@@ -40,6 +39,7 @@ public class landingPageController implements Initializable {
     @FXML private Button loginBtn;
     @FXML private TextField loginUsername;
     @FXML private PasswordField loginPassword;
+    @FXML private Label loginMsg;
 
     private UserServiceFactory userServiceFactory;
     private UserService userService;
@@ -74,9 +74,10 @@ public class landingPageController implements Initializable {
                 String username = loginUsername.getText();
                 String password = loginPassword.getText();
                 if(userService.login(username, password)){
-                    regUsername.setText("LOGGATO");
+                    Main.changeScene("HomePage");
                 }else{
-                    regUsername.setText("NON LOGGATO");
+                    loginMsg.setText("Username or password \nare incorrect");
+                    loginMsg.setStyle("-fx-text-fill: red;");
                 }
 
             }
@@ -85,6 +86,7 @@ public class landingPageController implements Initializable {
         registerBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                String result = new String();
                 String username = regUsername.getText();
                 String password = regPassword.getText();
                 String confPassword = regConfirmPassword.getText();
@@ -105,11 +107,13 @@ public class landingPageController implements Initializable {
                         regMsg.setText("You must insert the same password in both fields");
                         regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");
                     }else {
-                        userService.register(username, password, confPassword, country, ageNum);
+                        result = userService.register(username, password, confPassword, country, ageNum);
                     }
                 }
-                //userService.register(username, password, confPassword, "italy");
 
+                if(result.equals("registrato")){
+                    Main.changeScene("HomePage");
+                }
             }
         });
 
