@@ -23,20 +23,29 @@ import java.io.IOException;
 import java.util.Date;
 
 class UserDao {
+    private User userLogged;
 
-    public boolean checkLogin(String username, String password){
+    public User checkLogin(String username, String password){
         try(MongoCursor<Document> cursor =
         MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(eq("_id", username)).iterator()){
             if(cursor.hasNext()){
-                if(password.equals(cursor.next().get("password").toString())){
-                    return true;
+                Document doc = cursor.next();
+                if(password.equals(doc.get("password").toString())){
+
+                    String user = doc.get("_id").toString();
+                    String country = doc.get("country").toString();
+                    int age = Integer.parseInt(doc.get("age").toString());
+
+                    userLogged = new User(user, country, age);
+
+                    return userLogged;
                 }
             }
         }catch(MongoException me){
             LogManager.getLogger("UserDao.class").error("MongoDB: an error occurred");
             System.exit(-1);
         }
-        return false;
+        return null;
     }
 
     public String checkRegistration(String username, String password, String confPassword, String country, int age) {

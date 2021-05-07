@@ -2,6 +2,7 @@ package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 
 
+import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
 
@@ -41,12 +42,22 @@ public class sideMenuController implements Initializable {
     @FXML private Hyperlink addRecipe;
 
 
+    private User loggedUser;
+    private UserServiceFactory userServiceFactory;
+    private UserService userService;
 
 
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        userServiceFactory = UserServiceFactory.create();
+        userService = userServiceFactory.getService();
+
+        loggedUser = userService.getLoggedUser();
+
+        userName.setText(loggedUser.getUsername());
 
         logOut.setOnAction(new EventHandler<ActionEvent>() {
             @Override
