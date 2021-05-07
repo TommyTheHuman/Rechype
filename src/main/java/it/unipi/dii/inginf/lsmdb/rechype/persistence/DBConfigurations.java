@@ -37,7 +37,6 @@ class DBConfigurations {
             //throw qualcosa per chiudere l'applicazione?
         }
         timerNeo4j=Long.parseLong(prop.getProperty("timerNeo4j"));
-        timerMongo=Long.parseLong(prop.getProperty("timerMongo"));
         defaultDBNeo4j=prop.getProperty("defaultDBNeo4j");
         defaultDBMongo=prop.getProperty("defaultDBMongo");
         Neo4jUri=prop.getProperty("Neo4jUri");
