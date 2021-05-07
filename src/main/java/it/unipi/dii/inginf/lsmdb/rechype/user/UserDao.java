@@ -33,74 +33,61 @@ class UserDao {
                 }
             }
         }catch(MongoException me){
-
-            LogManager.getLogger(UserDao.class.getName()).error("MongoDB: error occurred");
+            LogManager.getLogger("UserDao.class").error("MongoDB: an error occurred");
+            System.exit(-1);
         }
         return false;
     }
 
-    public String checkRegistration(String username, String password, String confPassword, String country, int age){
-        long startTime = System.currentTimeMillis();
-        long elapsedTime = 0L;
+    public String checkRegistration(String username, String password, String confPassword, String country, int age) {
 
-        //infinite loop to check for double username
-        while(true){
-            try(MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(eq("_id", username)).iterator()){
-                //check for double username
-                if(cursor.hasNext()){
-                    // Already exist this username
-                    return "usernameProb";
-                }else{
-                    break;
-                }
-            }catch(MongoException me){
-                elapsedTime = (new Date()).getTime() - startTime;
-                if(elapsedTime > 900){//configTime
-                    LogManager.getLogger(UserDao.class.getName()).error("MongoDB: username retrievement failed");
-                    return "Abort";
-                }
-                LogManager.getLogger(UserDao.class.getName()).error("Error searching username in users collection");
-            }
+        try (MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(eq("_id", username)).iterator()) {
+            //check for double username
+            if (cursor.hasNext())
+                return "usernameProb";
+
+        } catch (MongoException me) {
+            LogManager.getLogger("UserDao.class").error("MongoDB: an error occurred");
         }
 
         Document doc = new Document("_id", username).append("password", password).append("country", country).append("age", age);
-        startTime = System.currentTimeMillis();
-        elapsedTime = 0L;
+        boolean already_tried=false;
+        MongoCollection<Document> coll=null;
+        System.out.println(doc.toJson());
 
         //try on MongoDB
-        while(true) {
+        while(true){
             try {
-                MongoCollection<Document> collection = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
-                collection.insertOne(doc);
-                break;
-            } catch (MongoException me) {
-                elapsedTime = (new Date()).getTime() - startTime;
-                if (elapsedTime > 900) { //MongoDriver.getObject().getTimer()
-                    LogManager.getLogger(UserDao.class.getName()).error("MongoDB: user insert failed");
+                if(!already_tried) { //try to add
+                    coll=MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
+                    coll.insertOne(doc);
+                }
+                else{ //try to delete
+                    coll=MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
+                    coll.deleteOne(eq("_id", username));
                     return "Abort";
                 }
-                LogManager.getLogger(UserDao.class.getName()).error("Error inserting user in users collection");
+
+            } catch (MongoException me) {
+                if(!already_tried) { //first time error
+                    LogManager.getLogger("UserDao.class").error("MongoDB: user insert failed");
+                    return "Abort";
+                }else{ //second time error, consistency adjustment
+                    LogManager.getLogger("UserDao.class").error("MongoDB[PARSE], registration inconsistency: "+doc.toJson());
+                    return "Abort";
+                }
+            }
+            //try Neo4j
+            try (Session session = Neo4jDriver.getObject().getDriver().session()) { //try to add
+                session.writeTransaction((TransactionWork<Void>) tx -> {
+                    tx.run("CREATE (ee:Person { username: $username, country: $country, level: $level })", parameters("username", username, "country", country, "level", 0));
+                    return null;
+                });
+                return "ok";
+            }catch(Neo4jException ne){ //fail, next cycle try to delete on MongoDB
+                LogManager.getLogger("UserDao.class").error("Neo4j: user insert failed");
+                already_tried=true;
             }
         }
-        try(Session session = Neo4jDriver.getObject().getDriver().session()) {
-            session.writeTransaction((TransactionWork<Void>) tx->{
-                tx.run("CREATE (ee:Person { username: $username, country: $country, level: $level })", parameters("username", username, "country", country, "level", 0));
-                return  null;
-            });
-
-
-        }catch (TransientException | DiscoveryException | SessionExpiredException ex){
-            //timer evaluation, dovremmo fare un timer generale e lasciare quelli di default
-            System.out.println("primo");
-        }
-        catch (Neo4jException ne){
-            //another error occurs it's not necessary to continue
-            System.out.println("secondo");
-        }
-
-        return "registrato";
-
     }
-
-
 }

@@ -17,18 +17,12 @@ import java.util.logging.Logger;
 
 public class MongoDriver {
     private static final MongoDriver obj = new MongoDriver();
-    private final MongoClient client;
-    private final MongoDatabase defaultDatabase;
-    private final long timer;
+    private MongoClient client;
+    private MongoDatabase defaultDatabase;
 
     private MongoDriver(){
-            timer=DBConfigurations.getObject().timerMongo;
             client = MongoClients.create(DBConfigurations.getObject().MongoUri);
             defaultDatabase = client.getDatabase(DBConfigurations.getObject().defaultDBMongo);
-    }
-
-    public long getTimer(){
-        return timer;
     }
 
     public MongoCollection getCollection(Collections c){
