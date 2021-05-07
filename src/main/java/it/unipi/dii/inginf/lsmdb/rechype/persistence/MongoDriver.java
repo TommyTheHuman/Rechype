@@ -27,7 +27,7 @@ public class MongoDriver {
             defaultDatabase = client.getDatabase(DBConfigurations.getObject().defaultDBMongo);
     }
 
-    public long getElapseTime(){
+    public long getTimer(){
         return timer;
     }
 
