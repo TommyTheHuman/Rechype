@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" stylesheets="@test.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ScrollPane prefHeight="540.0" prefWidth="748.0">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+        </content>
+      </ScrollPane>
+   </children>
+   <AnchorPane layoutX="226.0" layoutY="52.0" prefHeight="648.0" prefWidth="775.0">
+      <children>
+         <ScrollPane hbarPolicy="NEVER" prefHeight="648.0" prefWidth="775.0">
+            <content>
+               <AnchorPane prefHeight="969.0" prefWidth="776.0">
+                  <children>
+                     <Text layoutX="316.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nome creatore">
+                        <font>
+                           <Font size="20.0" />
+                        </font>
+                     </Text>
+                     <Pane layoutY="47.0" prefHeight="90.0" prefWidth="775.0">
+                        <children>
+                           <Text layoutX="14.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="title" />
+                           <ImageView fitHeight="40.0" fitWidth="49.0" layoutX="675.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true">
+                              <image>
+                                 
+                              </image>
+                           </ImageView>
+                           <ImageView fitHeight="36.0" fitWidth="48.0" layoutX="124.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true" />
+                           <ImageView fitHeight="36.0" fitWidth="48.0" layoutX="183.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true" />
+                           <ImageView fitHeight="36.0" fitWidth="48.0" layoutX="274.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true" />
+                           <Text layoutX="13.0" layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" text="URL" />
+                           <ImageView fitHeight="45.0" fitWidth="60.0" layoutX="582.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" />
+                           <Text layoutX="571.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" text="like:" />
+                        </children>
+                     </Pane>
+                     <AnchorPane layoutY="137.0" prefHeight="402.0" prefWidth="775.0">
+                        <children>
+                           <Pane layoutX="187.0" prefHeight="170.0" prefWidth="580.0">
+                              <children>
+                                 <Text layoutX="14.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Description" />
+                                 <Text layoutX="14.0" layoutY="63.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                              </children>
+                           </Pane>
+                           <VBox prefHeight="402.0" prefWidth="181.0">
+                              <children>
+                                 <AnchorPane prefHeight="160.0" prefWidth="181.0">
+                                    <children>
+                                       <ImageView fitHeight="150.0" fitWidth="155.0" layoutX="13.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
+                                    </children>
+                                 </AnchorPane>
+                                 <AnchorPane prefHeight="58.0" prefWidth="181.0">
+                                    <children>
+                                       <Text layoutX="23.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Kcal" />
+                                    </children>
+                                 </AnchorPane>
+                                 <AnchorPane prefHeight="58.0" prefWidth="181.0">
+                                    <children>
+                                       <Text layoutX="14.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Portata" />
+                                    </children>
+                                 </AnchorPane>
+                                 <AnchorPane prefHeight="58.0" prefWidth="181.0">
+                                    <children>
+                                       <Text layoutX="24.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tempo di preparazione" />
+                                    </children>
+                                 </AnchorPane>
+                                 <AnchorPane prefHeight="58.0" prefWidth="181.0">
+                                    <children>
+                                       <Text layoutX="24.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Quantità a persona" />
+                                    </children>
+                                 </AnchorPane>
+                              </children>
+                           </VBox>
+                           <ScrollPane hbarPolicy="NEVER" layoutX="187.0" layoutY="194.0" prefHeight="210.0" prefWidth="589.0">
+                             <content>
+                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+                             </content>
+                           </ScrollPane>
+                           <Text layoutX="198.0" layoutY="183.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ingredients" />
+                        </children>
+                     </AnchorPane>
+                     <AnchorPane layoutY="541.0" prefHeight="428.0" prefWidth="775.0">
+                        <children>
+                           <Text layoutX="14.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Steps" />
+                           <ScrollPane hbarPolicy="NEVER" layoutX="3.0" layoutY="37.0" prefHeight="132.0" prefWidth="769.0">
+                             <content>
+                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+                             </content>
+                           </ScrollPane>
+                           <Text layoutX="17.0" layoutY="256.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Valori Nutrizionali" />
+                           <PieChart layoutX="298.0" layoutY="238.0" prefHeight="334.0" prefWidth="418.0" />
+                        </children>
+                     </AnchorPane>
+                  </children>
+               </AnchorPane>
+            </content></ScrollPane>
+      </children>
+   </AnchorPane>
+    <fx:include source="SideMenu.fxml" />
+   <fx:include source="SearchBar.fxml" />
+</AnchorPane>
