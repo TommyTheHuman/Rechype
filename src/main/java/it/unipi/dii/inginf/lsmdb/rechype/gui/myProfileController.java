@@ -12,6 +12,7 @@ import java.util.ResourceBundle;
 public class myProfileController implements Initializable {
 
     @FXML private Button addIngredientBtn;
+    @FXML private Button createMealBtn;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -19,6 +20,14 @@ public class myProfileController implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 Main.changeScene("IngredientSearch");
+
+            }
+        });
+
+        createMealBtn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Main.changeScene("AddMeal");
 
             }
         });

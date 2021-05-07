@@ -83,7 +83,7 @@ class UserDao {
                     tx.run("CREATE (ee:Person { username: $username, country: $country, level: $level })", parameters("username", username, "country", country, "level", 0));
                     return null;
                 });
-                return "ok";
+                return "regOk";
             }catch(Neo4jException ne){ //fail, next cycle try to delete on MongoDB
                 LogManager.getLogger("UserDao.class").error("Neo4j: user insert failed");
                 already_tried=true;

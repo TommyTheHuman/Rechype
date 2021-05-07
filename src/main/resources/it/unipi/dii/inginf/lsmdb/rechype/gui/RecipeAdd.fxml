@@ -6,10 +6,9 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" stylesheets="@test.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1"  fx:controller="it.unipi.dii.inginf.lsmdb.rechype.gui.recipeAddController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" stylesheets="@test.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.inginf.lsmdb.rechype.gui.recipeAddController">
    <children>
       <ScrollPane prefHeight="540.0" prefWidth="748.0">
         <content>
@@ -41,82 +40,12 @@
                      <TextField layoutX="394.0" layoutY="240.0" />
                      <Text layoutX="22.0" layoutY="244.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Quantità a persona" wrappingWidth="67.080078125" />
                      <TextField layoutX="87.0" layoutY="235.0" />
-                     <ScrollPane hbarPolicy="NEVER" layoutX="26.0" layoutY="324.0" prefHeight="200.0" prefWidth="297.0">
-                       <content>
-                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="572.0" prefWidth="298.0">
-                              <children>
-                                 <VBox prefHeight="447.0" prefWidth="297.0">
-                                    <children>
-                                       <AnchorPane prefHeight="65.0" prefWidth="297.0">
-                                          <children>
-                                             <Text layoutX="14.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="1" />
-                                             <TextArea layoutX="55.0" layoutY="8.0" prefHeight="49.0" prefWidth="200.0" />
-                                          </children>
-                                       </AnchorPane>
-                                       <AnchorPane prefHeight="65.0" prefWidth="297.0">
-                                          <children>
-                                             <Text layoutX="14.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="2" />
-                                             <TextArea layoutX="55.0" layoutY="8.0" prefHeight="49.0" prefWidth="200.0" />
-                                          </children>
-                                       </AnchorPane>
-                                       <AnchorPane prefHeight="65.0" prefWidth="297.0">
-                                          <children>
-                                             <Text layoutX="14.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="3" />
-                                             <TextArea layoutX="55.0" layoutY="8.0" prefHeight="49.0" prefWidth="200.0" />
-                                          </children>
-                                       </AnchorPane>
-                                       <AnchorPane prefHeight="65.0" prefWidth="297.0">
-                                          <children>
-                                             <Text layoutX="14.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="4" />
-                                             <TextArea layoutX="55.0" layoutY="8.0" prefHeight="49.0" prefWidth="200.0" />
-                                          </children>
-                                       </AnchorPane>
-                                       <AnchorPane prefHeight="65.0" prefWidth="297.0">
-                                          <children>
-                                             <Text layoutX="14.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="5" />
-                                             <TextArea layoutX="55.0" layoutY="8.0" prefHeight="49.0" prefWidth="200.0" />
-                                          </children>
-                                       </AnchorPane>
-                                       <AnchorPane prefHeight="65.0" prefWidth="297.0">
-                                          <children>
-                                             <Text layoutX="14.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="6" />
-                                             <TextArea layoutX="55.0" layoutY="8.0" prefHeight="49.0" prefWidth="200.0" />
-                                          </children>
-                                       </AnchorPane>
-                                       <AnchorPane prefHeight="65.0" prefWidth="297.0">
-                                          <children>
-                                             <Text layoutX="14.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="7" />
-                                             <TextArea layoutX="55.0" layoutY="8.0" prefHeight="49.0" prefWidth="200.0" />
-                                          </children>
-                                       </AnchorPane>
-                                       <AnchorPane prefHeight="65.0" prefWidth="297.0">
-                                          <children>
-                                             <Text layoutX="14.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="8" />
-                                             <TextArea layoutX="55.0" layoutY="8.0" prefHeight="49.0" prefWidth="200.0" />
-                                          </children>
-                                       </AnchorPane>
-                                       <AnchorPane prefHeight="65.0" prefWidth="297.0">
-                                          <children>
-                                             <Text layoutX="14.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="9" />
-                                             <TextArea layoutX="55.0" layoutY="8.0" prefHeight="49.0" prefWidth="200.0" />
-                                          </children>
-                                       </AnchorPane>
-                                       <AnchorPane prefHeight="65.0" prefWidth="297.0">
-                                          <children>
-                                             <Text layoutX="14.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="10" />
-                                             <TextArea layoutX="55.0" layoutY="8.0" prefHeight="49.0" prefWidth="200.0" />
-                                          </children>
-                                       </AnchorPane>
-                                    </children>
-                                 </VBox>
-                              </children>
-                           </AnchorPane>
-                       </content>
-                     </ScrollPane>
                      <Text layoutX="22.0" layoutY="313.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Steps" />
                      <Text layoutX="372.0" layoutY="321.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ingredients" />
                      <TextArea layoutX="443.0" layoutY="290.0" prefHeight="54.0" prefWidth="252.0" />
                      <Button fx:id="addIngredientButton" layoutX="372.0" layoutY="358.0" mnemonicParsing="false" text="Add Ingredient" />
+                     <TextArea layoutX="22.0" layoutY="321.0" prefHeight="75.0" prefWidth="290.0" />
+                     <Button layoutX="25.0" layoutY="479.0" mnemonicParsing="false" text="Add your Recipe" />
                   </children>
                </AnchorPane>
             </content></ScrollPane>

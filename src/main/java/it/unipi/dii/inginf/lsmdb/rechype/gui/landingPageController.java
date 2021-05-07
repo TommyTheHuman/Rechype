@@ -111,8 +111,14 @@ public class landingPageController implements Initializable {
                     }
                 }
 
-                if(result.equals("registrato")){
+                if(result.equals("regOk")){
                     Main.changeScene("HomePage");
+                }else if(result.equals("Abort")){
+                    regMsg.setText("Error occurred during the registration");
+                    regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");
+                }else if(result.equals("usernameProb")){
+                    regMsg.setText("Username already in use, try a different one");
+                    regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");
                 }
             }
         });
