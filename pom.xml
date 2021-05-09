@@ -64,6 +64,11 @@
             <artifactId>charm-glisten</artifactId>
             <version>6.0.6</version>
         </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20201115</version>
+        </dependency>
     </dependencies>
 
     <build>

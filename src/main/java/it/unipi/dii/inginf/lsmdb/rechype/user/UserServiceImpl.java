@@ -1,5 +1,9 @@
 package it.unipi.dii.inginf.lsmdb.rechype.user;
 
+import org.json.JSONObject;
+
+import java.util.List;
+
 class UserServiceImpl implements UserService {
     private static UserDao userDao=new UserDao();
     private static User loggedUser;
@@ -13,9 +17,16 @@ class UserServiceImpl implements UserService {
     }
 
     public String register(String username, String password, String confPassword, String country, int age){
-        return userDao.checkRegistration(username, password, confPassword, country, age);
+        JSONObject Json =  userDao.checkRegistration(username, password, confPassword, country, age);
+        loggedUser = new User(Json.get("_id").toString(), Json.get("country").toString(), Integer.parseInt(Json.get("age").toString()), Integer.parseInt(Json.get("level").toString()));
+        return Json.get("response").toString();
     }
     public User getLoggedUser(){
         return loggedUser;
+    }
+
+
+    public List<User> searchUser(String text) {
+        return userDao.getUsersByText(text);
     }
 }

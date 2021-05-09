@@ -4,11 +4,13 @@ public class User {
     private String username;
     private String country;
     private int age;
+    private int level;
 
-    public User(String user, String userCountry, int userAge){
+    public User(String user, String userCountry, int userAge, int userLevel){
         username = user;
         country = userCountry;
         age = userAge;
+        level = userLevel;
     }
 
     public String getUsername(){

@@ -111,7 +111,7 @@ public class landingPageController implements Initializable {
                     }
                 }
 
-                if(result.equals("regOk")){
+                if(result.equals("RegOk")){
                     Main.changeScene("HomePage");
                 }else if(result.equals("Abort")){
                     regMsg.setText("Error occurred during the registration");
