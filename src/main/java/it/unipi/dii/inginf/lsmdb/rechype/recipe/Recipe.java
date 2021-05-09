@@ -1,23 +1,47 @@
 package it.unipi.dii.inginf.lsmdb.rechype.recipe;
 
 public class Recipe {
+
     private String name;
     private String author;
-    private String summary;
     private String image;
     private String description;
+    private String method;
+    private String ingredients;   // DOVRA' ESSERE UN ARRAY DI INGREDIENTS
+
     private boolean vegan;
     private boolean glutenFree;
     private boolean dairyFree;
     private boolean vegetarian;
+
     private double servings;
     private double readyInMinute;
     private double weightPerServing;
     private double pricePerServing;
-    private String method;
-    private int like;
+
+    private int likes;
 
     public Recipe(){}
+
+    public Recipe(String name, String author, String image, String description,
+        String method, String ingredients, boolean vegan, boolean glutenFree, boolean dairyFree, boolean vegetarian,
+        double servings, double readyInMinute, double weightPerServing, double pricePerServing){
+        this.name = name;
+        this.author = author;
+        this.image = image;
+        this.description = description;
+        this.method = method;
+        this.ingredients = ingredients;
+        this.vegan = vegan;
+        this.glutenFree = glutenFree;
+        this.dairyFree = dairyFree;
+        this.vegetarian = vegetarian;
+        this.servings = servings;
+        this.readyInMinute = readyInMinute;
+        this.weightPerServing = weightPerServing;
+        this.pricePerServing = pricePerServing;
+        this.likes = 0;
+    }
 
 //     costruttore passando un documento mongo
 //    public Recipe(Document docMongo){
@@ -31,17 +55,12 @@ public class Recipe {
 //    assegnamenti
 //    }
 
-
     public String getName() {
         return name;
     }
 
     public String getAuthor() {
         return author;
-    }
-
-    public String getSummary() {
-        return summary;
     }
 
     public String getImage() {
@@ -84,8 +103,8 @@ public class Recipe {
         return weightPerServing;
     }
 
-    public int getLike() {
-        return like;
+    public int getLikes() {
+        return likes;
     }
 
     public String getMethod() {

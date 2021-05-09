@@ -47,11 +47,6 @@ public class landingPageController extends JSONAdder implements Initializable {
     private UserService userService;
 
 
-
-    
-
-
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 

@@ -4,7 +4,7 @@ class RecipeServiceImpl implements RecipeService{
 
     private static RecipeDao recipeDao = new RecipeDao();
 
-    public boolean addRecipe(Recipe recipe) {
+    public String addRecipe(Recipe recipe) {
         return recipeDao.addRecipe(recipe);
     }
 
