@@ -76,6 +76,7 @@
             <resource>
                 <directory>src/main/resources/it/unipi/dii/inginf/lsmdb/rechype/gui</directory>
             </resource>
+
             <resource>
                 <directory>src/main/resources/it/unipi/dii/inginf/lsmdb/rechype/log4j2</directory>
             </resource>

@@ -16,4 +16,7 @@ public class User {
     public String getUsername(){
         return username;
     }
+    public String getCountry() { return country; }
+    public int getAge() { return age; }
+    public int getLevel() { return level; }
 }

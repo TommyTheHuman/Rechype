@@ -2,6 +2,7 @@ package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 
 
+import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
 
@@ -16,6 +17,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.*;
@@ -25,7 +27,7 @@ import java.util.ResourceBundle;
 /**
  * Initializable è necessario?
  */
-public class landingPageController implements Initializable {
+public class landingPageController extends JSONAdder implements Initializable {
 
 
     @FXML private Button registerBtn;
@@ -74,7 +76,7 @@ public class landingPageController implements Initializable {
                 String username = loginUsername.getText();
                 String password = loginPassword.getText();
                 if(userService.login(username, password)){
-                    Main.changeScene("HomePage");
+                    Main.changeScene("HomePage", new JSONObject());
                 }else{
                     loginMsg.setText("Username or password \nare incorrect");
                     loginMsg.setStyle("-fx-text-fill: red;");
@@ -112,7 +114,7 @@ public class landingPageController implements Initializable {
                 }
 
                 if(result.equals("RegOk")){
-                    Main.changeScene("HomePage");
+                    Main.changeScene("HomePage", new JSONObject());
                 }else if(result.equals("Abort")){
                     regMsg.setText("Error occurred during the registration");
                     regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");

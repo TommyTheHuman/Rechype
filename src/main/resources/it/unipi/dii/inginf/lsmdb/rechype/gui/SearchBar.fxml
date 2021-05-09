@@ -16,7 +16,7 @@
          <children>
             <ScrollPane fx:id="scrollSearch" hbarPolicy="NEVER" layoutY="-6.0" prefHeight="422.0" prefWidth="475.0">
               <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="423.0" prefWidth="433.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="433.0">
                      <children>
                         <VBox fx:id="resultBox" prefHeight="422.0" prefWidth="450.0" />
                      </children>

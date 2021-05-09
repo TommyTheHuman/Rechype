@@ -2,6 +2,7 @@ package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 
 
+import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
@@ -22,6 +23,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
+import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.*;
@@ -31,7 +33,7 @@ import java.util.ResourceBundle;
 /**
  * Initializable è necessario?
  */
-public class sideMenuController implements Initializable {
+public class sideMenuController extends JSONAdder implements Initializable {
 
 
     @FXML private Button logOut;
@@ -62,7 +64,7 @@ public class sideMenuController implements Initializable {
         logOut.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Main.changeScene("Landing");
+                Main.changeScene("Landing", new JSONObject());
 
             }
         });
@@ -70,7 +72,7 @@ public class sideMenuController implements Initializable {
         personalProfile.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Main.changeScene("MyProfile");
+                Main.changeScene("MyProfile", new JSONObject());
 
             }
         });
@@ -78,7 +80,7 @@ public class sideMenuController implements Initializable {
         myRecipes.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Main.changeScene("MyRecipes");
+                Main.changeScene("MyRecipes", new JSONObject());
 
             }
         });
@@ -86,7 +88,7 @@ public class sideMenuController implements Initializable {
         addRecipe.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Main.changeScene("RecipeAdd");
+                Main.changeScene("RecipeAdd", new JSONObject());
 
             }
         });
@@ -94,7 +96,7 @@ public class sideMenuController implements Initializable {
         homePageBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Main.changeScene("HomePage");
+                Main.changeScene("HomePage", new JSONObject());
 
             }
         });

@@ -1,5 +1,6 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
+import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
@@ -7,7 +8,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -17,7 +20,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class searchBarController implements Initializable {
+public class searchBarController extends JSONAdder implements Initializable {
 
     @FXML private Button searchBtn;
     @FXML private TextField searchText;
@@ -26,6 +29,7 @@ public class searchBarController implements Initializable {
 
     @FXML private AnchorPane searchAnchor;
 
+    private guiElementsBuilder builder;
 
     private UserServiceFactory userServiceFactory;
     private UserService userService;
@@ -33,6 +37,8 @@ public class searchBarController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        builder = new guiElementsBuilder();
 
         userServiceFactory = UserServiceFactory.create();
         userService = userServiceFactory.getService();
@@ -47,7 +53,7 @@ public class searchBarController implements Initializable {
                 List<User> listOfUsers = userService.searchUser(text);
 
                 for(User user : listOfUsers){
-                    resultBox.getChildren().add(new Text(user.getUsername()));
+                    resultBox.getChildren().addAll(builder.createUserBlock(user), new Separator(Orientation.HORIZONTAL));
                 }
 
                 resultBox.setStyle("-fx-background-color: white !important");
