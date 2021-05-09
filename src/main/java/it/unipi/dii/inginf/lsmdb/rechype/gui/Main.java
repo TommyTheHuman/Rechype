@@ -16,7 +16,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        mainScene = new Scene(loadFXML("Landing"), 1000, 700);
+        mainScene = new Scene(loadFXML("HomePage"), 1000, 700);
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(mainScene);
         primaryStage.show();

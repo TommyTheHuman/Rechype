@@ -45,11 +45,6 @@ public class landingPageController implements Initializable {
     private UserService userService;
 
 
-
-    
-
-
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 

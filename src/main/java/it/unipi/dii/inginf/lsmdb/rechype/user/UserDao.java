@@ -51,7 +51,7 @@ class UserDao {
         }
 
         Document doc = new Document("_id", username).append("password", password).append("country", country).append("age", age);
-        boolean already_tried=false;
+        boolean already_tried = false;
         MongoCollection<Document> coll=null;
         System.out.println(doc.toJson());
 
