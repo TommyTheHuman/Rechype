@@ -6,7 +6,7 @@ import javafx.fxml.Initializable;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class homePageController extends JSONAdder implements Initializable {
+public class HomePageController extends JSONAdder implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 

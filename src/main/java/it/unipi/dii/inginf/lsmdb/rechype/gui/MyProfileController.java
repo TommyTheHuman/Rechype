@@ -11,7 +11,7 @@ import org.json.JSONObject;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class myProfileController  extends JSONAdder implements Initializable {
+public class MyProfileController extends JSONAdder implements Initializable {
 
     @FXML private Button addIngredientBtn;
     @FXML private Button createMealBtn;

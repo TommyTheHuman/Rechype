@@ -27,7 +27,7 @@ import java.util.ResourceBundle;
 /**
  * Initializable è necessario?
  */
-public class landingPageController extends JSONAdder implements Initializable {
+public class LandingPageController extends JSONAdder implements Initializable {
 
 
     @FXML private Button registerBtn;

@@ -1,24 +1,17 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
-import javafx.geometry.Orientation;
-import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-public class guiElementsBuilder {
+public class GuiElementsBuilder {
 
     public HBox createUserBlock(User user){
         HBox block = new HBox();
@@ -28,11 +21,11 @@ public class guiElementsBuilder {
         ImageView levelNode = null;
 
         InputStream inputFlag;
-        inputFlag = guiElementsBuilder.class.getResourceAsStream("/images/flags/" + user.getCountry() + ".png");
-        InputStream inputAvatar = guiElementsBuilder.class.getResourceAsStream("/images/levels/" + String.valueOf(user.getLevel()) + ".png");
+        inputFlag = GuiElementsBuilder.class.getResourceAsStream("/images/flags/" + user.getCountry() + ".png");
+        InputStream inputAvatar = GuiElementsBuilder.class.getResourceAsStream("/images/levels/" + String.valueOf(user.getLevel()) + ".png");
 
         if (inputFlag == null) {
-            inputFlag = guiElementsBuilder.class.getResourceAsStream("/images/flags/Default.png");
+            inputFlag = GuiElementsBuilder.class.getResourceAsStream("/images/flags/Default.png");
 
         }
         countryNode = new ImageView(new Image(inputFlag));

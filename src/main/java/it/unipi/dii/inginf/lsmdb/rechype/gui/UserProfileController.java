@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class userProfileController extends JSONAdder implements Initializable {
+public class UserProfileController extends JSONAdder implements Initializable {
 
     @FXML private Text userText;
 

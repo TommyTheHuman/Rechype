@@ -33,7 +33,7 @@ import java.util.ResourceBundle;
 /**
  * Initializable è necessario?
  */
-public class sideMenuController extends JSONAdder implements Initializable {
+public class SideMenuController extends JSONAdder implements Initializable {
 
 
     @FXML private Button logOut;

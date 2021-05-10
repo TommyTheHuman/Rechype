@@ -14,13 +14,12 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class searchBarController extends JSONAdder implements Initializable {
+public class SearchBarController extends JSONAdder implements Initializable {
 
     @FXML private Button searchBtn;
     @FXML private TextField searchText;
@@ -29,7 +28,7 @@ public class searchBarController extends JSONAdder implements Initializable {
 
     @FXML private AnchorPane searchAnchor;
 
-    private guiElementsBuilder builder;
+    private GuiElementsBuilder builder;
 
     private UserServiceFactory userServiceFactory;
     private UserService userService;
@@ -38,7 +37,7 @@ public class searchBarController extends JSONAdder implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        builder = new guiElementsBuilder();
+        builder = new GuiElementsBuilder();
 
         userServiceFactory = UserServiceFactory.create();
         userService = userServiceFactory.getService();
