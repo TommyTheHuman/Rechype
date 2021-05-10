@@ -4,12 +4,16 @@ import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
@@ -25,6 +29,9 @@ public class SearchBarController extends JSONAdder implements Initializable {
     @FXML private TextField searchText;
     @FXML private VBox resultBox;
     @FXML private Button closeSearch;
+    @FXML private CheckBox checkBoxUsers;
+    @FXML private CheckBox checkBoxDrinks;
+    @FXML private CheckBox checkBoxRecipes;
 
     @FXML private AnchorPane searchAnchor;
 
@@ -44,6 +51,7 @@ public class SearchBarController extends JSONAdder implements Initializable {
         loggedUser = userService.getLoggedUser();
 
         searchAnchor.setVisible(false);
+        checkBoxDrinks.selectedProperty().setValue(true);
 
         searchBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -66,6 +74,24 @@ public class SearchBarController extends JSONAdder implements Initializable {
                 resultBox.getChildren().clear();
                 searchAnchor.setVisible(false);
             }
+        });
+
+        checkBoxUsers.setOnAction((event) ->{
+            checkBoxUsers.setSelected(true);
+            checkBoxDrinks.setSelected(false);
+            checkBoxRecipes.setSelected(false);
+        });
+
+        checkBoxDrinks.setOnAction((event) ->{
+            checkBoxUsers.setSelected(false);
+            checkBoxDrinks.setSelected(true);
+            checkBoxRecipes.setSelected(false);
+        });
+
+        checkBoxRecipes.setOnAction((event) ->{
+            checkBoxUsers.setSelected(false);
+            checkBoxDrinks.setSelected(false);
+            checkBoxRecipes.setSelected(true);
         });
 
     }

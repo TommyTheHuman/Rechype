@@ -29,8 +29,9 @@
       <AnchorPane prefHeight="41.0" prefWidth="668.0" AnchorPane.leftAnchor="0.0">
          <children>
             <TextField fx:id="searchText" layoutX="200.0" layoutY="8.0" />
-            <CheckBox layoutX="77.0" layoutY="12.0" mnemonicParsing="false" prefHeight="9.0" prefWidth="64.0" text="Recipes" />
-            <CheckBox layoutY="12.0" mnemonicParsing="false" prefHeight="9.0" prefWidth="64.0" text="Drinks" />
+            <CheckBox fx:id="checkBoxRecipes" layoutX="430.0" layoutY="12.0" mnemonicParsing="false" prefHeight="9.0" prefWidth="64.0" text="Recipes" />
+            <CheckBox fx:id="checkBoxDrinks" layoutX="502.0" layoutY="12.0" mnemonicParsing="false" prefHeight="9.0" prefWidth="64.0" text="Drinks" />
+            <CheckBox fx:id="checkBoxUsers" layoutX="376.0" layoutY="12.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="64.0" text="Users" />
             <Button fx:id="searchBtn" layoutX="156.0" layoutY="3.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="28.0">
                <graphic>
                   <HBox prefHeight="24.0" prefWidth="25.0">
