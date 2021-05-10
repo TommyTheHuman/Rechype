@@ -20,7 +20,7 @@ public class RecipeDao {
 
         Document doc = new Document().append("name", recipe.getName()).append("author", recipe.getAuthor())
                 .append("vegetarian", recipe.isVegetarian()).append("glutenFree", recipe.isGlutenFree())
-                .append("dairyFree", recipe.isDairyFree()).append("pricePerServing", recipe.getPricePerServing())
+                .append("dairyFree", recipe.isDairyFree()).append("pricePerServing", recipe.getPricePerServing()).append("weightPerServing", recipe.getWeightPerServing())
                 .append("servings", recipe.getServings()).append("image", recipe.getImage())
                 .append("description", recipe.getDescription()).append("readyInMinutes", recipe.getReadyInMinute())
                 .append("method", recipe.getMethod()).append("likes", recipe.getLikes());
@@ -64,8 +64,6 @@ public class RecipeDao {
                 LogManager.getLogger("RecipeDao.class").error("Neo4j: recipe insert failed");
                 already_tried=true;
             }
-
         }
     }
-
 }
