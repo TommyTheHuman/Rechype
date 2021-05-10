@@ -1,6 +1,8 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeService;
+import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
@@ -41,6 +43,11 @@ public class SearchBarController extends JSONAdder implements Initializable {
     private UserService userService;
     private User loggedUser;
 
+    private RecipeServiceFactory recipeServiceFactory;
+    private RecipeService recipeService;
+
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
@@ -50,6 +57,10 @@ public class SearchBarController extends JSONAdder implements Initializable {
         userService = userServiceFactory.getService();
         loggedUser = userService.getLoggedUser();
 
+        recipeServiceFactory = RecipeServiceFactory.create();
+        recipeService = recipeServiceFactory.getService();
+
+
         searchAnchor.setVisible(false);
         checkBoxDrinks.selectedProperty().setValue(true);
 
@@ -57,10 +68,17 @@ public class SearchBarController extends JSONAdder implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 String text = searchText.getText();
-                List<User> listOfUsers = userService.searchUser(text);
 
-                for(User user : listOfUsers){
-                    resultBox.getChildren().addAll(builder.createUserBlock(user), new Separator(Orientation.HORIZONTAL));
+                if(checkBoxUsers.isSelected()) {
+                    List<User> listOfUsers = userService.searchUser(text);
+
+                    for (User user : listOfUsers) {
+                        resultBox.getChildren().addAll(builder.createUserBlock(user), new Separator(Orientation.HORIZONTAL));
+                    }
+                }
+
+                if(checkBoxRecipes.isSelected()){
+
                 }
 
                 resultBox.setStyle("-fx-background-color: white !important");
