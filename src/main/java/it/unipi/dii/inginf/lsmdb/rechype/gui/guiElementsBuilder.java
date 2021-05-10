@@ -47,11 +47,8 @@ public class guiElementsBuilder {
         block.setId(user.getUsername());
 
         block.setOnMouseClicked((MouseEvent e) ->{
-            System.out.println("o porco dio " + user.getUsername());
 
-            JSONObject par = new JSONObject().append("id", user.getUsername());
-
-            //System.out.println(par.get("id").toString());
+            JSONObject par = new JSONObject().put("id", user.getUsername());
 
             Main.changeScene("UserProfile", par);
         });

@@ -4,6 +4,7 @@ import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.text.Text;
+import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -15,13 +16,10 @@ public class userProfileController extends JSONAdder implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //userText.setText(jsonParameters.get("id").toString());
-
-
-        System.out.println("sono nel controller madonna impestata" + jsonParameters);
-        test();
     }
 
-    private void test(){
-        System.out.println("sono nel controller madonna impestata" + jsonParameters);
+    @Override
+    public void setGui(JSONObject jsonParameters){
+        userText.setText(jsonParameters.get("id").toString());
     }
 }

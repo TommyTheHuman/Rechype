@@ -36,25 +36,18 @@ public class Main extends Application {
 
     private static Parent loadFXML(String fxml, JSONObject par){
         try{
-            System.out.println("Prima del load di " + fxml);
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/" + fxml + ".fxml"));
             Parent returnValue =  fxmlLoader.load();
             JSONAdder controller = fxmlLoader.getController();
-            System.out.println(fxml + " " + par);
-            controller.setParameters(par);
+            controller.setGui(par);
             return returnValue;
         }catch (IOException ie){
-            System.out.println(fxml);
             LogManager.getLogger(Main.class.getName()).error("IO: Failed to load resources");
         }
         return null;
     }
 
     static void changeScene(String fxml, JSONObject parameters){
-        System.out.println("change scene " + fxml);
         mainScene.setRoot(loadFXML(fxml, parameters));
-
-
-
     }
 }
