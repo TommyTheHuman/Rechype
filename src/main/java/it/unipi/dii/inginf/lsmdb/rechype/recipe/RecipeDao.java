@@ -2,17 +2,25 @@ package it.unipi.dii.inginf.lsmdb.rechype.recipe;
 
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.InsertOneResult;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
 import static com.mongodb.client.model.Filters.eq;
 import static org.neo4j.driver.Values.parameters;
 
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
+import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.TransactionWork;
 import org.neo4j.driver.exceptions.Neo4jException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class RecipeDao {
 
@@ -66,4 +74,25 @@ public class RecipeDao {
             }
         }
     }
+
+    public List<Recipe> getRecipesByText(String recipeName){
+        //create the case Insesitive pattern and perform the mongo query
+        List<Recipe> returnList = new ArrayList<>();
+        Pattern pattern = Pattern.compile(".*" + recipeName + ".*", Pattern.CASE_INSENSITIVE);
+        Bson filter = Filters.regex("name", pattern);
+        MongoCursor<Document> recipeCursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES).find(filter).iterator();
+        while (recipeCursor.hasNext()){
+
+            Document doc = recipeCursor.next();
+
+            Recipe user = new Recipe(doc);
+
+            returnList.add(user);
+
+        }
+
+        return returnList;
+    }
+
+
 }

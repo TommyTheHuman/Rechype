@@ -1,5 +1,7 @@
 package it.unipi.dii.inginf.lsmdb.rechype.recipe;
 
+import org.bson.Document;
+
 public class Recipe {
 
     private String name;
@@ -43,11 +45,18 @@ public class Recipe {
         this.likes = 0;
     }
 
-//     costruttore passando un documento mongo
-//    public Recipe(Document docMongo){
-//            name = docMongo.get......
-//      assegnamenti
-//    }
+//    costruttore passando un documento mongo
+    public Recipe(Document doc){
+        this.name = doc.get("name").toString();
+        this.author = doc.get("author").toString();
+        this.pricePerServing = Double.parseDouble(doc.get("pricePerServing").toString());
+        this.image = doc.get("image").toString();
+        this.vegan = doc.getBoolean("vegan");
+        this.glutenFree = doc.getBoolean("glutenFree");
+        this.dairyFree = doc.getBoolean("dairyFree");
+        this.vegetarian = doc.getBoolean("vegetarian");
+        this.likes = Integer.parseInt(doc.get("likes").toString());
+    }
 
 
 //     costruttore passando un documento neo4j

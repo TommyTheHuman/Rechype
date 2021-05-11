@@ -1,6 +1,7 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeService;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
@@ -20,6 +21,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.util.List;
@@ -78,7 +80,11 @@ public class SearchBarController extends JSONAdder implements Initializable {
                 }
 
                 if(checkBoxRecipes.isSelected()){
+                    List<Recipe> listOfRecipes = recipeService.searchRecipe(text);
 
+                    for (Recipe recipe : listOfRecipes) {
+                        resultBox.getChildren().addAll(new Text(recipe.getName()), new Separator(Orientation.HORIZONTAL));
+                    }
                 }
 
                 resultBox.setStyle("-fx-background-color: white !important");
