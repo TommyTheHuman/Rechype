@@ -7,7 +7,7 @@ public class Recipe {
     private String image;
     private String description;
     private String method;
-    private String ingredients;   // DOVRA' ESSERE UN ARRAY DI INGREDIENTS
+    private String ingredients;
 
     private boolean vegan;
     private boolean glutenFree;

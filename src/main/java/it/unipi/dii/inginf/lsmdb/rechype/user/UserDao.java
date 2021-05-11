@@ -124,14 +124,7 @@ class UserDao {
         while (cursor.hasNext()){
 
             Document doc = cursor.next();
-
-            String id = doc.get("_id").toString();
-            String country = doc.get("country").toString();
-            int age = Integer.parseInt(doc.get("age").toString());
-            int level = Integer.parseInt(doc.get("level").toString());
-            User user = new User(id, country, age, level);
-
-            returnList.add(user);
+            returnList.add(new User(doc));
 
         }
 
