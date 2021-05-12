@@ -29,31 +29,26 @@
                         </font>
                      </Text>
                      <TextField fx:id="ingredientText" layoutX="192.0" layoutY="30.0" />
-                     <Text layoutX="526.0" layoutY="48.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Selected Ingredients">
+                     <Text layoutX="480.0" layoutY="49.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Selected Ingredients">
                         <font>
                            <Font size="19.0" />
                         </font>
                      </Text>
-                     <Button layoutX="6.0" mnemonicParsing="false" text="&lt;--" />
+                     <Button fx:id="backToRecipeBtn" layoutX="6.0" mnemonicParsing="false" text="&lt;--" />
+                     <Text fx:id="inputGramsError" fill="RED" layoutX="488.0" layoutY="66.0" strokeType="OUTSIDE" strokeWidth="0.0" text="You must add all inputs" wrappingWidth="146.21630859375" />
                   </children>
                </Pane>
             </children>
          </AnchorPane>
-         <ScrollPane hbarPolicy="NEVER" layoutX="55.0" layoutY="85.0" prefHeight="565.0" prefWidth="378.0">
-           <content>
-             <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="377.0">
-                  <children>
-                     <VBox fx:id="searchedIngredientVBox" layoutY="-2.0" prefHeight="565.0" prefWidth="378.0" />
-                  </children></AnchorPane>
-           </content>
+         <ScrollPane hbarPolicy="NEVER" layoutX="63.0" layoutY="71.0" prefHeight="565.0" prefWidth="300.0">
+            <content>
+               <VBox fx:id="searchedIngredientVBox" prefWidth="300.0" />
+            </content>
          </ScrollPane>
-         <ScrollPane hbarPolicy="NEVER" layoutX="482.0" layoutY="65.0" prefHeight="565.0" prefWidth="292.0">
-           <content>
-             <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="291.0">
-                  <children>
-                     <VBox fx:id="selectedIngredientVBox" prefHeight="586.0" prefWidth="292.0" />
-                  </children></AnchorPane>
-           </content>
+         <ScrollPane hbarPolicy="NEVER" layoutX="416.0" layoutY="69.0" prefHeight="565.0" prefWidth="300.0">
+            <content>
+               <VBox fx:id="selectedIngredientVBox" prefWidth="300.0" />
+            </content>
          </ScrollPane>
       </children>
    </AnchorPane>

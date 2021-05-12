@@ -19,6 +19,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        // check: togli le due righe successive e togli il commento alla terza
+//        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/.fxml"));
+//        mainScene = new Scene(fxmlLoader.load());
         mainScene = new Scene(loadFXML("Landing", new JSONObject()), 1000, 700);
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(mainScene);
@@ -39,7 +42,8 @@ public class Main extends Application {
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/" + fxml + ".fxml"));
             Parent returnValue =  fxmlLoader.load();
             JSONAdder controller = fxmlLoader.getController();
-            controller.setGui(par);
+            controller.setParameters(par);
+            controller.setGui();
             return returnValue;
         }catch (IOException ie){
             LogManager.getLogger(Main.class.getName()).error("IO: Failed to load resources");

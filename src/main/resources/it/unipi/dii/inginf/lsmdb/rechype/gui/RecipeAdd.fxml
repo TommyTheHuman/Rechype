@@ -41,9 +41,9 @@
                      <TextField fx:id="weightPerServing" layoutX="87.0" layoutY="151.0" />
                      <Text layoutX="324.0" layoutY="268.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Method" />
                      <Text layoutX="55.0" layoutY="378.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ingredients (grams)" wrappingWidth="60.91845703125" />
-                     <TextArea fx:id="method" layoutX="25.0" layoutY="407.0" prefHeight="54.0" prefWidth="252.0" />
+                     <TextArea fx:id="ingredients" layoutX="25.0" layoutY="407.0" prefHeight="54.0" prefWidth="252.0" />
                      <Button fx:id="addIngredientButton" layoutX="149.0" layoutY="370.0" mnemonicParsing="false" text="Add Ingredient" />
-                     <TextArea fx:id="ingredients" layoutX="324.0" layoutY="278.0" prefHeight="75.0" prefWidth="290.0" />
+                     <TextArea fx:id="method" layoutX="324.0" layoutY="278.0" prefHeight="75.0" prefWidth="290.0" />
                      <Button fx:id="addRecipeButton" layoutX="425.0" layoutY="422.0" mnemonicParsing="false" text="Add your Recipe">
                         <font>
                            <Font size="18.0" />

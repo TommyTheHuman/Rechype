@@ -22,7 +22,7 @@ public class Ingredient {
         String unit;
 
         this.name = doc.get("_id").toString();
-        this.imageUrl = null;
+        this.imageUrl = "no.png";
         this.nutrition = null;
 
         if(doc.containsKey("nutrients")){

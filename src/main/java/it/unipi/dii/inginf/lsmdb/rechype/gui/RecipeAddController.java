@@ -12,6 +12,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
@@ -58,12 +59,19 @@ public class RecipeAddController extends JSONAdder implements Initializable {
 
         User loggedUser = userService.getLoggedUser();
 
+     //   ingredients.setDisable(true);
 
         addIngredientButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Main.changeScene("IngredientSearch", new JSONObject());
 
+                JSONObject par = new JSONObject().put("title", title.getText()).put("imageUrl", imageUrl.getText())
+                        .put("servings", servings.getText()).put("readyInMinutes", readyInMinutes.getText()).put("weightPerServing", weightPerServing.getText())
+                        .put("pricePerServing", pricePerServing.getText()).put("description", description.getText())
+                        .put("method", method.getText()).put("ingredients", ingredients.getText()).put("vegan", vegan.isSelected())
+                        .put("dairyFree", dairyFree.isSelected()).put("vegetarian", vegetarian.isSelected())
+                        .put("vegetarian", vegetarian.isSelected()).put("glutenFree", glutenFree.isSelected());
+                Main.changeScene("IngredientSearch", par);
             }
         });
 
@@ -81,6 +89,26 @@ public class RecipeAddController extends JSONAdder implements Initializable {
 
             }
         });
+    }
+
+    @Override
+    public void setGui(){
+        JSONObject par = jsonParameters;
+        if(par.toString().equals("{}"))
+            return;
+        title.setText(par.get("title").toString());
+        imageUrl.setText(par.get("imageUrl").toString());
+        servings.setText(par.get("servings").toString());
+        readyInMinutes.setText(par.get("readyInMinutes").toString());
+        weightPerServing.setText(par.get("weightPerServing").toString());
+        pricePerServing.setText(par.get("pricePerServing").toString());
+        description.setText(par.get("description").toString());
+        method.setText(par.get("method").toString());
+        vegan.setSelected(par.getBoolean("vegan"));
+        dairyFree.setSelected(par.getBoolean("dairyFree"));
+        vegetarian.setSelected(par.getBoolean("vegetarian"));
+        glutenFree.setSelected(par.getBoolean("glutenFree"));
+        ingredients.setText(par.get("ingredients").toString());
 
     }
 }
