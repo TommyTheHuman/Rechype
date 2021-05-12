@@ -1,6 +1,7 @@
 package it.unipi.dii.inginf.lsmdb.rechype.recipe;
 
 import org.bson.Document;
+import org.json.JSONObject;
 
 public class Recipe {
 
@@ -20,6 +21,7 @@ public class Recipe {
     private double readyInMinute;
     private double weightPerServing;
     private double pricePerServing;
+    private String _id;
 
     private int likes;
 
@@ -45,17 +47,18 @@ public class Recipe {
         this.likes = 0;
     }
 
-//    costruttore passando un documento mongo
     public Recipe(Document doc){
-        this.name = doc.get("name").toString();
-        this.author = doc.get("author").toString();
-        this.pricePerServing = Double.parseDouble(doc.get("pricePerServing").toString());
-        this.image = doc.get("image").toString();
-        this.vegan = doc.getBoolean("vegan");
-        this.glutenFree = doc.getBoolean("glutenFree");
-        this.dairyFree = doc.getBoolean("dairyFree");
-        this.vegetarian = doc.getBoolean("vegetarian");
-        this.likes = Integer.parseInt(doc.get("likes").toString());
+        this.name = doc.get("name")==null? "" : doc.get("name").toString();
+        this.author = doc.get("author")==null? "" : doc.get("author").toString();
+        this.pricePerServing = doc.get("pricePerServing")==null? 0 : Double.parseDouble(doc.get("pricePerServing").toString());
+        this.image = doc.get("image")==null? null : doc.get("image").toString();
+        this.vegan = doc.get("vegan")==null? false : doc.getBoolean("vegan");
+        this.glutenFree = doc.get("glutenFree")==null? false : doc.getBoolean("glutenFree");
+        this.dairyFree = doc.get("dairyFree")==null? false : doc.getBoolean("dairyFree");
+        this.vegetarian = doc.get("vegetarian")==null? false : doc.getBoolean("vegetarian");
+        this.likes = doc.get("likes")==null? 0 : Integer.parseInt(doc.get("likes").toString());
+        JSONObject json = new JSONObject(doc.toJson());
+        this._id=json.getJSONObject("_id").getString("$oid");
     }
 
 
@@ -119,5 +122,7 @@ public class Recipe {
     public String getMethod() {
         return method;
     }
+
+    public String getId(String id) {return _id; }
 
 }

@@ -115,12 +115,13 @@ class UserDao {
         }
     }
 
-    public List<User> getUsersByText(String userName){
+    public List<User> getUsersByText(String userName, int offset, int quantity){
         //create the case Insesitive pattern and perform the mongo query
         List<User> returnList = new ArrayList<>();
         Pattern pattern = Pattern.compile(".*" + userName + ".*", Pattern.CASE_INSENSITIVE);
         Bson filter = Filters.regex("_id", pattern);
-        MongoCursor<Document> cursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(filter).iterator();
+        MongoCursor<Document> cursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(filter)
+        .skip(offset).limit(quantity).iterator();
         while (cursor.hasNext()){
 
             Document doc = cursor.next();

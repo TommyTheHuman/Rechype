@@ -14,29 +14,25 @@
    <children>
       <AnchorPane fx:id="searchAnchor" layoutX="-3.0" layoutY="46.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="0.0" prefWidth="0.0">
          <children>
-            <ScrollPane fx:id="scrollSearch" hbarPolicy="NEVER" layoutY="-6.0" prefHeight="422.0" prefWidth="475.0">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="433.0">
-                     <children>
-                        <VBox fx:id="resultBox" prefHeight="422.0" prefWidth="450.0" />
-                     </children>
-                  </AnchorPane>
-              </content>
+            <ScrollPane fx:id="scrollSearch" hbarPolicy="NEVER" layoutX="98.0" layoutY="-6.0" prefHeight="239.0" prefWidth="333.0">
+               <content>
+                  <VBox fx:id="resultBox" prefWidth="332.0" />
+               </content>
             </ScrollPane>
-            <Button fx:id="closeSearch" layoutX="206.0" layoutY="425.0" mnemonicParsing="false" text="Chiudi" />
+            <Button fx:id="closeSearch" mnemonicParsing="false" text="Chiudi" />
          </children>
       </AnchorPane>
       <AnchorPane prefHeight="41.0" prefWidth="668.0" AnchorPane.leftAnchor="0.0">
          <children>
             <TextField fx:id="searchText" layoutX="200.0" layoutY="8.0" />
-            <CheckBox fx:id="checkBoxRecipes" layoutX="430.0" layoutY="12.0" mnemonicParsing="false" prefHeight="9.0" prefWidth="64.0" text="Recipes" />
-            <CheckBox fx:id="checkBoxDrinks" layoutX="502.0" layoutY="12.0" mnemonicParsing="false" prefHeight="9.0" prefWidth="64.0" text="Drinks" />
-            <CheckBox fx:id="checkBoxUsers" layoutX="376.0" layoutY="12.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="64.0" text="Users" />
-            <Button fx:id="searchBtn" layoutX="156.0" layoutY="3.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="28.0">
+            <CheckBox fx:id="checkBoxRecipes" layoutX="428.0" layoutY="12.0" mnemonicParsing="false" prefHeight="9.0" prefWidth="64.0" text="Recipes" />
+            <CheckBox fx:id="checkBoxDrinks" layoutX="503.0" layoutY="12.0" mnemonicParsing="false" prefHeight="9.0" prefWidth="64.0" text="Drinks" />
+            <CheckBox fx:id="checkBoxUsers" layoutX="364.0" layoutY="11.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="64.0" text="Users" />
+            <Button fx:id="searchBtn" layoutX="168.0" layoutY="7.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="30.0">
                <graphic>
                   <HBox prefHeight="24.0" prefWidth="25.0">
                      <children>
-                        <ImageView fitHeight="28.0" fitWidth="28.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="16.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@images/logout.png" />
                            </image>

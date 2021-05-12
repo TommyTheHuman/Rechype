@@ -1,10 +1,10 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
-import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.util.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.user.*;
 import javafx.application.Application;
+import javafx.application.HostServices;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -14,18 +14,18 @@ import org.json.JSONObject;
 import java.io.IOException;
 
 public class Main extends Application {
-
+    private static Main istance;
     private static Scene mainScene;
+    private static final UserServiceFactory factory=UserServiceFactory.create();
 
     @Override
     public void start(Stage primaryStage) throws Exception{
         mainScene = new Scene(loadFXML("Landing", new JSONObject()), 1000, 700);
+        istance=this;
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(mainScene);
         primaryStage.show();
     }
-
-    private static final UserServiceFactory factory=UserServiceFactory.create();
 
     public static void main(String[] args){
 
@@ -47,7 +47,12 @@ public class Main extends Application {
         return null;
     }
 
-    static void changeScene(String fxml, JSONObject parameters){
+    public static void changeScene(String fxml, JSONObject parameters){
         mainScene.setRoot(loadFXML(fxml, parameters));
     }
+
+    public static Main getInstance(){
+        return istance;
+    }
+
 }

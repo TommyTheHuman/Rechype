@@ -1,13 +1,12 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
-import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.util.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeService;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -15,13 +14,9 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.util.List;
@@ -36,7 +31,7 @@ public class SearchBarController extends JSONAdder implements Initializable {
     @FXML private CheckBox checkBoxUsers;
     @FXML private CheckBox checkBoxDrinks;
     @FXML private CheckBox checkBoxRecipes;
-
+    @FXML private ScrollPane scrollSearch;
     @FXML private AnchorPane searchAnchor;
 
     private GuiElementsBuilder builder;
@@ -47,6 +42,7 @@ public class SearchBarController extends JSONAdder implements Initializable {
 
     private RecipeServiceFactory recipeServiceFactory;
     private RecipeService recipeService;
+    private String lastSearchedText;
 
 
 
@@ -69,10 +65,11 @@ public class SearchBarController extends JSONAdder implements Initializable {
         searchBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                String text = searchText.getText();
+                resultBox.getChildren().clear();
+                lastSearchedText = searchText.getText();
 
                 if(checkBoxUsers.isSelected()) {
-                    List<User> listOfUsers = userService.searchUser(text);
+                    List<User> listOfUsers = userService.searchUser(lastSearchedText, 0, 10);
 
                     for (User user : listOfUsers) {
                         resultBox.getChildren().addAll(builder.createUserBlock(user), new Separator(Orientation.HORIZONTAL));
@@ -80,10 +77,10 @@ public class SearchBarController extends JSONAdder implements Initializable {
                 }
 
                 if(checkBoxRecipes.isSelected()){
-                    List<Recipe> listOfRecipes = recipeService.searchRecipe(text);
+                    List<Recipe> listOfRecipes = recipeService.searchRecipe(lastSearchedText);
 
                     for (Recipe recipe : listOfRecipes) {
-                        resultBox.getChildren().addAll(new Text(recipe.getName()), new Separator(Orientation.HORIZONTAL));
+                        resultBox.getChildren().addAll(builder.createRecipeBlock(recipe), new Separator(Orientation.HORIZONTAL));
                     }
                 }
 
@@ -116,6 +113,20 @@ public class SearchBarController extends JSONAdder implements Initializable {
             checkBoxUsers.setSelected(false);
             checkBoxDrinks.setSelected(false);
             checkBoxRecipes.setSelected(true);
+        });
+
+        scrollSearch.vvalueProperty().addListener(new ChangeListener<Number>() {
+            int offset=0;
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                if(scrollSearch.getVvalue()==scrollSearch.getVmax()){
+                    offset=resultBox.getChildren().size()/2;
+                    List<User> listOfUsers = userService.searchUser(lastSearchedText, offset, 10);
+                    for (User user : listOfUsers) {
+                            resultBox.getChildren().addAll(builder.createUserBlock(user), new Separator(Orientation.HORIZONTAL));
+                    };
+                }
+            }
         });
 
     }
