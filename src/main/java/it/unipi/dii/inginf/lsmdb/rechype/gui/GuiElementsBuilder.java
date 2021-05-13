@@ -120,8 +120,7 @@ public class GuiElementsBuilder {
         mainContainer.setSpacing(5);
 
         mainContainer.setOnMouseClicked((MouseEvent e) ->{
-            JSONObject par = new JSONObject().put("id", recipe.getId("_id"));
-            Main.changeScene("RecipePage", par);
+            Main.changeScene("RecipePage", recipe.getJSON());
         });
 
         return mainContainer;

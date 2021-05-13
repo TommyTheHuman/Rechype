@@ -18,10 +18,11 @@ public class Recipe {
     private boolean vegetarian;
 
     private double servings;
-    private double readyInMinute;
+    private double readyInMinutes;
     private double weightPerServing;
     private double pricePerServing;
     private String _id;
+    private JSONObject jsonRepresentation;
 
     private int likes;
 
@@ -41,31 +42,56 @@ public class Recipe {
         this.dairyFree = dairyFree;
         this.vegetarian = vegetarian;
         this.servings = servings;
-        this.readyInMinute = readyInMinute;
+        this.readyInMinutes = readyInMinute;
         this.weightPerServing = weightPerServing;
         this.pricePerServing = pricePerServing;
+        this._id="";
         this.likes = 0;
     }
 
     public Recipe(Document doc){
+        this.jsonRepresentation = new JSONObject(doc.toJson());
         this.name = doc.get("name")==null? "" : doc.get("name").toString();
         this.author = doc.get("author")==null? "" : doc.get("author").toString();
         this.pricePerServing = doc.get("pricePerServing")==null? 0 : Double.parseDouble(doc.get("pricePerServing").toString());
         this.image = doc.get("image")==null? null : doc.get("image").toString();
+        this.description = doc.get("description")==null? "" : doc.get("description").toString();
+        this.method = doc.get("method")==null? "" : doc.get("method").toString();
+        this.ingredients = ingredients;
         this.vegan = doc.get("vegan")==null? false : doc.getBoolean("vegan");
         this.glutenFree = doc.get("glutenFree")==null? false : doc.getBoolean("glutenFree");
         this.dairyFree = doc.get("dairyFree")==null? false : doc.getBoolean("dairyFree");
         this.vegetarian = doc.get("vegetarian")==null? false : doc.getBoolean("vegetarian");
+        this.readyInMinutes = doc.get("readyInMinute")==null? 0: doc.getDouble("readyInMinute");
+
+        //weight and price may be integer
+        if(doc.get("weightPerServing") == null){
+            this.weightPerServing = 0;
+        }
+        else if(doc.get("weightPerServing") instanceof Integer){
+            this.weightPerServing = Double.valueOf(doc.getInteger("weightPerServing"));
+        }
+        else{
+            this.weightPerServing = doc.getDouble("weightPerServing");
+        }
+        if(doc.get("pricePerServing") == null){
+            this.pricePerServing = 0;
+        }
+        else if(doc.get("pricePerServing") instanceof Integer){
+            this.pricePerServing = Double.valueOf(doc.getInteger("pricePerServing"));
+        }
+        else{
+            this.pricePerServing = doc.getDouble("pricePerServing");
+        }
+
         this.likes = doc.get("likes")==null? 0 : Integer.parseInt(doc.get("likes").toString());
         JSONObject json = new JSONObject(doc.toJson());
         this._id=json.getJSONObject("_id").getString("$oid");
     }
 
 
-//     costruttore passando un documento neo4j
-//    public Recipe(Record recNeo){
-//    assegnamenti
-//    }
+//neo4j constructor with less fields but all the private fields must be set anyway
+    public JSONObject getJSON() { return jsonRepresentation; } //da provare
 
     public String getName() {
         return name;
@@ -104,7 +130,7 @@ public class Recipe {
     }
 
     public double getReadyInMinute() {
-        return readyInMinute;
+        return readyInMinutes;
     }
 
     public double getServings() {
@@ -123,6 +149,6 @@ public class Recipe {
         return method;
     }
 
-    public String getId(String id) {return _id; }
+    public String getId() {return _id; }
 
 }

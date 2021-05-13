@@ -19,7 +19,7 @@ public class UserProfileController extends JSONAdder implements Initializable {
     }
 
     @Override
-    public void setGui(JSONObject jsonParameters){
+    public void setGui(){
         userText.setText(jsonParameters.get("id").toString());
     }
 }
