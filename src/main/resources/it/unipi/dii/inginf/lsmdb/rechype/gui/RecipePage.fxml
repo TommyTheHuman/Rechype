@@ -39,7 +39,7 @@
                            <ImageView fitHeight="36.0" fitWidth="48.0" layoutX="183.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true" />
                            <ImageView fitHeight="36.0" fitWidth="48.0" layoutX="274.0" layoutY="45.0" pickOnBounds="true" preserveRatio="true" />
                            <ImageView fitHeight="45.0" fitWidth="60.0" layoutX="582.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" />
-                           <Text layoutX="571.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" fx:id="Likes"/>
+                           <Text fx:id="Likes" layoutX="571.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
                         </children>
                      </Pane>
                      <AnchorPane layoutY="137.0" prefHeight="402.0" prefWidth="775.0">
@@ -86,8 +86,8 @@
                      <AnchorPane layoutY="541.0" prefHeight="428.0" prefWidth="775.0">
                         <children>
                            <Text layoutX="14.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Method" />
-                           <Text layoutX="15.0" layoutY="52.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" wrappingWidth="684.1426086425781" fx:id="MethodText"/>
-                           <PieChart layoutX="298.0" layoutY="238.0" prefHeight="334.0" prefWidth="418.0" fx:id="NutritionsPie"/>
+                           <Text fx:id="MethodText" layoutX="15.0" layoutY="52.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" wrappingWidth="684.1426086425781" />
+                           <PieChart fx:id="NutritionsPie" layoutX="298.0" layoutY="238.0" prefHeight="334.0" prefWidth="418.0" />
                         </children>
                      </AnchorPane>
                   </children>

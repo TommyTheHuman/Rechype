@@ -69,9 +69,11 @@ public class RecipePageController extends JSONAdder implements Initializable {
         pieData.add(new PieChart.Data("Calcium", nutrients.getJSONObject(6).get("amount") instanceof Integer?
         nutrients.getJSONObject(6).getInt("amount") : nutrients.getJSONObject(6).getDouble("amount")));
 
-        NutritionsPie=new PieChart(pieData);
+        NutritionsPie.setData(pieData);
         NutritionsPie.setLegendVisible(false);
         NutritionsPie.setTitle("Nutritional Information");
+
+        //add the control for the mg case and other measures
 
     }
 }
