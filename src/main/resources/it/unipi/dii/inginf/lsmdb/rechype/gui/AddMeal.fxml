@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" stylesheets="@test.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.inginf.lsmdb.rechype.gui.HomePageController">
+   <children>
+      <ScrollPane prefHeight="540.0" prefWidth="748.0">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+        </content>
+      </ScrollPane>
+   </children>
+   <AnchorPane layoutX="226.0" layoutY="52.0" prefHeight="648.0" prefWidth="775.0">
+      <children>
+         <ScrollPane hbarPolicy="NEVER" layoutY="47.0" prefHeight="601.0" prefWidth="775.0">
+            <content>
+               <AnchorPane prefHeight="600.0" prefWidth="773.0" />
+            </content>
+         </ScrollPane>
+         <ImageView fitHeight="36.0" fitWidth="38.0" layoutX="25.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true" />
+         <TextField layoutX="63.0" layoutY="17.0" />
+      </children>
+   </AnchorPane>
+    <fx:include source="SideMenu.fxml" />
+   <fx:include source="SearchBar.fxml" />
+</AnchorPane>

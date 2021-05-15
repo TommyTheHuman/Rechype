@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" stylesheets="@test.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.inginf.lsmdb.rechype.gui.RecipePageController">
+   <children>
+      <ScrollPane prefHeight="540.0" prefWidth="748.0">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+        </content>
+      </ScrollPane>
+   </children>
+   <AnchorPane layoutX="226.0" layoutY="52.0" prefHeight="648.0" prefWidth="775.0">
+      <children>
+         <ScrollPane hbarPolicy="NEVER" prefHeight="648.0" prefWidth="775.0">
+            <content>
+               <AnchorPane prefHeight="969.0" prefWidth="776.0">
+                  <children>
+                     <Text fx:id="authorLabel" layoutX="316.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="">
+                        <font>
+                           <Font size="20.0" />
+                        </font>
+                     </Text>
+                     <Pane layoutY="47.0" prefHeight="90.0" prefWidth="775.0">
+                        <children>
+                           <Text fx:id="Name" layoutX="7.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="c" wrappingWidth="721.6000022888184" />
+                           <ImageView fx:id="GlutenIcon" fitHeight="40.0" fitWidth="40.0" layoutX="315.0" layoutY="31.0" pickOnBounds="true" />
+                           <ImageView fx:id="VeganIcon" fitHeight="40.0" fitWidth="40.0" layoutX="133.0" layoutY="31.0" pickOnBounds="true" preserveRatio="true" />
+                           <ImageView fx:id="VegetarianIcon" fitHeight="40.0" fitWidth="40.0" layoutX="198.0" layoutY="31.0" pickOnBounds="true" preserveRatio="true" />
+                           <ImageView fx:id="DairyIcon" fitHeight="40.0" fitWidth="40.0" layoutX="254.0" layoutY="31.0" pickOnBounds="true" preserveRatio="true" />
+                           <Text fx:id="PriceIcon" layoutX="501.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" />
+                           <Text fx:id="Likes" layoutX="571.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+                        </children>
+                     </Pane>
+                     <AnchorPane layoutY="137.0" prefHeight="402.0" prefWidth="775.0">
+                        <children>
+                           <Pane layoutX="187.0">
+                              <children>
+                                 <Text layoutX="14.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Description" />
+                                 <Text fx:id="DescriptionText" layoutX="14.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="The recipe Everything Seasoning could satisfy your Southern craving in roughly &lt;b&gt;5 minutes&lt;/b&gt;. This marinade has &lt;b&gt;257 calories&lt;/b&gt;, &lt;b&gt;9g of protein&lt;/b&gt;, and &lt;b&gt;16g of fat&lt;/b&gt; per serving. This caveman, gluten free, primal, and whole 30 recipe serves 1 and costs &lt;b&gt;$4.69 per serving&lt;/b&gt;. 47 people have made this recipe and would make it again. Head to the store and pick up sesame seeds, poppy seeds, sesame seeds, and a few other things to make it today. All things considered, we decided this recipe &lt;b&gt;deserves a spoonacular score of 99%&lt;/b&gt;. This score is excellent. Try &lt;a href=&quot;https://spoonacular.com/recipes/all-around-seasoning-mix-395391&quot;&gt;All-Around Seasoning Mix&lt;/a&gt;, &lt;a href=&quot;https://spoonacular.com/recipes/tex-mex-seasoning-mix-385091&quot;&gt;Tex-Mex Seasoning Mix&lt;/a&gt;, and &lt;a href=&quot;https://spoonacular.com/recipes/taco-seasoning-mix-406398&quot;&gt;Taco Seasoning Mix&lt;/a&gt; for similar recipes." wrappingWidth="506.3999786376953" />
+                              </children>
+                           </Pane>
+                           <VBox prefHeight="402.0" prefWidth="181.0">
+                              <children>
+                                 <AnchorPane prefHeight="160.0" prefWidth="181.0">
+                                    <children>
+                                       <ImageView fx:id="RecipeImage" fitHeight="150.0" fitWidth="155.0" layoutX="13.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true" />
+                                    </children>
+                                 </AnchorPane>
+                                 <AnchorPane prefHeight="58.0" prefWidth="181.0">
+                                    <children>
+                                       <Text fx:id="Kcal" layoutX="9.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" />
+                                    </children>
+                                 </AnchorPane>
+                                 <AnchorPane prefHeight="58.0" prefWidth="181.0">
+                                    <children>
+                                       <Text fx:id="Servings" layoutX="9.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0"  />
+                                    </children>
+                                 </AnchorPane>
+                                 <AnchorPane prefHeight="58.0" prefWidth="181.0">
+                                    <children>
+                                       <Text fx:id="ReadyInMinutes" layoutX="8.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" />
+                                    </children>
+                                 </AnchorPane>
+                                 <AnchorPane prefHeight="58.0" prefWidth="181.0">
+                                    <children>
+                                       <Text fx:id="WeightPerServing" layoutX="10.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0"  />
+                                    </children>
+                                 </AnchorPane>
+                              </children>
+                           </VBox>
+                           <Text layoutX="459.0" layoutY="241.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ingredients" wrappingWidth="67.6953125" />
+                           <ScrollPane hbarPolicy="NEVER" layoutX="204.0" layoutY="262.0" prefHeight="142.0" prefWidth="574.0" />
+                        </children>
+                     </AnchorPane>
+                     <AnchorPane layoutY="541.0" prefHeight="428.0" prefWidth="775.0">
+                        <children>
+                           <Text layoutX="14.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Method" />
+                           <Text fx:id="MethodText" layoutX="15.0" layoutY="52.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" wrappingWidth="684.1426086425781" />
+                           <PieChart fx:id="NutritionsPie" layoutX="190.0" layoutY="248.0" prefHeight="334.0" prefWidth="418.0" />
+                        </children>
+                     </AnchorPane>
+                  </children>
+               </AnchorPane>
+            </content></ScrollPane>
+      </children>
+   </AnchorPane>
+    <fx:include source="SideMenu.fxml" />
+   <fx:include source="SearchBar.fxml" />
+</AnchorPane>

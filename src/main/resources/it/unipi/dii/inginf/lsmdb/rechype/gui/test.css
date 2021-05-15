@@ -1,0 +1,4 @@
+.scroll-pane, .scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+

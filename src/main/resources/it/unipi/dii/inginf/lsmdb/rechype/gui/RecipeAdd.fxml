@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" stylesheets="@test.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.inginf.lsmdb.rechype.gui.RecipeAddController">
+   <children>
+      <ScrollPane prefHeight="540.0" prefWidth="748.0">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+        </content>
+      </ScrollPane>
+   </children>
+   <AnchorPane layoutX="226.0" layoutY="52.0" prefHeight="648.0" prefWidth="775.0">
+      <children>
+         <ScrollPane hbarPolicy="NEVER" prefHeight="648.0" prefWidth="775.0">
+            <content>
+               <AnchorPane prefHeight="647.0" prefWidth="773.0">
+                  <children>
+                     <Text layoutX="22.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Title" />
+                     <TextField fx:id="title" layoutX="51.0" layoutY="20.0" />
+                     <Text layoutX="307.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Image URL" />
+                     <TextField fx:id="imageUrl" layoutX="372.0" layoutY="20.0" />
+                     <Text layoutX="324.0" layoutY="139.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Description" />
+                     <TextArea fx:id="description" layoutX="324.0" layoutY="154.0" prefHeight="75.0" prefWidth="290.0" />
+                     <CheckBox fx:id="vegan" layoutX="47.0" layoutY="64.0" mnemonicParsing="false" text="Vegan" />
+                     <CheckBox fx:id="dairyFree" layoutX="47.0" layoutY="108.0" mnemonicParsing="false" text="Dairy free" />
+                     <CheckBox fx:id="vegetarian" layoutX="133.0" layoutY="108.0" mnemonicParsing="false" text="Vegetarian" />
+                     <CheckBox fx:id="glutenFree" layoutX="132.0" layoutY="66.0" mnemonicParsing="false" text="Gluten free" />
+                     <Text layoutX="19.0" layoutY="208.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Servings" />
+                     <TextField fx:id="servings" layoutX="87.0" layoutY="191.0" />
+                     <Text layoutX="22.0" layoutY="247.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ready in minute" wrappingWidth="83.900390625" />
+                     <TextField fx:id="readyInMinutes" layoutX="87.0" layoutY="238.0" />
+                     <Text layoutX="12.0" layoutY="159.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Weight per service" wrappingWidth="65.080078125" />
+                     <TextField fx:id="weightPerServing" layoutX="87.0" layoutY="151.0" />
+                     <Text layoutX="324.0" layoutY="268.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Method" />
+                     <Text layoutX="55.0" layoutY="378.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ingredients (grams)" wrappingWidth="60.91845703125" />
+                     <TextArea fx:id="method" layoutX="25.0" layoutY="407.0" prefHeight="54.0" prefWidth="252.0" />
+                     <Button fx:id="addIngredientButton" layoutX="149.0" layoutY="370.0" mnemonicParsing="false" text="Add Ingredient" />
+                     <TextArea fx:id="ingredients" layoutX="324.0" layoutY="278.0" prefHeight="75.0" prefWidth="290.0" />
+                     <Button fx:id="addRecipeButton" layoutX="425.0" layoutY="422.0" mnemonicParsing="false" text="Add your Recipe">
+                        <font>
+                           <Font size="18.0" />
+                        </font></Button>
+                     <Text layoutX="18.0" layoutY="292.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Price  per serving" wrappingWidth="58.82177734375" />
+                     <TextField fx:id="pricePerServing" layoutX="87.0" layoutY="283.0" />
+                  </children>
+               </AnchorPane>
+            </content></ScrollPane>
+      </children>
+   </AnchorPane>
+    <fx:include source="SideMenu.fxml" />
+   <fx:include source="SearchBar.fxml" />
+</AnchorPane>
