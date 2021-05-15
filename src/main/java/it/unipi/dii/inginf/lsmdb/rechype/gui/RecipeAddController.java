@@ -4,7 +4,7 @@ import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.Ingredient;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientService;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientServiceFactory;
-import it.unipi.dii.inginf.lsmdb.rechype.util.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeService;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeServiceFactory;

@@ -1,8 +1,6 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
-
-
-import it.unipi.dii.inginf.lsmdb.rechype.util.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
@@ -48,8 +46,7 @@ public class SideMenuController extends JSONAdder implements Initializable {
         userService = userServiceFactory.getService();
 
         loggedUser = userService.getLoggedUser();
-// check: togli il commento alla riga sotto
-//        userName.setText(loggedUser.getUsername());
+        userName.setText(loggedUser.getUsername());
 
         logOut.setOnAction(new EventHandler<ActionEvent>() {
             @Override

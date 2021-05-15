@@ -1,6 +1,6 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
-import it.unipi.dii.inginf.lsmdb.rechype.util.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.user.*;
 import javafx.application.Application;
 import javafx.application.HostServices;
