@@ -1,7 +1,7 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
-import it.unipi.dii.inginf.lsmdb.rechype.util.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
