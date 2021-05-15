@@ -75,12 +75,13 @@ public class RecipeDao {
         }
     }
 
-    public List<Recipe> getRecipesByText(String recipeName){
-        //create the case Insesitive pattern and perform the mongo query
+    public List<Recipe> getRecipesByText(String recipeName, int offset, int quantity){
+
+        //create the case Insensitive pattern and perform the mongo query
         List<Recipe> returnList = new ArrayList<>();
         Pattern pattern = Pattern.compile(".*" + recipeName + ".*", Pattern.CASE_INSENSITIVE);
         Bson filter = Filters.regex("name", pattern);
-        MongoCursor<Document> recipeCursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES).find(filter).iterator();
+        MongoCursor<Document> recipeCursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES).find(filter).skip(offset).limit(quantity).iterator();
         while (recipeCursor.hasNext()){
 
             Document doc = recipeCursor.next();

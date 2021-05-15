@@ -61,17 +61,45 @@ public class GuiElementsBuilder {
         ImageView imageRecipe=null;
         InputStream inputStream;
 
-        inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/vegan.png");
+        if(recipe.isVegan()){
+            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/vegan_on.png");
+        }else{
+            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/vegan.png");
+        }
         ImageView veganIcon=new ImageView(new Image(inputStream, 20, 20, false, false));
+        veganIcon.setPreserveRatio(true);
+        veganIcon.setSmooth(true);
+        veganIcon.setCache(true);
 
-        inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/vegetarian.png");
+        if(recipe.isVegetarian()){
+            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/vegetarian_on.png");
+        }else{
+            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/vegetarian.png");
+        }
         ImageView vegetarianIcon=new ImageView(new Image(inputStream, 20, 20, false, false));
+        vegetarianIcon.setPreserveRatio(true);
+        vegetarianIcon.setSmooth(true);
+        vegetarianIcon.setCache(true);
 
-        inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/gluten.png");
+        if(recipe.isGlutenFree()){
+            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/gluten_on.png");
+        }else{
+            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/gluten.png");
+        }
         ImageView glutenIcon=new ImageView(new Image(inputStream, 20, 20, false, false));
+        glutenIcon.setPreserveRatio(true);
+        glutenIcon.setSmooth(true);
+        glutenIcon.setCache(true);
 
-        inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/dairy.png");
+        if(recipe.isDairyFree()){
+            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/dairy_on.png");
+        }else{
+            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/dairy.png");
+        }
         ImageView dairyIcon=new ImageView(new Image(inputStream, 20, 20, false, false));
+        dairyIcon.setPreserveRatio(true);
+        dairyIcon.setSmooth(true);
+        dairyIcon.setCache(true);
 
         inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/cloche.png");
         ImageView standardIconRecipe=new ImageView(new Image(inputStream, 20, 20, false, false));
@@ -92,20 +120,7 @@ public class GuiElementsBuilder {
         }
 
         //setting the price icon
-        double price=recipe.getPricePerServing();
-        Text priceIcon = new Text();
-        if(price>=1500){
-            priceIcon.setText("$$$$");
-        }
-        else if(price>=1000){
-            priceIcon.setText("$$$");
-        }
-        else if(price>=500){
-            priceIcon.setText("$$");
-        }
-        else{
-            priceIcon.setText("$");
-        }
+        Text priceIcon = new Text(Recipe.getPriceSymbol(recipe.getPricePerServing()));
         priceIcon.setStyle("-fx-font-size: 16px");
         iconContainer.getChildren().addAll(veganIcon, vegetarianIcon, dairyIcon, glutenIcon, priceIcon);
         iconContainer.setSpacing(10);

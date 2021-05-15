@@ -62,6 +62,11 @@ public class SearchBarController extends JSONAdder implements Initializable {
         searchAnchor.setVisible(false);
         checkBoxDrinks.selectedProperty().setValue(true);
 
+        //clear al the checkbox at load
+        checkBoxUsers.setSelected(false);
+        checkBoxDrinks.setSelected(false);
+        checkBoxRecipes.setSelected(false);
+
         searchBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -77,7 +82,7 @@ public class SearchBarController extends JSONAdder implements Initializable {
                 }
 
                 if(checkBoxRecipes.isSelected()){
-                    List<Recipe> listOfRecipes = recipeService.searchRecipe(lastSearchedText);
+                    List<Recipe> listOfRecipes = recipeService.searchRecipe(lastSearchedText, 0, 10);
 
                     for (Recipe recipe : listOfRecipes) {
                         resultBox.getChildren().addAll(builder.createRecipeBlock(recipe), new Separator(Orientation.HORIZONTAL));
@@ -121,10 +126,19 @@ public class SearchBarController extends JSONAdder implements Initializable {
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 if(scrollSearch.getVvalue()==scrollSearch.getVmax()){
                     offset=resultBox.getChildren().size()/2;
-                    List<User> listOfUsers = userService.searchUser(lastSearchedText, offset, 10);
-                    for (User user : listOfUsers) {
-                            resultBox.getChildren().addAll(builder.createUserBlock(user), new Separator(Orientation.HORIZONTAL));
-                    };
+                    if(checkBoxUsers.isSelected()){
+                        List<User> listOfUsers = userService.searchUser(lastSearchedText, offset, 10);
+                        for (User user : listOfUsers) {
+                                resultBox.getChildren().addAll(builder.createUserBlock(user), new Separator(Orientation.HORIZONTAL));
+                        };
+                    }
+                    if(checkBoxRecipes.isSelected()){
+                        List<Recipe> listOfRecipes = recipeService.searchRecipe(lastSearchedText, offset, 10);
+                        for (Recipe recipe : listOfRecipes) {
+                            resultBox.getChildren().addAll(builder.createRecipeBlock(recipe), new Separator(Orientation.HORIZONTAL));
+                        };
+                    }
+                    //drinks
                 }
             }
         });

@@ -7,11 +7,13 @@ import javafx.application.HostServices;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 public class Main extends Application {
     private static Main istance;
@@ -28,10 +30,9 @@ public class Main extends Application {
     }
 
     public static void main(String[] args){
-
         launch(args);
+        //loading main icons
         UserService userService=factory.getService();
-
     }
 
     private static Parent loadFXML(String fxml, JSONObject par){

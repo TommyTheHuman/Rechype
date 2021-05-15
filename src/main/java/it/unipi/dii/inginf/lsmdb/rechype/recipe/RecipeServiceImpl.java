@@ -11,7 +11,7 @@ class RecipeServiceImpl implements RecipeService{
     public String addRecipe(Recipe recipe) {
         return recipeDao.addRecipe(recipe);
     }
-    public List<Recipe> searchRecipe(String text) {
-        return recipeDao.getRecipesByText(text);
+    public List<Recipe> searchRecipe(String text, int offset, int quantity) {
+        return recipeDao.getRecipesByText(text, offset, quantity);
     }
 }

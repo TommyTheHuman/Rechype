@@ -1,7 +1,12 @@
 package it.unipi.dii.inginf.lsmdb.rechype.recipe;
 
+import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
 import org.json.JSONObject;
+
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.util.Arrays;
 
 public class Recipe {
 
@@ -11,6 +16,7 @@ public class Recipe {
     private String description;
     private String method;
     private String ingredients;   // DOVRA' ESSERE UN ARRAY DI INGREDIENTS
+    private Integer originalId;
 
     private boolean vegan;
     private boolean glutenFree;
@@ -22,8 +28,7 @@ public class Recipe {
     private double weightPerServing;
     private double pricePerServing;
     private String _id;
-    private JSONObject jsonRepresentation;
-
+    private JSONObject jsonRepresentation; //comment
     private int likes;
 
     public Recipe(){}
@@ -50,10 +55,14 @@ public class Recipe {
     }
 
     public Recipe(Document doc){
+        //we save the document to get a json representation of the class
         this.jsonRepresentation = new JSONObject(doc.toJson());
+
+        if(doc.get("name")==null){
+            this.name="";
+        }
         this.name = doc.get("name")==null? "" : doc.get("name").toString();
         this.author = doc.get("author")==null? "" : doc.get("author").toString();
-        this.pricePerServing = doc.get("pricePerServing")==null? 0 : Double.parseDouble(doc.get("pricePerServing").toString());
         this.image = doc.get("image")==null? null : doc.get("image").toString();
         this.description = doc.get("description")==null? "" : doc.get("description").toString();
         this.method = doc.get("method")==null? "" : doc.get("method").toString();
@@ -89,8 +98,45 @@ public class Recipe {
         this._id=json.getJSONObject("_id").getString("$oid");
     }
 
+    //if the json doesn't have some fields is a problem so we must access from t
+    /*public Recipe(Document doc){
+        String[] keys=doc.keySet().toArray(new String[doc.keySet().size()]);
+        String name="";
+        for(int i=0; i<keys.length; i++){
+            try {
+                name=keys[i];
+                Field field=this.getClass().getDeclaredField(keys[i]);
 
-//neo4j constructor with less fields but all the private fields must be set anyway
+                if(name.equals("_id")) {
+                    JSONObject json = new JSONObject(doc.toJson());
+                    field.set(this, json.getJSONObject("_id").getString("$oid"));
+                    continue;
+                }
+
+                if(doc.get(name) instanceof Integer){
+                    if(name.equals("originalId") || name.equals("likes")){
+                        field.set(this, doc.getInteger(name));
+                    }else {
+                        field.set(this, Double.valueOf(doc.getInteger(name)));
+                    }
+                }
+                else if(doc.get(name) instanceof Double){
+                    field.set(this, doc.getDouble(name));
+                }
+                else if (doc.get(name) instanceof Boolean){
+                    field.set(this, doc.getBoolean(name));
+                }
+                else {
+                    field.set(this, doc.getString(name));
+                }
+            }catch(NoSuchFieldException | SecurityException | IllegalAccessException ex){
+                LogManager.getLogger("Recipe.class").fatal("field "+name+" is missing");
+                System.exit(-1);
+            }
+        }
+    }*/
+
+    //neo4j constructor with less fields but all the private fields must be set anyway
     public JSONObject getJSON() { return jsonRepresentation; } //da provare
 
     public String getName() {
@@ -150,5 +196,20 @@ public class Recipe {
     }
 
     public String getId() {return _id; }
+
+    public static String getPriceSymbol(double price){
+        if(price>=1500){
+            return "$$$$";
+        }
+        else if(price>=1000){
+            return "$$$";
+        }
+        else if(price>=500){
+            return"$$";
+        }
+        else{
+            return "$";
+        }
+    }
 
 }
