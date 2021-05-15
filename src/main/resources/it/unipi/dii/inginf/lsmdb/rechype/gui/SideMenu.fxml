@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="604.0" prefWidth="227.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.inginf.lsmdb.rechype.gui.sideMenuController">
+<AnchorPane prefHeight="604.0" prefWidth="227.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.inginf.lsmdb.rechype.gui.SideMenuController">
    <children>
       <ImageView fitHeight="88.0" fitWidth="117.0" layoutX="53.0" layoutY="21.0" pickOnBounds="true" preserveRatio="true" />
       <Text fx:id="userName" layoutX="25.0" layoutY="143.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="151.869140625" />

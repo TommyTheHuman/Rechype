@@ -2,7 +2,7 @@ package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 
 
-import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.util.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
 
@@ -27,7 +27,7 @@ import java.util.ResourceBundle;
 /**
  * Initializable è necessario?
  */
-public class landingPageController extends JSONAdder implements Initializable {
+public class LandingPageController extends JSONAdder implements Initializable {
 
 
     @FXML private Button registerBtn;
@@ -45,11 +45,6 @@ public class landingPageController extends JSONAdder implements Initializable {
 
     private UserServiceFactory userServiceFactory;
     private UserService userService;
-
-
-
-    
-
 
 
     @Override

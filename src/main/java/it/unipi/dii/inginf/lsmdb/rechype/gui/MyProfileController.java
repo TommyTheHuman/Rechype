@@ -1,6 +1,6 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
-import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.util.JSONAdder;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -11,7 +11,7 @@ import org.json.JSONObject;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class myProfileController  extends JSONAdder implements Initializable {
+public class MyProfileController extends JSONAdder implements Initializable {
 
     @FXML private Button addIngredientBtn;
     @FXML private Button createMealBtn;

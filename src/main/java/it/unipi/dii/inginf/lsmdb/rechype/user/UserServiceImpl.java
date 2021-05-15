@@ -10,7 +10,7 @@ class UserServiceImpl implements UserService {
 
     public boolean login(String user, String pass){
         loggedUser = userDao.checkLogin(user, pass);
-        if(loggedUser.equals(null)){
+        if(loggedUser == null){
             return false;
         }
         return true;
@@ -26,7 +26,7 @@ class UserServiceImpl implements UserService {
     }
 
 
-    public List<User> searchUser(String text) {
-        return userDao.getUsersByText(text);
+    public List<User> searchUser(String text, int offset, int quantity) {
+        return userDao.getUsersByText(text, offset, quantity);
     }
 }

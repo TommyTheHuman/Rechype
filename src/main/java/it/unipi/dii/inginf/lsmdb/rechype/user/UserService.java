@@ -12,7 +12,7 @@ public interface UserService {
     boolean login(String user, String pass);
     String register(String username, String password, String confPassword, String country, int age);
     User getLoggedUser();
-    List<User> searchUser(String text);
+    List<User> searchUser(String text, int offset, int quantity);
 
 }
 
