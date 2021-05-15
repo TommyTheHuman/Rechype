@@ -10,4 +10,6 @@ public class IngredientServiceImpl implements IngredientService{
     public List<Ingredient> searchIngredients(String text) {
         return ingredientDao.getIngredientByText(text);
     }
+
+    public List<Ingredient> getIngredientFromString(List<String> ingrName){ return ingredientDao.getIngredientFromString(ingrName); }
 }

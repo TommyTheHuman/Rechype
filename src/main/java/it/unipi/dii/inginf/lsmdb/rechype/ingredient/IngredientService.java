@@ -6,4 +6,6 @@ public interface IngredientService {
 
     List<Ingredient> searchIngredients(String text);
 
+    List<Ingredient> getIngredientFromString(List<String> ingrName);
+
 }

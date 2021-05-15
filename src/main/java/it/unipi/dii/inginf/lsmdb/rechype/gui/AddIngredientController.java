@@ -30,6 +30,7 @@ public class AddIngredientController extends JSONAdder implements Initializable 
     @FXML private VBox searchedIngredientVBox;
     @FXML private VBox selectedIngredientVBox;
     @FXML private Button backToRecipeBtn;
+
     @FXML private Text inputGramsError;
 
     private IngredientServiceFactory ingredientServiceFactory;
@@ -59,7 +60,6 @@ public class AddIngredientController extends JSONAdder implements Initializable 
             }
         });
 
-//      Event on the button back to recipe.
         backToRecipeBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -76,7 +76,11 @@ public class AddIngredientController extends JSONAdder implements Initializable 
                             inputGramsError.setOpacity(100);
                             return;
                         }
-                        finalIngredients = finalIngredients + builder.idSelectedIngredient.get(counter) + ": " + quantityString + "g, ";
+                        if(counter == builder.idSelectedIngredient.size()-1){
+                            finalIngredients = finalIngredients + builder.idSelectedIngredient.get(counter) + ": " + quantityString + "g ";
+                        }else {
+                            finalIngredients = finalIngredients + builder.idSelectedIngredient.get(counter) + ": " + quantityString + "g, ";
+                        }
                         counter++;
                     }
                 }
@@ -93,16 +97,9 @@ public class AddIngredientController extends JSONAdder implements Initializable 
         JSONObject par = jsonParameters;
         if(!(par.get("ingredients").equals(""))){
             String ingredientsString = par.get("ingredients").toString();
-            String[] ingredient = ingredientsString.trim().split(", ");
-            for(String ingr: ingredient){
-                if(ingr.charAt(ingr.length() - 1) == ','){
-                    // String ingr:  name 4g,
-                    ingr = ingr.substring(0, ingr.length() - 2);
-                }else {
-                    // String ingr:  name: 4
-                    ingr = ingr.substring(0, ingr.length() - 1);
-                }
-
+            String[] singleIngredient = ingredientsString.trim().split(", ");
+            for(String ingr: singleIngredient){
+                ingr = ingr.substring(0, ingr.length() - 1);
                 String[] details = ingr.trim().split(":");
                 builder.idSelectedIngredient.add(details[0]);
 

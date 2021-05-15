@@ -13,7 +13,6 @@ public class Ingredient {
     public Ingredient(String name, String imageUrl, String nutrition){
         this.name = name;
         this.imageUrl = imageUrl;
-
     }
 
     public Ingredient(Document doc){

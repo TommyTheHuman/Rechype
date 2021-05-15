@@ -50,6 +50,7 @@
                         </font></Button>
                      <Text layoutX="18.0" layoutY="292.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Price  per serving" wrappingWidth="58.82177734375" />
                      <TextField fx:id="pricePerServing" layoutX="87.0" layoutY="283.0" />
+                     <Text fx:id="textFieldsError" fill="RED" layoutX="449.0" layoutY="490.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Complete all fields" />
                   </children>
                </AnchorPane>
             </content></ScrollPane>
