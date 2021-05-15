@@ -48,8 +48,8 @@ public class SideMenuController extends JSONAdder implements Initializable {
         userService = userServiceFactory.getService();
 
         loggedUser = userService.getLoggedUser();
-
-        userName.setText(loggedUser.getUsername());
+// check: togli il commento alla riga sotto
+//        userName.setText(loggedUser.getUsername());
 
         logOut.setOnAction(new EventHandler<ActionEvent>() {
             @Override

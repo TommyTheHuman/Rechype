@@ -24,7 +24,7 @@ public class Recipe {
     private boolean vegetarian;
 
     private double servings;
-    private double readyInMinutes;
+    private double readyInMinute;
     private double weightPerServing;
     private double pricePerServing;
     private String _id;
@@ -47,7 +47,7 @@ public class Recipe {
         this.dairyFree = dairyFree;
         this.vegetarian = vegetarian;
         this.servings = servings;
-        this.readyInMinutes = readyInMinute;
+        this.readyInMinute = readyInMinute;
         this.weightPerServing = weightPerServing;
         this.pricePerServing = pricePerServing;
         this._id="";
@@ -71,7 +71,7 @@ public class Recipe {
         this.glutenFree = doc.get("glutenFree")==null? false : doc.getBoolean("glutenFree");
         this.dairyFree = doc.get("dairyFree")==null? false : doc.getBoolean("dairyFree");
         this.vegetarian = doc.get("vegetarian")==null? false : doc.getBoolean("vegetarian");
-        this.readyInMinutes = doc.get("readyInMinute")==null? 0: doc.getDouble("readyInMinute");
+        this.readyInMinute = doc.get("readyInMinute")==null? 0: doc.getDouble("readyInMinute");
 
         //weight and price may be integer
         if(doc.get("weightPerServing") == null){
@@ -176,7 +176,7 @@ public class Recipe {
     }
 
     public double getReadyInMinute() {
-        return readyInMinutes;
+        return readyInMinute;
     }
 
     public double getServings() {

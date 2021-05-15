@@ -22,6 +22,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        // check: togli le due righe successive e togli il commento alla terza
+//        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/.fxml"));
+//        mainScene = new Scene(fxmlLoader.load());
         mainScene = new Scene(loadFXML("Landing", new JSONObject()), 1000, 700);
         istance=this;
         primaryStage.setTitle("Hello World");

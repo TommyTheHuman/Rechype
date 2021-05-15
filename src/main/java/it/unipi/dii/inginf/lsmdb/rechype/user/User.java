@@ -1,5 +1,7 @@
 package it.unipi.dii.inginf.lsmdb.rechype.user;
 
+import org.bson.Document;
+
 public class User {
     private String username;
     private String country;
@@ -11,6 +13,13 @@ public class User {
         country = userCountry;
         age = userAge;
         level = userLevel;
+    }
+
+    public User(Document doc){
+        this.username = doc.get("_id").toString();
+        this.country = doc.get("country").toString();
+        this.age = Integer.parseInt(doc.get("age").toString());
+        this.level = Integer.parseInt(doc.get("level").toString());
     }
 
     public String getUsername(){
