@@ -10,7 +10,7 @@ class UserServiceImpl implements UserService {
 
     public boolean login(String user, String pass){
         loggedUser = userDao.checkLogin(user, pass);
-        if(loggedUser.equals(null)){
+        if(loggedUser == null){
             return false;
         }
         return true;
