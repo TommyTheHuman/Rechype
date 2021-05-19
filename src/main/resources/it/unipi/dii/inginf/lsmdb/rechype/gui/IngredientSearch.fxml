@@ -34,13 +34,12 @@
                            <Font size="19.0" />
                         </font>
                      </Text>
-                     <Button fx:id="backToRecipeBtn" layoutX="6.0" mnemonicParsing="false" text="&lt;--" />
                      <Text fx:id="inputGramsError" fill="RED" layoutX="488.0" layoutY="66.0" strokeType="OUTSIDE" strokeWidth="0.0" text="You must add all inputs" wrappingWidth="146.21630859375" />
                   </children>
                </Pane>
             </children>
          </AnchorPane>
-         <ScrollPane hbarPolicy="NEVER" layoutX="63.0" layoutY="71.0" prefHeight="565.0" prefWidth="300.0">
+         <ScrollPane fx:id="scrollBoxIngredients" hbarPolicy="NEVER" layoutX="61.0" layoutY="92.0" prefHeight="389.0" prefWidth="300.0">
             <content>
                <VBox fx:id="searchedIngredientVBox" prefWidth="300.0" />
             </content>
@@ -50,6 +49,7 @@
                <VBox fx:id="selectedIngredientVBox" prefWidth="300.0" />
             </content>
          </ScrollPane>
+         <Button fx:id="backToRecipeBtn" layoutX="24.0" layoutY="553.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="199.0" text="&lt;--  BACK TO RECIPE" />
       </children>
    </AnchorPane>
     <fx:include source="SideMenu.fxml" />
