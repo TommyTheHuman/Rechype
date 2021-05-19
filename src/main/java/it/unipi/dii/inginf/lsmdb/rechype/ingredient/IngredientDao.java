@@ -15,11 +15,11 @@ import java.util.regex.Pattern;
 public class IngredientDao {
 
 
-    public List<Ingredient> getIngredientByText(String ingredientName) {
+    public List<Ingredient> getIngredientByText(String ingredientName, int offset, int quantity) {
         List<Ingredient> returnList = new ArrayList<>();
         Pattern pattern = Pattern.compile(".*" + ingredientName + ".*", Pattern.CASE_INSENSITIVE);
         Bson filter = Filters.regex("_id", pattern);
-        MongoCursor<Document> cursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.INGREDIENTS).find(filter).iterator();
+        MongoCursor<Document> cursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.INGREDIENTS).find(filter).skip(offset).limit(quantity).iterator();
 
         while (cursor.hasNext()){
             Document doc = cursor.next();

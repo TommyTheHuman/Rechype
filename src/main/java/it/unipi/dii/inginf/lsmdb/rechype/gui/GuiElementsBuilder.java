@@ -34,7 +34,6 @@ public class GuiElementsBuilder {
 
     public GuiElementsBuilder(){
         idSelectedIngredient = new ArrayList<>();
-
     }
 
     public HBox createUserBlock(User user){
@@ -54,7 +53,6 @@ public class GuiElementsBuilder {
         }
         countryNode = new ImageView(new Image(inputFlag));
         levelNode = new ImageView(new Image(inputAvatar,50, 50, false, false));
-
 
         block.getChildren().addAll(levelNode, userNode, ageNode, countryNode);
 

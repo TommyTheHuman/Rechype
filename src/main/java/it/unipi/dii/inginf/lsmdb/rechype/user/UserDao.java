@@ -61,8 +61,8 @@ class UserDao {
         JSONObject Json = new JSONObject(doc.toJson());
 
         try (MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(eq("_id", username)).iterator()) {
-            //check for double username
-            if (cursor.hasNext()) {
+            //check for double username or username not allow.
+            if (cursor.hasNext() || username.equals("Spoonacular") || username.equals("admin") || username.equals("CocktailsDB") || username.equals("PunkAPI")) {
                 Json.put("response", "usernameProb");
                 return Json;
             }
