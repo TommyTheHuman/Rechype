@@ -98,12 +98,24 @@ public class RecipeAddController extends JSONAdder implements Initializable {
                     String fieldIngredient = ingredients.getText();
                     String[] singleIngredient = fieldIngredient.trim().split(", ");
                     List<String> ingredientName = new ArrayList<>();
+                    List<Double> amount = new ArrayList<>();
                     for(String ingr: singleIngredient){
                         String[] details = ingr.trim().split(":");
                         ingredientName.add(details[0]);
+                        details[1] = details[1].replaceAll("\\s+","");
+                        amount.add(Double.parseDouble(details[1]));
                     }
 
                     List<Ingredient> recipeIngredient = ingredientService.getIngredientFromString(ingredientName);
+                    // check: ho tutti gli ingredienti cercati, devo prendere i nutrients, fare il controllo di niko
+                    // sulla unit (in RecipePageController), moltiplicare per l'amount inserito tenendo conto che di
+                    // default i nutrients sono per 100g, fare l'inserimento sul DB delle recipe con lista di ingredienti
+                    // e lista di nutrients, inserire ricetta innestata sul db user dell'autore corrente.
+                    // Inserimento ridotto su neo4j (Successivamente).
+                    for(Ingredient ingr: recipeIngredient){
+
+                    }
+
 
                     Recipe recipe = new Recipe(title.getText(), loggedUser.getUsername(), imageUrl.getText(),
                             description.getText(), method.getText(), ingredients.getText(), vegan.isSelected(), glutenFree.isSelected(),

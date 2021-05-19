@@ -4,6 +4,8 @@ import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.Ingredient;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientService;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientServiceFactory;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -11,6 +13,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
@@ -21,6 +24,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.LogManager;
 
@@ -30,6 +34,7 @@ public class AddIngredientController extends JSONAdder implements Initializable 
     @FXML private VBox searchedIngredientVBox;
     @FXML private VBox selectedIngredientVBox;
     @FXML private Button backToRecipeBtn;
+    @FXML private ScrollPane scrollBoxIngredients;
 
     @FXML private Text inputGramsError;
 
@@ -45,20 +50,6 @@ public class AddIngredientController extends JSONAdder implements Initializable 
         ingredientService = ingredientServiceFactory.getService();
 
         builder = new GuiElementsBuilder();
-
-//      When the user type a more than 3 letters create the boxes contaning the ingredient and display those in searchedIngredientVBox
-        ingredientText.setOnKeyTyped(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                String text = ingredientText.getText();
-                searchedIngredientVBox.getChildren().clear();
-                if(text.length() > 4){
-                    for(Ingredient ingr: ingredientService.searchIngredients(text)){
-                            searchedIngredientVBox.getChildren().addAll(builder.createIngredientBlock(ingr, selectedIngredientVBox), new Separator(Orientation.HORIZONTAL));
-                    }
-                }
-            }
-        });
 
         backToRecipeBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -88,6 +79,37 @@ public class AddIngredientController extends JSONAdder implements Initializable 
                 par.remove("ingredients");
                 par.put("ingredients", finalIngredients);
                 Main.changeScene("RecipeAdd", par);
+            }
+
+
+        });
+
+        //      When the user type a more than 3 letters create the boxes contaning the ingredient and display those in searchedIngredientVBox
+        ingredientText.setOnKeyTyped(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                String text = ingredientText.getText();
+                searchedIngredientVBox.getChildren().clear();
+                if(text.length() > 2){
+                    for(Ingredient ingr: ingredientService.searchIngredients(text, 0, 10)){
+                        searchedIngredientVBox.getChildren().addAll(builder.createIngredientBlock(ingr, selectedIngredientVBox), new Separator(Orientation.HORIZONTAL));
+                    }
+                }
+            }
+        });
+
+        scrollBoxIngredients.vvalueProperty().addListener(new ChangeListener<Number>() {
+            int offset=0;
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                if(scrollBoxIngredients.getVvalue()==scrollBoxIngredients.getVmax()){
+                    offset=searchedIngredientVBox.getChildren().size()/2;
+
+                    List<Ingredient> listOfIngredients = ingredientService.searchIngredients(ingredientText.getText(), offset, 10);
+                    for (Ingredient ingr: listOfIngredients) {
+                        searchedIngredientVBox.getChildren().addAll(builder.createIngredientBlock(ingr, selectedIngredientVBox), new Separator(Orientation.HORIZONTAL));
+                    };
+                }
             }
         });
     }
