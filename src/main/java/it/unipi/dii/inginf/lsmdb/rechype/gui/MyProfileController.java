@@ -29,7 +29,7 @@ public class MyProfileController extends JSONAdder implements Initializable {
         createMealBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Main.changeScene("AddMeal", new JSONObject());
+                Main.changeScene("MealAdd", new JSONObject());
 
             }
         });
