@@ -3,6 +3,8 @@ package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 
 import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileService;
+import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
 
@@ -46,12 +48,18 @@ public class LandingPageController extends JSONAdder implements Initializable {
     private UserServiceFactory userServiceFactory;
     private UserService userService;
 
+    private ProfileServiceFactory profileServiceFactory;
+    private ProfileService profileService;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         userServiceFactory = UserServiceFactory.create();
         userService = userServiceFactory.getService();
+
+        profileServiceFactory = ProfileServiceFactory.create();
+        profileService = profileServiceFactory.getService();
 
 
         regAge.textProperty().addListener(new ChangeListener<String>() {
@@ -108,12 +116,29 @@ public class LandingPageController extends JSONAdder implements Initializable {
                     }
                 }
 
-                if(result.equals("RegOk")){
+                String resultProfile = profileService.createProfile(username);
+                if(result.equals("RegOk") && resultProfile.equals("ProfileOk")){
                     Main.changeScene("HomePage", new JSONObject());
-                }else if(result.equals("Abort")){
+                }
+
+                if(result.equals("Abort") || resultProfile.equals("Abort")){
+
+                    if(!(resultProfile.equals("Abort") && result.equals("Abort"))){
+                        //cross-consistency: deletete on Mongo and neo
+                        if(resultProfile.equals("Abort")){
+                            //cancella user
+                        }else{
+                            //cancella profile
+                        }
+                    }
+
                     regMsg.setText("Error occurred during the registration");
                     regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");
-                }else if(result.equals("usernameProb")){
+                }
+
+
+
+                if(result.equals("usernameProb")){
                     regMsg.setText("Username already in use, try a different one");
                     regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");
                 }
