@@ -2,6 +2,10 @@ package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeService;
+import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeServiceFactory;
+import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
+import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -14,6 +18,7 @@ import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -43,47 +48,54 @@ public class RecipePageController extends JSONAdder implements Initializable {
     @FXML private ImageView GlutenIcon;
     @FXML private Text PriceIcon;
     private ObservableList<PieChart.Data> pieData;
+    private RecipeServiceFactory recipeServiceFactory;
+    private RecipeService recipeService;
 
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {}
+    public void initialize(URL location, ResourceBundle resources) {
+        recipeServiceFactory = RecipeServiceFactory.create();
+        recipeService = recipeServiceFactory.getService();
+    }
 
     public void setGui(){
+        //retrieving the recipe from key-value
+        JSONObject jsonRecipe = recipeService.getCachedRecipe(jsonParameters.getString("_id"));
 
         //setting text informations
         try{
-            authorLabel.setText("Author: "+jsonParameters.getString("author"));
+            authorLabel.setText("Author: "+jsonRecipe.getString("author"));
         }catch(JSONException ex){
             authorLabel.setText("Author: unknown");
         }
         try{
-            Name.setText("title: "+jsonParameters.getString("name"));
+            Name.setText("title: "+jsonRecipe.getString("name"));
         }catch(JSONException ex){
             Name.setText("title: unknown");
         }
         try{ //the description is in html, so we need to parse it
-            Document htmlParsed=Jsoup.parse(jsonParameters.getString("description"));
+            Document htmlParsed=Jsoup.parse(jsonRecipe.getString("description"));
             DescriptionText.setText("description: "+htmlParsed.text());
         }catch(JSONException ex){
             DescriptionText.setText("description: unknown");
         }
         try{
-            MethodText.setText("method: "+jsonParameters.getString("method"));
+            MethodText.setText("method: "+jsonRecipe.getString("method"));
         }catch(JSONException ex){
             MethodText.setText("method: unknown");
         }
         try{
-            Servings.setText("Servings: "+String.valueOf(jsonParameters.getInt("servings")));
+            Servings.setText("Servings: "+String.valueOf(jsonRecipe.getInt("servings")));
         }catch(JSONException ex){
             Servings.setText("Servings: unknown");
         }
         try{
-            WeightPerServing.setText("Weight Per Serving: "+String.valueOf(jsonParameters.getInt("weightPerServing"))+" g");
+            WeightPerServing.setText("Weight Per Serving: "+String.valueOf(jsonRecipe.getInt("weightPerServing"))+" g");
         }catch(JSONException ex){
             WeightPerServing.setText("Weight Per Serving: undefined");
         }
         try {
-            ReadyInMinutes.setText("Ready in Minutes: " + String.valueOf(jsonParameters.getInt("readyInMinutes")));
+            ReadyInMinutes.setText("Ready in Minutes: " + String.valueOf(jsonRecipe.getInt("readyInMinutes")));
         }catch(JSONException ex){
             ReadyInMinutes.setText("Ready in Minutes: undefined");
         }
@@ -91,7 +103,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
         //setting recipe's image
         InputStream inputStream=null;
         try {
-            inputStream = new URL(jsonParameters.getString("image")).openStream();
+            inputStream = new URL(jsonRecipe.getString("image")).openStream();
             RecipeImage.setImage(new Image(inputStream));
         }catch(IOException ie){
             LogManager.getLogger("RecipePageController.class").info("Recipe's image not found");
@@ -104,7 +116,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
         }
 
         //setting the icons
-        if(jsonParameters.getBoolean("vegan")){
+        if(jsonRecipe.getBoolean("vegan")){
             inputStream=RecipePageController.class.getResourceAsStream("/images/icons/vegan_on.png");
         }else{
             inputStream=RecipePageController.class.getResourceAsStream("/images/icons/vegan.png");
@@ -114,7 +126,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
         VeganIcon.setSmooth(true);
         VeganIcon.setCache(true);
 
-        if(jsonParameters.getBoolean("vegetarian")){
+        if(jsonRecipe.getBoolean("vegetarian")){
             inputStream=RecipePageController.class.getResourceAsStream("/images/icons/vegetarian_on.png");
         }else{
             inputStream=RecipePageController.class.getResourceAsStream("/images/icons/vegetarian.png");
@@ -124,7 +136,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
         VegetarianIcon.setSmooth(true);
         VegetarianIcon.setCache(true);
 
-        if(jsonParameters.getBoolean("glutenFree")){
+        if(jsonRecipe.getBoolean("glutenFree")){
             inputStream=RecipePageController.class.getResourceAsStream("/images/icons/gluten_on.png");
         }else{
             inputStream=RecipePageController.class.getResourceAsStream("/images/icons/gluten.png");
@@ -134,7 +146,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
         GlutenIcon.setSmooth(true);
         GlutenIcon.setCache(true);
 
-        if(jsonParameters.getBoolean("dairyFree")){
+        if(jsonRecipe.getBoolean("dairyFree")){
             inputStream=RecipePageController.class.getResourceAsStream("/images/icons/dairy_on.png");
         }else{
             inputStream=RecipePageController.class.getResourceAsStream("/images/icons/dairy.png");
@@ -145,13 +157,13 @@ public class RecipePageController extends JSONAdder implements Initializable {
         DairyIcon.setCache(true);
 
         //price per serving
-        if(jsonParameters.get("pricePerServing")!=null){
+        if(jsonRecipe.get("pricePerServing")!=null){
 
-            if(jsonParameters.get("pricePerServing") instanceof Integer){
-                PriceIcon.setText(Recipe.getPriceSymbol(Double.valueOf(jsonParameters.getInt("pricePerServing"))));
+            if(jsonRecipe.get("pricePerServing") instanceof Integer){
+                PriceIcon.setText(Recipe.getPriceSymbol(Double.valueOf(jsonRecipe.getInt("pricePerServing"))));
             }
             else{
-                PriceIcon.setText(Recipe.getPriceSymbol(jsonParameters.getDouble("pricePerServing")));
+                PriceIcon.setText(Recipe.getPriceSymbol(jsonRecipe.getDouble("pricePerServing")));
             }
         }
 
@@ -164,7 +176,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
         Double amount;
         String name;
         pieData= FXCollections.observableArrayList();
-        JSONArray nutrients=jsonParameters.getJSONArray("nutrients");
+        JSONArray nutrients=jsonRecipe.getJSONArray("nutrients");
 
 
         for (int i=0; i<nutrients.length(); i++){
@@ -194,7 +206,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
         NutritionsPie.setData(pieData);
         NutritionsPie.setLegendVisible(false);
         NutritionsPie.setTitle("Nutritional Information");
-        Likes.setText("Likes: "+String.valueOf(jsonParameters.getInt("likes")));
+        Likes.setText("Likes: "+String.valueOf(jsonRecipe.getInt("likes")));
     }
 
     public void setField(String fieldName, String jsonKey, String type){

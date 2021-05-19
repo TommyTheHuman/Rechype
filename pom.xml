@@ -14,6 +14,11 @@
             <url>https://nexus.gluonhq.com/nexus/content/repositories/releases/</url>
             <layout>default</layout>
         </repository>
+        <repository>
+            <id>yahoo-bintray</id>
+            <name>yahoo-bintray</name>
+            <url>https://yahoo.bintray.com/maven</url>
+        </repository>
     </repositories>
 
     <properties>
@@ -81,21 +86,15 @@
             <version>1.13.1</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jnosql.mapping</groupId>
-            <artifactId>mapping-key-value</artifactId>
-            <version>1.0.0-b3</version>
+            <groupId>com.oath.halodb</groupId>
+            <artifactId>halodb</artifactId>
+            <version>0.4.3</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jnosql.communication</groupId>
-            <artifactId>hazelcast-driver</artifactId>
-            <version>1.0.0-b3</version>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1</version>
         </dependency>
-        <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
-            <version>1.0</version>
-        </dependency>
-
     </dependencies>
 
     <build>

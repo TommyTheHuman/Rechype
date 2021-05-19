@@ -2,7 +2,9 @@ package it.unipi.dii.inginf.lsmdb.rechype.user;
 
 import org.bson.Document;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private String username;
     private String country;
     private int age;

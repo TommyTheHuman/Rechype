@@ -6,6 +6,11 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.InsertOneResult;
+import com.oath.halodb.HaloDB;
+import com.oath.halodb.HaloDBException;
+import com.oath.halodb.HaloDBIterator;
+import com.oath.halodb.Record;
+import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
 import static com.mongodb.client.model.Filters.eq;
 import static org.neo4j.driver.Values.parameters;
@@ -24,6 +29,7 @@ import org.neo4j.driver.exceptions.TransientException;
 
 import javax.print.Doc;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -116,8 +122,10 @@ class UserDao {
     }
 
     public List<User> getUsersByText(String userName, int offset, int quantity){
-        //create the case Insesitive pattern and perform the mongo query
+        //List of users and list of documents for caching
         List<User> returnList = new ArrayList<>();
+        List<Document> returnDocList = new ArrayList<>();
+        //create the case Insesitive pattern and perform the mongo query
         Pattern pattern = Pattern.compile(".*" + userName + ".*", Pattern.CASE_INSENSITIVE);
         Bson filter = Filters.regex("_id", pattern);
         MongoCursor<Document> cursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(filter)
@@ -125,10 +133,39 @@ class UserDao {
         while (cursor.hasNext()){
 
             Document doc = cursor.next();
+            returnDocList.add(doc);
             returnList.add(new User(doc));
 
         }
-
+        cacheSearch(returnDocList);
         return returnList;
     }
+
+    public JSONObject getUserByKey(String key){
+        try{
+            HaloDB db = HaloDBDriver.getObject().getClient("users");
+            byte[] byteObj = db.get(key.getBytes(StandardCharsets.UTF_8));
+            return new JSONObject(new String(byteObj));
+        }catch(HaloDBException ex){
+            LogManager.getLogger("UserDao.class").fatal("HaloDB: caching failed");
+            HaloDBDriver.getObject().closeConnection();
+            System.exit(-1);
+        }
+        return new JSONObject();
+    }
+
+    private void cacheSearch(List<Document> userList){ //caching of user's search
+        for(int i=0; i<userList.size(); i++) {
+            byte[] username = userList.get(i).getString("_id").getBytes(StandardCharsets.UTF_8); //key
+            byte[] objToSave = userList.get(i).toJson().getBytes(StandardCharsets.UTF_8); //value
+            try{
+                HaloDBDriver.getObject().getClient("users").put(username, objToSave);
+            }catch(Exception e){
+                LogManager.getLogger("UserDao.class").fatal("HaloDB: caching failed");
+                HaloDBDriver.getObject().closeConnection();
+                System.exit(-1);
+            }
+        }
+    }
+
 }

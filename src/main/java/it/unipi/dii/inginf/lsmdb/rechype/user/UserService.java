@@ -1,5 +1,7 @@
 package it.unipi.dii.inginf.lsmdb.rechype.user;
 
+import org.json.JSONObject;
+
 import java.util.List;
 
 /**
@@ -13,7 +15,7 @@ public interface UserService {
     String register(String username, String password, String confPassword, String country, int age);
     User getLoggedUser();
     List<User> searchUser(String text, int offset, int quantity);
-
+    JSONObject getCachedUser(String key);
 }
 
 

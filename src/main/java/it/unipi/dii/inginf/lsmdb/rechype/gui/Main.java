@@ -1,6 +1,11 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
+import com.oath.halodb.HaloDB;
+import com.oath.halodb.HaloDBOptions;
 import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
+import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
+import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.user.*;
 import javafx.application.Application;
 import javafx.application.HostServices;
@@ -30,6 +35,12 @@ public class Main extends Application {
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(mainScene);
         primaryStage.show();
+        primaryStage.setOnHiding( event -> {
+            HaloDBDriver.getObject().closeConnection();
+            MongoDriver.getObject().closeConnection();
+            Neo4jDriver.getObject().closeConnection();
+        }
+        );;
     }
 
     public static void main(String[] args){

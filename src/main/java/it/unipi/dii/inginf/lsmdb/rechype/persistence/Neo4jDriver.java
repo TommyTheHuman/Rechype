@@ -28,7 +28,7 @@ public class Neo4jDriver {
         return obj;
     }
 
-    public void closeDriver(){
+    public void closeConnection(){
         driver.close();
     }
 

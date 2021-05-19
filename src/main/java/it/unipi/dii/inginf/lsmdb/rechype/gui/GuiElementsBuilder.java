@@ -62,9 +62,7 @@ public class GuiElementsBuilder {
         block.setId(user.getUsername());
 
         block.setOnMouseClicked((MouseEvent e) ->{
-
-            JSONObject par = new JSONObject().put("id", user.getUsername());
-
+            JSONObject par = new JSONObject().put("_id", user.getUsername());
             Main.changeScene("UserProfile", par);
         });
         return block;
@@ -132,53 +130,45 @@ public class GuiElementsBuilder {
         InputStream inputStream;
 
         if(recipe.isVegan()){
-            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/vegan_on.png");
+            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/vegan_on_e.png");
         }else{
-            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/vegan.png");
+            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/vegan_e.png");
         }
         ImageView veganIcon=new ImageView(new Image(inputStream, 20, 20, false, false));
-        veganIcon.setPreserveRatio(true);
-        veganIcon.setSmooth(true);
         veganIcon.setCache(true);
 
         if(recipe.isVegetarian()){
-            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/vegetarian_on.png");
+            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/vegetarian_on_e.png");
         }else{
-            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/vegetarian.png");
+            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/vegetarian_e.png");
         }
         ImageView vegetarianIcon=new ImageView(new Image(inputStream, 20, 20, false, false));
-        vegetarianIcon.setPreserveRatio(true);
-        vegetarianIcon.setSmooth(true);
         vegetarianIcon.setCache(true);
 
         if(recipe.isGlutenFree()){
-            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/gluten_on.png");
+            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/gluten_on_e.png");
         }else{
-            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/gluten.png");
+            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/gluten_e.png");
         }
         ImageView glutenIcon=new ImageView(new Image(inputStream, 20, 20, false, false));
-        glutenIcon.setPreserveRatio(true);
-        glutenIcon.setSmooth(true);
         glutenIcon.setCache(true);
 
         if(recipe.isDairyFree()){
-            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/dairy_on.png");
+            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/dairy_on_e.png");
         }else{
-            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/dairy.png");
+            inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/dairy_e.png");
         }
         ImageView dairyIcon=new ImageView(new Image(inputStream, 20, 20, false, false));
-        dairyIcon.setPreserveRatio(true);
-        dairyIcon.setSmooth(true);
         dairyIcon.setCache(true);
 
         inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/cloche.png");
-        ImageView standardIconRecipe=new ImageView(new Image(inputStream, 20, 20, false, false));
+        ImageView standardIconRecipe=new ImageView(new Image(inputStream, 50, 50, false, true));
 
         //setting the recipe's image of the block
         if(recipe.getImage()!=null) {
             try {
                 InputStream imageStream = new URL(recipe.getImage()).openStream();
-                imageRecipe=new ImageView(new Image(imageStream, 50, 50, false, false));
+                imageRecipe=new ImageView(new Image(imageStream, 50, 50, false, true));
             }catch(IOException ie){
                 LogManager.getLogger("GuiElementsBuilder.class").info("Recipe's image not found");
             }
@@ -205,7 +195,8 @@ public class GuiElementsBuilder {
         mainContainer.setSpacing(5);
 
         mainContainer.setOnMouseClicked((MouseEvent e) ->{
-            Main.changeScene("RecipePage", recipe.getJSON());
+            JSONObject par = new JSONObject().put("_id", recipe.getId());
+            Main.changeScene("RecipePage", par);
         });
 
         return mainContainer;
