@@ -17,6 +17,8 @@ import static org.neo4j.driver.Values.parameters;
 
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
 import org.apache.logging.log4j.LogManager;
+import org.bson.BsonArray;
+import org.bson.BsonBinary;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.json.JSONObject;
@@ -84,7 +86,7 @@ class UserDao {
      */
     public JSONObject checkRegistration(String username, String password, String confPassword, String country, int age) {
 
-        Document doc = new Document("_id", username).append("password", password).append("country", country).append("age", age).append("level", 0);
+        Document doc = new Document("_id", username).append("password", password).append("country", country).append("age", age).append("level", 0).append("recipes", new BsonArray());
         JSONObject Json = new JSONObject(doc.toJson());
 
         try (MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(eq("_id", username)).iterator()) {

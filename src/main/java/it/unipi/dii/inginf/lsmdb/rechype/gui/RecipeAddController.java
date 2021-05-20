@@ -209,6 +209,7 @@ public class RecipeAddController extends JSONAdder implements Initializable {
                     recipeService.putRecipeInCache(doc);
                     JSONObject par = new JSONObject().put("_id", recipe.getId());
                     Main.changeScene("RecipePage", par);
+
                 }
             }
         });
