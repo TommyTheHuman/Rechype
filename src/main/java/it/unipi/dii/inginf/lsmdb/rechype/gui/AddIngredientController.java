@@ -92,6 +92,7 @@ public class AddIngredientController extends JSONAdder implements Initializable 
                 searchedIngredientVBox.getChildren().clear();
                 if(text.length() > 2){
                     for(Ingredient ingr: ingredientService.searchIngredients(text, 0, 10)){
+
                         searchedIngredientVBox.getChildren().addAll(builder.createIngredientBlock(ingr, selectedIngredientVBox), new Separator(Orientation.HORIZONTAL));
                     }
                 }
