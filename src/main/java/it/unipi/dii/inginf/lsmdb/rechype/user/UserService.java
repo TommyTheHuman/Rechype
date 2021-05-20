@@ -1,5 +1,6 @@
 package it.unipi.dii.inginf.lsmdb.rechype.user;
 
+import org.bson.Document;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public interface UserService {
     User getLoggedUser();
     List<User> searchUser(String text, int offset, int quantity);
     JSONObject getCachedUser(String key);
+    String addNewRecipe(Document doc);
     String deleteUser(String username);
 }
 

@@ -185,13 +185,7 @@ public class RecipeAddController extends JSONAdder implements Initializable {
                         }
                     }
 
-                    Recipe recipe = new Recipe(title.getText(), loggedUser.getUsername(), imageUrl.getText(),
-                            description.getText(), method.getText(), cachedIngredients, vegan.isSelected(), glutenFree.isSelected(),
-                            dairyFree.isSelected(), vegetarian.isSelected(), Double.parseDouble(servings.getText()),
-                            Double.parseDouble(readyInMinutes.getText()), Double.parseDouble(weightPerServing.getText()),
-                            Double.parseDouble(pricePerServing.getText()), ingredients.getText());
-
-                    org.bson.Document doc = new Document().append("name", title.getText()).append("author", loggedUser.getUsername())
+                    Document doc = new Document().append("name", title.getText()).append("author", loggedUser.getUsername())
                             .append("vegetarian", vegetarian.isSelected()).append("vegan", vegan.isSelected()).append("glutenFree", glutenFree.isSelected())
                             .append("dairyFree", dairyFree.isSelected()).append("pricePerServing", DoubleRounder.round(Double.parseDouble(pricePerServing.getText()),1))
                             .append("weightPerServing", Double.parseDouble(weightPerServing.getText()))
@@ -201,15 +195,16 @@ public class RecipeAddController extends JSONAdder implements Initializable {
                             .append("nutrients", docNutrients);
 
                     // check: inserire ricetta innestata sul db user dell'autore corrente.
-
-                    recipeService.addRecipe(doc, recipe);
                     textFieldsError.setOpacity(0);
-
-                    HaloDBDriver.getObject().flush();
-                    recipeService.putRecipeInCache(doc);
-                    JSONObject par = new JSONObject().put("_id", recipe.getId());
-                    Main.changeScene("RecipePage", par);
-
+                    if(recipeService.addRecipe(doc).equals("RecipeAdded")) {
+                        userService.addNewRecipe(doc);
+                        HaloDBDriver.getObject().flush();
+                        recipeService.putRecipeInCache(doc);
+                        JSONObject par = new JSONObject().put("_id", doc.getString("_id"));
+                        Main.changeScene("RecipePage", par);
+                    }else{
+                        //error on recipeAdd
+                    }
                 }
             }
         });

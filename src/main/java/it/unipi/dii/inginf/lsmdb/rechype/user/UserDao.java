@@ -24,6 +24,8 @@ import org.bson.conversions.Bson;
 import org.json.JSONObject;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.TransactionWork;
+import static com.mongodb.client.model.Updates.push;
+import static com.mongodb.client.model.Updates.addToSet;
 import org.neo4j.driver.exceptions.DiscoveryException;
 import org.neo4j.driver.exceptions.Neo4jException;
 import org.neo4j.driver.exceptions.SessionExpiredException;
@@ -239,5 +241,27 @@ class UserDao {
             neo4j=false;
         }
         return neo4j && mongo;
+    }
+
+    /***
+     * Adding new nested recipe to user
+     * @param recipe
+     * @return
+     */
+    public String addNestedRecipe(Document recipe, User user){
+        MongoCollection<Document> collUser = null;
+        Document userRecipe = new Document().append("_id", recipe.getString("_id")).append("name", recipe.getString("name")).append("author", recipe.getString("author"))
+                .append("pricePerServing", recipe.getDouble("pricePerServing")).append("image", recipe.getString("image"))
+                .append("vegetarian", recipe.getBoolean("vegetarian")).append("vegan",recipe.getBoolean("vegan")).append("dairyFree",recipe.getBoolean("dairyFree"))
+                .append("glutenFree", recipe.getBoolean("glutenFree")).append("likes", 0);
+        try {
+            collUser = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
+            collUser.updateOne(eq("_id", recipe.getString("author")), push("recipes", userRecipe));
+        } catch (MongoException me) {
+            me.printStackTrace();
+            LogManager.getLogger("RecipeDao.class").error("MongoDB[PARSE]: insert nested recipe in user failed" + recipe.toJson());
+            return "Abort";
+        }
+        return "RecipeOk";
     }
 }

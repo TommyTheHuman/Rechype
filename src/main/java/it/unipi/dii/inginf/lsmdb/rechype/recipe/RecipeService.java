@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface RecipeService {
 
-    String addRecipe(org.bson.Document doc, Recipe recipe);
+    String addRecipe(Document doc);
     List<Recipe> searchRecipe(String text, int offset, int quantity);
     JSONObject getCachedRecipe(String key);
     void putRecipeInCache(Document recipe);
