@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 public class IngredientDao {
 
-
+    // Return a list of ingredients given by the letters of the name
     public List<Ingredient> getIngredientByText(String ingredientName, int offset, int quantity) {
         List<Ingredient> returnList = new ArrayList<>();
         List<Document> returnDocList = new ArrayList<>();
@@ -35,6 +35,7 @@ public class IngredientDao {
         return returnList;
     }
 
+    // Return a list of Ingredients given a list of full names of Ingredients.
     public List<Ingredient> getIngredientFromString(List<String> ingredientName) {
         List<Ingredient> returnList = new ArrayList<>();
 
@@ -47,7 +48,7 @@ public class IngredientDao {
         return returnList;
     }
 
-    public JSONObject getingredientsByKey(String key){
+    public JSONObject getIngredientByKey(String key){
         try{
             HaloDB db = HaloDBDriver.getObject().getClient("ingredients");
             byte[] byteObj = db.get(key.getBytes(StandardCharsets.UTF_8));
@@ -60,7 +61,7 @@ public class IngredientDao {
         return new JSONObject();
     }
 
-    private void cacheSearch(List<Document> ingredientsList){ //caching of recipe's search
+    private void cacheSearch(List<Document> ingredientsList){ //caching of ingredient's search
         for(int i=0; i<ingredientsList.size(); i++) {
             String idObj = ingredientsList.get(i).getString("_id");
             byte[] _id = idObj.getBytes(StandardCharsets.UTF_8); //key

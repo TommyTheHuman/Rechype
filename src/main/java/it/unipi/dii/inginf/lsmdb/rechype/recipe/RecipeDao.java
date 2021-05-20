@@ -29,14 +29,15 @@ import java.util.regex.Pattern;
 
 public class RecipeDao {
 
-    public String addRecipe(Recipe recipe){
+    public String addRecipe(org.bson.Document doc, Recipe recipe){
 
-        Document doc = new Document().append("name", recipe.getName()).append("author", recipe.getAuthor())
-                .append("vegetarian", recipe.isVegetarian()).append("glutenFree", recipe.isGlutenFree())
-                .append("dairyFree", recipe.isDairyFree()).append("pricePerServing", recipe.getPricePerServing()).append("weightPerServing", recipe.getWeightPerServing())
-                .append("servings", recipe.getServings()).append("image", recipe.getImage())
-                .append("description", recipe.getDescription()).append("readyInMinutes", recipe.getReadyInMinute())
-                .append("method", recipe.getMethod()).append("likes", recipe.getLikes());
+        /*
+        Recipe recipe = new Recipe(title.getText(), loggedUser.getUsername(), imageUrl.getText(),
+                description.getText(), method.getText(), cachedIngredients, vegan.isSelected(), glutenFree.isSelected(),
+                dairyFree.isSelected(), vegetarian.isSelected(), Double.parseDouble(servings.getText()),
+                Double.parseDouble(readyInMinutes.getText()), Double.parseDouble(weightPerServing.getText()),
+                Double.parseDouble(pricePerServing.getText()));
+        */
 
         boolean already_tried = false;
         MongoCollection<Document> coll = null;
@@ -48,6 +49,8 @@ public class RecipeDao {
                 if(!already_tried){
                     coll = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
                     res = coll.insertOne(doc);
+                    recipe.setId(res.getInsertedId().toString());
+                    doc.append("_id", res.getInsertedId().toString());
                 } else {
                     coll = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
                     coll.deleteOne(eq("_id", res.getInsertedId()));
@@ -111,7 +114,7 @@ public class RecipeDao {
         return new JSONObject();
     }
 
-    private void cacheSearch(List<Document> recipesList){ //caching of recipe's search
+    public void cacheSearch(List<Document> recipesList){ //caching of recipe's search
         for(int i=0; i<recipesList.size(); i++) {
             String idObj = new JSONObject(recipesList.get(i).toJson()).getJSONObject("_id").getString("$oid");
             byte[] _id = idObj.getBytes(StandardCharsets.UTF_8); //key
@@ -123,6 +126,19 @@ public class RecipeDao {
                 HaloDBDriver.getObject().closeConnection();
                 System.exit(-1);
             }
+        }
+    }
+
+    public void cacheAddedRecipe(Document doc){
+        String idObj = doc.getString("_id");
+        byte[] _id = idObj.getBytes(StandardCharsets.UTF_8); //key
+        byte[] objToSave = doc.toJson().getBytes(StandardCharsets.UTF_8); //value
+        try {
+            HaloDBDriver.getObject().getClient("recipes").put(_id, objToSave);
+        }catch(Exception e){
+            LogManager.getLogger("RecipeDao.class").fatal("HaloDB: caching failed");
+            HaloDBDriver.getObject().closeConnection();
+            System.exit(-1);
         }
     }
 

@@ -47,5 +47,21 @@ public class HaloDBDriver {
             }
         });
     }
+
+    public void flush(){
+        //flushing all the dbs
+        clients.forEach((String value, HaloDB db)->{
+            try {
+                HaloDBIterator iterator = db.newIterator();
+                while (iterator.hasNext()) {
+                    Record record = iterator.next();
+                    db.delete(record.getKey());
+                }
+            }catch(HaloDBException ex){
+                LogManager.getLogger("HaloDBDriver.class").fatal("key value database not closed");
+                System.exit(-1);
+            }
+        });
+    }
 }
 
