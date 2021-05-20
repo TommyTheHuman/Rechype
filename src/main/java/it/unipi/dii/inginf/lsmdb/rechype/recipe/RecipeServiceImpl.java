@@ -20,4 +20,6 @@ class RecipeServiceImpl implements RecipeService{
     public JSONObject getCachedRecipe(String key){
         return recipeDao.getRecipeByKey(key);
     }
+
+    public String addLike(JSONObject _id) {return recipeDao.updateRecipeLike(_id);}
 }

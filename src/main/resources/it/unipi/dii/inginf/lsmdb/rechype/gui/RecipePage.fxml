@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -23,6 +24,7 @@
             <content>
                <AnchorPane prefHeight="969.0" prefWidth="776.0">
                   <children>
+                     <Button fx:id="LikeButton" layoutX="643.0" layoutY="1.0" mnemonicParsing="false" text="Like it!" />
                      <Text fx:id="authorLabel" layoutX="316.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="">
                         <font>
                            <Font size="20.0" />
@@ -61,7 +63,7 @@
                                  </AnchorPane>
                                  <AnchorPane prefHeight="58.0" prefWidth="181.0">
                                     <children>
-                                       <Text fx:id="Servings" layoutX="9.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0"  />
+                                       <Text fx:id="Servings" layoutX="9.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" />
                                     </children>
                                  </AnchorPane>
                                  <AnchorPane prefHeight="58.0" prefWidth="181.0">
@@ -71,7 +73,7 @@
                                  </AnchorPane>
                                  <AnchorPane prefHeight="58.0" prefWidth="181.0">
                                     <children>
-                                       <Text fx:id="WeightPerServing" layoutX="10.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0"  />
+                                       <Text fx:id="WeightPerServing" layoutX="10.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" />
                                     </children>
                                  </AnchorPane>
                               </children>

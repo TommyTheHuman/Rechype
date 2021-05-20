@@ -33,4 +33,11 @@ class UserServiceImpl implements UserService {
     public JSONObject getCachedUser(String key){
         return userDao.getUserByKey(key);
     }
+
+    public String deleteUser(String username){
+        if(userDao.deleteUser(username))
+            return "DeleteOk";
+        else
+            return "Abort";
+    }
 }

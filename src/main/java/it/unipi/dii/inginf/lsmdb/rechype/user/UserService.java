@@ -16,6 +16,7 @@ public interface UserService {
     User getLoggedUser();
     List<User> searchUser(String text, int offset, int quantity);
     JSONObject getCachedUser(String key);
+    String deleteUser(String username);
 }
 
 

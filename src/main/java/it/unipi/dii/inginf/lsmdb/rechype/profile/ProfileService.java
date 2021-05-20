@@ -6,4 +6,5 @@ public interface ProfileService {
 
     String createProfile(String user);
 
+    String deleteProfile(String user);
 }

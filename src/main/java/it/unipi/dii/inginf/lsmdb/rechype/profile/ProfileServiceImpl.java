@@ -17,4 +17,12 @@ class ProfileServiceImpl implements ProfileService {
         }
     }
 
+    public String deleteProfile(String username){
+        if(profileDAO.deleteProfile(username)){
+            return "DeleteOK";
+        }else{
+            return "Abort";
+        }
+    }
+
 }

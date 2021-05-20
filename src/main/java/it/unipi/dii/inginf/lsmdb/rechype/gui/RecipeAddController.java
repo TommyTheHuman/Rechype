@@ -127,6 +127,8 @@ public class RecipeAddController extends JSONAdder implements Initializable {
                     textFieldsError.setOpacity(0);
 
                     // cambio scena, vado sulla visualizzazione della ricetta appena creata
+
+
                 }
             }
         });

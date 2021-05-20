@@ -1,6 +1,7 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.Ingredient;
+import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import javafx.event.ActionEvent;
@@ -64,6 +65,8 @@ public class GuiElementsBuilder {
         block.setOnMouseClicked((MouseEvent e) ->{
             JSONObject par = new JSONObject().put("_id", user.getUsername());
             Main.changeScene("UserProfile", par);
+            //flushing cache
+            HaloDBDriver.getObject().flush();
         });
         return block;
     }
@@ -116,8 +119,6 @@ public class GuiElementsBuilder {
                 });
             }
         });
-
-
         return block;
 
     }
@@ -197,6 +198,8 @@ public class GuiElementsBuilder {
         mainContainer.setOnMouseClicked((MouseEvent e) ->{
             JSONObject par = new JSONObject().put("_id", recipe.getId());
             Main.changeScene("RecipePage", par);
+            //flushing cache
+            HaloDBDriver.getObject().flush();
         });
 
         return mainContainer;

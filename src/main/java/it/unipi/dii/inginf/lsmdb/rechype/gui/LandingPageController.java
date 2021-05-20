@@ -19,6 +19,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 
 import java.net.URL;
@@ -117,6 +118,8 @@ public class LandingPageController extends JSONAdder implements Initializable {
                 }
 
                 String resultProfile = profileService.createProfile(username);
+                //checking the consistency between the collection Profile and User
+                //If something goes wrong one of the 2
                 if(result.equals("RegOk") && resultProfile.equals("ProfileOk")){
                     Main.changeScene("HomePage", new JSONObject());
                 }
@@ -124,11 +127,15 @@ public class LandingPageController extends JSONAdder implements Initializable {
                 if(result.equals("Abort") || resultProfile.equals("Abort")){
 
                     if(!(resultProfile.equals("Abort") && result.equals("Abort"))){
-                        //cross-consistency: deletete on Mongo and neo
+                        //consistency: delete on Profile and User collection
                         if(resultProfile.equals("Abort")){
-                            //cancella user
+                            if(userService.deleteUser(username).equals("Abort")){
+                                LogManager.getLogger("LandingPageController.class").info("inconsistency will be solved during parsing");
+                            }
                         }else{
-                            //cancella profile
+                            if(profileService.deleteProfile(username).equals("Abort")){
+                                LogManager.getLogger("LandingPageController.class").info("inconsistency will be solved during parsing");
+                            }
                         }
                     }
 
