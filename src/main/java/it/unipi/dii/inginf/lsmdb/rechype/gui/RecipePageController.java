@@ -222,7 +222,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
         LikeButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                recipeService.addLike(jsonRecipe.getJSONObject("_id"));
+                recipeService.addLike(jsonRecipe.getJSONObject("_id"), userService.getLoggedUser().getUsername());
             }
         });
     }

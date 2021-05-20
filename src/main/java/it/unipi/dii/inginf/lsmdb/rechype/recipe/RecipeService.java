@@ -10,6 +10,6 @@ public interface RecipeService {
     String addRecipe(Recipe recipe);
     List<Recipe> searchRecipe(String text, int offset, int quantity);
     JSONObject getCachedRecipe(String key);
-    String addLike(JSONObject _id);
+    String addLike(JSONObject _id, String username);
 
 }

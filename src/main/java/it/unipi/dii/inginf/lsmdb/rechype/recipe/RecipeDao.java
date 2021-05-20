@@ -126,7 +126,32 @@ public class RecipeDao {
         }
     }
 
-    public String updateRecipeLike(JSONObject _id){
+    public String updateRecipeLike(JSONObject _id, String user){
+
+        String ret = null;
+
+        try (Session session = Neo4jDriver.getObject().getDriver().session()) { //try to add
+            session.writeTransaction((TransactionWork<Void>) tx -> {
+                tx.run("MATCH (uu:User) WHERE uu.name = $username" +
+                            "MATCH (rr:Recipe) WHERE rr.name = $title" +
+                                " CREATE (uu)-[r:LIKES]->(rr)",
+                        parameters("username", user, "title", _id.getString("$oid")));
+                return null;
+            });
+        }catch(Neo4jException ne){ //fail, next cycle try to delete on MongoDB
+            LogManager.getLogger("RecipeDao.class").error("Neo4j: recipe insert failed");
+        }
+
+        try (MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES).find(eq("_id", _id)).iterator()) {
+            //check for double username or username not allow.
+
+
+        } catch (MongoException me) {
+            LogManager.getLogger("UserDao.class").error("MongoDB: an error occurred");
+        }
+
+
+
         return "ciao";
     }
 

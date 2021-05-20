@@ -21,5 +21,5 @@ class RecipeServiceImpl implements RecipeService{
         return recipeDao.getRecipeByKey(key);
     }
 
-    public String addLike(JSONObject _id) {return recipeDao.updateRecipeLike(_id);}
+    public String addLike(JSONObject _id, String user) {return recipeDao.updateRecipeLike(_id, user);}
 }
