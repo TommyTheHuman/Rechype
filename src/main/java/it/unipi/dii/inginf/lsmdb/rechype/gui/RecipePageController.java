@@ -4,13 +4,19 @@ import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeService;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeServiceFactory;
+import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Orientation;
 import javafx.scene.chart.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -26,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -47,15 +54,19 @@ public class RecipePageController extends JSONAdder implements Initializable {
     @FXML private ImageView DairyIcon;
     @FXML private ImageView GlutenIcon;
     @FXML private Text PriceIcon;
+    @FXML private Button LikeButton;
     private ObservableList<PieChart.Data> pieData;
     private RecipeServiceFactory recipeServiceFactory;
     private RecipeService recipeService;
-
+    private UserServiceFactory userServiceFactory;
+    private UserService userService;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         recipeServiceFactory = RecipeServiceFactory.create();
         recipeService = recipeServiceFactory.getService();
+        userServiceFactory = UserServiceFactory.create();
+        userService = userServiceFactory.getService();
     }
 
     public void setGui(){
@@ -207,11 +218,12 @@ public class RecipePageController extends JSONAdder implements Initializable {
         NutritionsPie.setLegendVisible(false);
         NutritionsPie.setTitle("Nutritional Information");
         Likes.setText("Likes: "+String.valueOf(jsonRecipe.getInt("likes")));
-    }
-
-    public void setField(String fieldName, String jsonKey, String type){
-        if(type.equals("string")){
-
-        }
+        //Like Button event
+        LikeButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                recipeService.addLike(jsonRecipe.getJSONObject("_id"));
+            }
+        });
     }
 }

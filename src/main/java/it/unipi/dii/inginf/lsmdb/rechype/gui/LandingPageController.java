@@ -3,6 +3,8 @@ package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 
 import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileService;
+import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
 
@@ -17,6 +19,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 
 import java.net.URL;
@@ -46,12 +49,18 @@ public class LandingPageController extends JSONAdder implements Initializable {
     private UserServiceFactory userServiceFactory;
     private UserService userService;
 
+    private ProfileServiceFactory profileServiceFactory;
+    private ProfileService profileService;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         userServiceFactory = UserServiceFactory.create();
         userService = userServiceFactory.getService();
+
+        profileServiceFactory = ProfileServiceFactory.create();
+        profileService = profileServiceFactory.getService();
 
 
         regAge.textProperty().addListener(new ChangeListener<String>() {
@@ -108,12 +117,35 @@ public class LandingPageController extends JSONAdder implements Initializable {
                     }
                 }
 
-                if(result.equals("RegOk")){
+                String resultProfile = profileService.createProfile(username);
+                //checking the consistency between the collection Profile and User
+                //If something goes wrong one of the 2
+                if(result.equals("RegOk") && resultProfile.equals("ProfileOk")){
                     Main.changeScene("HomePage", new JSONObject());
-                }else if(result.equals("Abort")){
+                }
+
+                if(result.equals("Abort") || resultProfile.equals("Abort")){
+
+                    if(!(resultProfile.equals("Abort") && result.equals("Abort"))){
+                        //consistency: delete on Profile and User collection
+                        if(resultProfile.equals("Abort")){
+                            if(userService.deleteUser(username).equals("Abort")){
+                                LogManager.getLogger("LandingPageController.class").info("inconsistency will be solved during parsing");
+                            }
+                        }else{
+                            if(profileService.deleteProfile(username).equals("Abort")){
+                                LogManager.getLogger("LandingPageController.class").info("inconsistency will be solved during parsing");
+                            }
+                        }
+                    }
+
                     regMsg.setText("Error occurred during the registration");
                     regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");
-                }else if(result.equals("usernameProb")){
+                }
+
+
+
+                if(result.equals("usernameProb")){
                     regMsg.setText("Username already in use, try a different one");
                     regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");
                 }

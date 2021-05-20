@@ -37,6 +37,13 @@ import java.util.regex.Pattern;
 
 class UserDao {
 
+    /***
+     * performing the login on the mongoDB user's collection, if something goes wrong the user is not
+     * logged into the service
+     * @param username
+     * @param password
+     * @return
+     */
     public User checkLogin(String username, String password){
         try(MongoCursor<Document> cursor =
         MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(eq("_id", username)).iterator()){
@@ -61,6 +68,20 @@ class UserDao {
         return null;
     }
 
+    /***
+     * Performing the registration of a user writing the corresponding entity in both Neo4j
+     * and MongoDB Databases. If something goes wrong during the registration the cross-db consistency
+     * is handled in this way:
+     * try on mongo->fails->abort
+     * try on mongo->success->try on neo4j->fails->try delete on mongo->success
+     * try on mongo->success->try on neo4j->fails->try delete on mongo->fails->parsing
+     * @param username
+     * @param password
+     * @param confPassword
+     * @param country
+     * @param age
+     * @return
+     */
     public JSONObject checkRegistration(String username, String password, String confPassword, String country, int age) {
 
         Document doc = new Document("_id", username).append("password", password).append("country", country).append("age", age).append("level", 0);
@@ -109,23 +130,31 @@ class UserDao {
             //try Neo4j
             try (Session session = Neo4jDriver.getObject().getDriver().session()) { //try to add
                 session.writeTransaction((TransactionWork<Void>) tx -> {
-                    tx.run("CREATE (ee:Person { username: $username, country: $country, level: $level })", parameters("username", username, "country", country, "level", 0));
+                    tx.run("CREATE (ee:User { username: $username, country: $country, level: $level })", parameters("username", username, "country", country, "level", 0));
                     return null;
                 });
                 Json.put("response", "RegOk");
                 return Json;
-            }catch(Neo4jException ne){ //fail, next cycle try to delete on MongoDB
+            }catch(Neo4jException ne){ //fail, next cycle will try to delete on MongoDB
                 LogManager.getLogger("UserDao.class").error("Neo4j: user insert failed");
                 already_tried=true;
             }
         }
     }
 
+    /***
+     * retrieve the users from mongoDb and cache the search into the key-value DB
+     * @param userName
+     * @param offset
+     * @param quantity
+     * @return
+     */
     public List<User> getUsersByText(String userName, int offset, int quantity){
-        //List of users and list of documents for caching
+        //List of users to build gui and list of documents to caching
         List<User> returnList = new ArrayList<>();
         List<Document> returnDocList = new ArrayList<>();
-        //create the case Insesitive pattern and perform the mongo query
+
+        //create the case insensitive pattern and perform the mongo query
         Pattern pattern = Pattern.compile(".*" + userName + ".*", Pattern.CASE_INSENSITIVE);
         Bson filter = Filters.regex("_id", pattern);
         MongoCursor<Document> cursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(filter)
@@ -141,6 +170,11 @@ class UserDao {
         return returnList;
     }
 
+    /***
+     * retrieving the user's entity from the key-value DB
+     * @param key
+     * @return
+     */
     public JSONObject getUserByKey(String key){
         try{
             HaloDB db = HaloDBDriver.getObject().getClient("users");
@@ -154,7 +188,11 @@ class UserDao {
         return new JSONObject();
     }
 
-    private void cacheSearch(List<Document> userList){ //caching of user's search
+    /***
+     * caching the user's search in a key-value DB
+     * @param userList
+     */
+    private void cacheSearch(List<Document> userList){
         for(int i=0; i<userList.size(); i++) {
             byte[] username = userList.get(i).getString("_id").getBytes(StandardCharsets.UTF_8); //key
             byte[] objToSave = userList.get(i).toJson().getBytes(StandardCharsets.UTF_8); //value
@@ -168,4 +206,36 @@ class UserDao {
         }
     }
 
+    /***
+     * deleting a user's entity from both databases (cross-db consistency)
+     * @param username
+     * @return
+     */
+    public Boolean deleteUser(String username){
+        MongoCollection<Document> coll=null;
+        Boolean neo4j, mongo;
+
+        //delete on MongoDB
+        try {
+            coll = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
+            coll.deleteOne(eq("_id", username));
+            mongo=true;
+        }catch(MongoException ex){ //somethind goes wrong, a software will parse and solve
+            LogManager.getLogger("UserDao.class").error("MongoDB[PARSE], user deletion inconsistency: "+username);
+            mongo=false;
+        }
+
+        //try Neo4j
+        try (Session session = Neo4jDriver.getObject().getDriver().session()) {
+            session.writeTransaction((TransactionWork<Void>) tx -> {
+                tx.run("MATCH (u:User { username: $username }) delete u", parameters("username", username));
+                return null;
+            });
+            neo4j=true;
+        }catch(Neo4jException ne){ //somethind goes wrong, a software will parse and solve
+            LogManager.getLogger("UserDao.class").error("Neo4j[PARSE], user deletion inconsistency: "+username);
+            neo4j=false;
+        }
+        return neo4j && mongo;
+    }
 }
