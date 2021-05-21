@@ -12,6 +12,6 @@ public interface RecipeService {
     List<Recipe> searchRecipe(String text, int offset, int quantity);
     JSONObject getCachedRecipe(String key);
     void putRecipeInCache(Document recipe);
-    String addLike(JSONObject _id, String username);
+    String addLike(String _id, String username);
 
 }

@@ -72,7 +72,6 @@ public class RecipePageController extends JSONAdder implements Initializable {
     public void setGui(){
         //retrieving the recipe from key-value
         JSONObject jsonRecipe = recipeService.getCachedRecipe(jsonParameters.getString("_id"));
-
         //setting text informations
         try{
             authorLabel.setText("Author: "+jsonRecipe.getString("author"));
@@ -222,7 +221,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
         LikeButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                recipeService.addLike(jsonRecipe.getJSONObject("_id"), userService.getLoggedUser().getUsername());
+                recipeService.addLike(jsonParameters.getString("_id"), userService.getLoggedUser().getUsername());
             }
         });
     }
