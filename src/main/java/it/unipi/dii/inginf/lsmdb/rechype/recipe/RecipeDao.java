@@ -4,6 +4,7 @@ import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.InsertOneResult;
 import com.oath.halodb.HaloDB;
 import com.oath.halodb.HaloDBException;
@@ -17,6 +18,7 @@ import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.json.JSONObject;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.TransactionWork;
@@ -128,31 +130,56 @@ public class RecipeDao {
 
     public String updateRecipeLike(JSONObject _id, String user){
 
-        String ret = null;
+        boolean already_tried = false;
+        //cross-db consistency between neo4j and mongodb
+        //the while will execute 2 iteration at most
+        while(true){
 
-        try (Session session = Neo4jDriver.getObject().getDriver().session()) { //try to add
-            session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MATCH (uu:User) WHERE uu.name = $username" +
-                            "MATCH (rr:Recipe) WHERE rr.name = $title" +
-                                " CREATE (uu)-[r:LIKES]->(rr)",
-                        parameters("username", user, "title", _id.getString("$oid")));
-                return null;
-            });
-        }catch(Neo4jException ne){ //fail, next cycle try to delete on MongoDB
-            LogManager.getLogger("RecipeDao.class").error("Neo4j: recipe insert failed");
+            //_id in neo4j is the oid field in mongodb
+            if(!already_tried) { //try to add to neo4j
+                try (Session session = Neo4jDriver.getObject().getDriver().session()){
+                    session.writeTransaction((TransactionWork<Void>) tx -> {
+                        tx.run("MATCH (uu:User) WHERE uu.name = $username" +
+                                        "MATCH (rr:Recipe) WHERE rr._id = $_id" +
+                                        " CREATE (uu)-[rel:LIKES]->(rr)",
+                                parameters("username", user, "_id", _id.getString("$oid")));
+                        return null;
+                    });
+                }catch(Neo4jException ne){
+                    LogManager.getLogger("RecipeDao.class").error("Neo4j: like's relation insert failed");
+                    return "Abort";
+                }
+            }
+            //second try consists in deleting the relation from neo4j
+            else{
+                //try to delete the relation from neo4j in case the operation on mongo fails
+                try (Session session = Neo4jDriver.getObject().getDriver().session()){
+                    session.writeTransaction((TransactionWork<Void>) tx -> {
+                        tx.run("MATCH (uu:User)-[rel:LIKES]-(rr:Recipe) WHERE uu.name = $username " +
+                                        "AND rr._id=$_id" +
+                                        "DELETE rel",
+                                parameters("username", user, "_id", _id.getString("$oid")));
+                        return null;
+                    });
+                }catch(Neo4jException ne){
+                    LogManager.getLogger("RecipeDao.class").error("Neo4j[PARSE], like incosistency: _id: "+
+                            _id.getString(("$oid"))+" username: "+user);
+                    return "Abort";
+                }
+            }
+            MongoCollection<Document> recipeColl=null;
+            //try to add the redundancy on mongodb
+            try {
+                ObjectId objectId = new ObjectId(_id.getString("$oid"));
+                recipeColl=MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
+                recipeColl.updateOne(eq("_id", objectId), Updates.inc("likes", 1));
+                //the database are perfectly consistent
+                return "LikeOk";
+            }catch (MongoException me) {
+                LogManager.getLogger("UserDao.class").error("MongoDB: failed to insert like in recipes");
+                already_tried=true;
+            }
         }
-
-        try (MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES).find(eq("_id", _id)).iterator()) {
-            //check for double username or username not allow.
-
-
-        } catch (MongoException me) {
-            LogManager.getLogger("UserDao.class").error("MongoDB: an error occurred");
-        }
-
-
-
-        return "ciao";
     }
 
 
