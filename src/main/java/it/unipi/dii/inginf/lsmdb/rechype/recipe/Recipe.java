@@ -1,5 +1,6 @@
 package it.unipi.dii.inginf.lsmdb.rechype.recipe;
 
+import it.unipi.dii.inginf.lsmdb.rechype.ingredient.Ingredient;
 import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
 import org.json.JSONObject;
@@ -7,6 +8,7 @@ import org.json.JSONObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.List;
 
 public class Recipe {
 
@@ -15,7 +17,8 @@ public class Recipe {
     private String image;
     private String description;
     private String method;
-    private String ingredients;   // DOVRA' ESSERE UN ARRAY DI INGREDIENTS
+    private String ingredientsText;
+    private List<Ingredient> ingredients;   // DOVRA' ESSERE UN ARRAY DI INGREDIENTS
     private Integer originalId;
 
     private boolean vegan;
@@ -31,11 +34,13 @@ public class Recipe {
     private JSONObject jsonRepresentation; //comment
     private int likes;
 
-    public Recipe(){}
+    public Recipe(String ingrText){
+        ingredientsText = ingrText;
+    }
 
     public Recipe(String name, String author, String image, String description,
-        String method, String ingredients, boolean vegan, boolean glutenFree, boolean dairyFree, boolean vegetarian,
-        double servings, double readyInMinute, double weightPerServing, double pricePerServing){
+                  String method, List<Ingredient> ingredients, boolean vegan, boolean glutenFree, boolean dairyFree, boolean vegetarian,
+                  double servings, double readyInMinute, double weightPerServing, double pricePerServing, String ingredientsText){
         this.name = name;
         this.author = author;
         this.image = image;
@@ -51,6 +56,7 @@ public class Recipe {
         this.weightPerServing = weightPerServing;
         this.pricePerServing = pricePerServing;
         this._id="";
+        this.ingredientsText = ingredientsText;
         this.likes = 0;
     }
 
@@ -138,6 +144,10 @@ public class Recipe {
 
     //neo4j constructor with less fields but all the private fields must be set anyway
     public JSONObject getJSON() { return jsonRepresentation; } //da provare
+
+    public void setId(String _id){
+        this._id = _id;
+    }
 
     public String getName() {
         return name;

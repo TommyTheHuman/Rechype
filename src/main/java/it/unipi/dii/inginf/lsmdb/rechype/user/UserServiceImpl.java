@@ -1,5 +1,6 @@
 package it.unipi.dii.inginf.lsmdb.rechype.user;
 
+import org.bson.Document;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -40,4 +41,6 @@ class UserServiceImpl implements UserService {
         else
             return "Abort";
     }
+
+    public String addNewRecipe(Document doc){ return userDao.addNestedRecipe(doc, loggedUser); }
 }

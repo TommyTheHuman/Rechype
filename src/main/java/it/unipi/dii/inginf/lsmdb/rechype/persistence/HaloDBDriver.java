@@ -49,6 +49,7 @@ public class HaloDBDriver {
     }
 
     public void flush(){
+        //flushing all the dbs
         clients.forEach((String value, HaloDB db)->{
             try {
                 HaloDBIterator iterator = db.newIterator();
