@@ -190,7 +190,7 @@ public class RecipeDao {
                 recipeColl.updateOne(eq("_id", objectId), Updates.inc("likes", 1));
                 //the database are perfectly consistent
                 return "LikeOk";
-            }catch (MongoException me) {
+            }catch (MongoException me){
                 LogManager.getLogger("UserDao.class").error("MongoDB: failed to insert like in recipes");
                 already_tried=true;
             }
