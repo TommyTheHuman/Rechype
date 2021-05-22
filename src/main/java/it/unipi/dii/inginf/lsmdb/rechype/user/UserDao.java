@@ -264,4 +264,19 @@ class UserDao {
         }
         return "RecipeOk";
     }
+
+    public List<Document> getUserRecipe(String user) {
+
+        List<Document> returnList = new ArrayList<>();
+        MongoCursor<Document> cursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(eq("_id", user)).iterator();
+        while (cursor.hasNext()){
+
+            Document doc = cursor.next();
+
+            returnList = (List<Document>) doc.get("recipes");
+
+        }
+
+        return returnList;
+    }
 }

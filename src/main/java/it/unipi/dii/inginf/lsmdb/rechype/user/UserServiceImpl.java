@@ -42,5 +42,9 @@ class UserServiceImpl implements UserService {
             return "Abort";
     }
 
+    public List<Document> getNestedRecipes(String user){
+        return userDao.getUserRecipe(user);
+    }
+
     public String addNewRecipe(Document doc){ return userDao.addNestedRecipe(doc, loggedUser); }
 }

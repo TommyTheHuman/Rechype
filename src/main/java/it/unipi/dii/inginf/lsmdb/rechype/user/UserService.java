@@ -1,6 +1,8 @@
 package it.unipi.dii.inginf.lsmdb.rechype.user;
 
 import org.bson.Document;
+import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
+import org.bson.Document;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -19,6 +21,8 @@ public interface UserService {
     JSONObject getCachedUser(String key);
     String addNewRecipe(Document doc);
     String deleteUser(String username);
+    List<Document> getNestedRecipes(String user);
+
 }
 
 

@@ -198,4 +198,16 @@ public class RecipeDao {
     }
 
 
+    public Document getRecipeById(String id) {
+
+        Document recipe = new Document();
+        MongoCursor<Document> cursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES).find(eq("_id", new ObjectId(id))).iterator();
+
+
+        recipe = cursor.next();
+
+
+        return recipe;
+
+    }
 }
