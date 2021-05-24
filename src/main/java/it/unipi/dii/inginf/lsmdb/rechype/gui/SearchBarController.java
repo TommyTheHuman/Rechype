@@ -1,6 +1,9 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.drink.Drink;
+import it.unipi.dii.inginf.lsmdb.rechype.drink.DrinkService;
+import it.unipi.dii.inginf.lsmdb.rechype.drink.DrinkServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeService;
@@ -34,7 +37,7 @@ public class SearchBarController extends JSONAdder implements Initializable {
     @FXML private CheckBox checkBoxRecipes;
     @FXML private ScrollPane scrollSearch;
     @FXML private AnchorPane searchAnchor;
-
+    private String lastSearchedText;
     private GuiElementsBuilder builder;
 
     private UserServiceFactory userServiceFactory;
@@ -43,8 +46,9 @@ public class SearchBarController extends JSONAdder implements Initializable {
 
     private RecipeServiceFactory recipeServiceFactory;
     private RecipeService recipeService;
-    private String lastSearchedText;
 
+    private DrinkServiceFactory drinkServiceFactory;
+    private DrinkService drinkService;
 
 
     @Override
@@ -59,6 +63,8 @@ public class SearchBarController extends JSONAdder implements Initializable {
         recipeServiceFactory = RecipeServiceFactory.create();
         recipeService = recipeServiceFactory.getService();
 
+        drinkServiceFactory = DrinkServiceFactory.create();
+        drinkService = drinkServiceFactory.getService();
 
         searchAnchor.setVisible(false);
         checkBoxDrinks.selectedProperty().setValue(true);
@@ -87,6 +93,14 @@ public class SearchBarController extends JSONAdder implements Initializable {
 
                     for (Recipe recipe : listOfRecipes) {
                         resultBox.getChildren().addAll(builder.createRecipeBlock(recipe), new Separator(Orientation.HORIZONTAL));
+                    }
+                }
+
+                if(checkBoxDrinks.isSelected()){
+                    List<Drink> listOfDrinks = drinkService.searchDrink(lastSearchedText, 0, 10);
+
+                    for (Drink drink : listOfDrinks) {
+                        resultBox.getChildren().addAll(builder.createDrinkBlock(drink), new Separator(Orientation.HORIZONTAL));
                     }
                 }
 
@@ -133,13 +147,18 @@ public class SearchBarController extends JSONAdder implements Initializable {
                                 resultBox.getChildren().addAll(builder.createUserBlock(user), new Separator(Orientation.HORIZONTAL));
                         };
                     }
-                    if(checkBoxRecipes.isSelected()){
+                    else if(checkBoxRecipes.isSelected()){
                         List<Recipe> listOfRecipes = recipeService.searchRecipe(lastSearchedText, offset, 10);
                         for (Recipe recipe : listOfRecipes) {
                             resultBox.getChildren().addAll(builder.createRecipeBlock(recipe), new Separator(Orientation.HORIZONTAL));
                         };
                     }
-                    //drinks
+                    else if(checkBoxDrinks.isSelected()){
+                        List<Drink> listOfDrinks = drinkService.searchDrink(lastSearchedText, offset, 10);
+                        for(Drink drink: listOfDrinks){
+                            resultBox.getChildren().addAll(builder.createDrinkBlock(drink), new Separator(Orientation.HORIZONTAL));
+                        }
+                    }
                 }
             }
         });

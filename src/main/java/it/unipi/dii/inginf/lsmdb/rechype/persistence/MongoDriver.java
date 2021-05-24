@@ -51,7 +51,8 @@ public class MongoDriver {
         RECIPES("recipes"),
         INGREDIENTS("ingredients"),
         PROFILES("profiles"),
-        USERS("users");
+        USERS("users"),
+        DRINKS("drinks");
 
         private String name;
 

@@ -26,10 +26,6 @@ import java.net.URL;
 import java.util.*;
 import java.util.ResourceBundle;
 
-
-/**
- * Initializable è necessario?
- */
 public class LandingPageController extends JSONAdder implements Initializable {
 
 
