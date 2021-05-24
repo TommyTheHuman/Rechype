@@ -32,7 +32,7 @@ public class Main extends Application {
 //        mainScene = new Scene(fxmlLoader.load());
         mainScene = new Scene(loadFXML("Landing", new JSONObject()), 1000, 700);
         istance=this;
-        primaryStage.setTitle("Hello World");
+        primaryStage.setTitle("Rechype");
         primaryStage.setScene(mainScene);
         primaryStage.show();
         primaryStage.setOnHiding( event -> {

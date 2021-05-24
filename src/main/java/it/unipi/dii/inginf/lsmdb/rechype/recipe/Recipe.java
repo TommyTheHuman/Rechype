@@ -107,8 +107,6 @@ public class Recipe {
             this._id=json.getJSONObject("_id").getString("$oid");
         }
 
-    }
-
     //if the json doesn't have some fields is a problem so we must access from t
     /*public Recipe(Document doc){
         String[] keys=doc.keySet().toArray(new String[doc.keySet().size()]);
