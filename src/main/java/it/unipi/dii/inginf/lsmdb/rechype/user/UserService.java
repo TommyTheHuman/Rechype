@@ -22,6 +22,8 @@ public interface UserService {
     String addNewRecipe(Document doc);
     String deleteUser(String username);
     List<Document> getNestedRecipes(String user);
+    String addFollow(String myName, String userName, String btnStatus);
+    Boolean checkForFollow(String myName, String userName);
 
 }
 

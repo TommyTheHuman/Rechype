@@ -22,6 +22,7 @@ import org.bson.BsonBinary;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.json.JSONObject;
+import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.TransactionWork;
 import static com.mongodb.client.model.Updates.push;
@@ -279,4 +280,56 @@ class UserDao {
 
         return returnList;
     }
+
+    public String followUser(String myName, String userName, String btnStatus) {
+
+        if(btnStatus.equals("Follow")) {
+            try (Session session = Neo4jDriver.getObject().getDriver().session()) {
+                System.out.println();
+                session.writeTransaction((TransactionWork<Void>) tx -> {
+                    tx.run("MATCH (uu:User) WHERE uu.username = $myName" +
+                                    " MATCH (uu2:User) WHERE uu2.username = $userName" +
+                                    " CREATE (uu)-[rel:FOLLOWS {since:$date}]->(uu2)",
+                            parameters("myName", myName, "userName", userName, "date", java.time.LocalDate.now().toString()));
+                    return null;
+                });
+            } catch (Neo4jException ne) {
+                ne.printStackTrace();
+                LogManager.getLogger("RecipeDao.class").error("Neo4j: follow's relation insert failed");
+                return "Abort";
+            }
+            return "followOk";
+        }else{
+            try (Session session = Neo4jDriver.getObject().getDriver().session()){
+                session.writeTransaction((TransactionWork<Void>) tx -> {
+                    tx.run("MATCH (uu:User {username:$myName})-[rel:FOLLOWS]->(uu2:User {username:$userName}) delete rel",
+                            parameters("myName", myName, "userName", userName));
+                    return null;
+                });
+            }catch(Neo4jException ne){
+                LogManager.getLogger("RecipeDao.class").error("Neo4j: like's relation deletion failed");
+                return "Abort";
+            }
+            return "followDelOk";
+        }
+    }
+
+    public boolean checkUserFollow(String myName, String userName) {
+        //accessing neo4j and check the relationship between the user and the recipe entity
+        try (Session session = Neo4jDriver.getObject().getDriver().session()) {
+            return session.readTransaction((TransactionWork<Boolean>) tx -> {
+                Result res = tx.run("MATCH (u:User {username: $myName })-[rel:FOLLOWS]->(u2:User {username: $userName}) " +
+                                "return rel",
+                        parameters("myName", myName, "userName", userName));
+                if ((res.hasNext())) {
+                    return true;
+                }
+                return false;
+            });
+        } catch (Neo4jException ne) { //somethind goes wrong, a software will parse and solve
+            LogManager.getLogger("UserDao.class").error("Neo4j: follow check failed");
+            return false;
+        }
+    }
+
 }
