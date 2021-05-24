@@ -52,5 +52,7 @@ class UserServiceImpl implements UserService {
     @Override
     public Boolean checkForFollow(String myName, String userName) {return userDao.checkUserFollow(myName, userName);}
 
+    public List<Document> getUserRecipe(String username){ return userDao.getNestedRecipe(username); }
+
     public String addNewRecipe(Document doc){ return userDao.addNestedRecipe(doc, loggedUser); }
 }

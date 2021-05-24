@@ -60,56 +60,50 @@ public class Recipe {
         this.likes = 0;
     }
 
-    public Recipe(Document doc){
+    public Recipe(Document doc) {
         //we save the document to get a json representation of the class
         this.jsonRepresentation = new JSONObject(doc.toJson());
 
-        if(doc.get("name")==null){
-            this.name="";
+        if (doc.get("name") == null) {
+            this.name = "";
         }
-        this.name = doc.get("name")==null? "" : doc.get("name").toString();
-        this.author = doc.get("author")==null? "" : doc.get("author").toString();
-        this.image = doc.get("image")==null? null : doc.get("image").toString();
-        this.description = doc.get("description")==null? "" : doc.get("description").toString();
-        this.method = doc.get("method")==null? "" : doc.get("method").toString();
+        this.name = doc.get("name") == null ? "" : doc.get("name").toString();
+        this.author = doc.get("author") == null ? "" : doc.get("author").toString();
+        this.image = doc.get("image") == null ? null : doc.get("image").toString();
+        this.description = doc.get("description") == null ? "" : doc.get("description").toString();
+        this.method = doc.get("method") == null ? "" : doc.get("method").toString();
         this.ingredients = ingredients;
-        this.vegan = doc.get("vegan")==null? false : doc.getBoolean("vegan");
-        this.glutenFree = doc.get("glutenFree")==null? false : doc.getBoolean("glutenFree");
-        this.dairyFree = doc.get("dairyFree")==null? false : doc.getBoolean("dairyFree");
-        this.vegetarian = doc.get("vegetarian")==null? false : doc.getBoolean("vegetarian");
-        this.readyInMinute = doc.get("readyInMinute")==null? 0: doc.getDouble("readyInMinute");
+        this.vegan = doc.get("vegan") == null ? false : doc.getBoolean("vegan");
+        this.glutenFree = doc.get("glutenFree") == null ? false : doc.getBoolean("glutenFree");
+        this.dairyFree = doc.get("dairyFree") == null ? false : doc.getBoolean("dairyFree");
+        this.vegetarian = doc.get("vegetarian") == null ? false : doc.getBoolean("vegetarian");
+        this.readyInMinute = doc.get("readyInMinute") == null ? 0 : doc.getDouble("readyInMinute");
 
         //weight and price may be integer
-        if(doc.get("weightPerServing") == null){
+        if (doc.get("weightPerServing") == null) {
             this.weightPerServing = 0;
-        }
-        else if(doc.get("weightPerServing") instanceof Integer){
+        } else if (doc.get("weightPerServing") instanceof Integer) {
             this.weightPerServing = Double.valueOf(doc.getInteger("weightPerServing"));
-        }
-        else{
+        } else {
             this.weightPerServing = doc.getDouble("weightPerServing");
         }
-        if(doc.get("pricePerServing") == null){
+        if (doc.get("pricePerServing") == null) {
             this.pricePerServing = 0;
-        }
-        else if(doc.get("pricePerServing") instanceof Integer){
+        } else if (doc.get("pricePerServing") instanceof Integer) {
             this.pricePerServing = Double.valueOf(doc.getInteger("pricePerServing"));
-        }
-        else{
+        } else {
             this.pricePerServing = doc.getDouble("pricePerServing");
         }
 
-        this.likes = doc.get("likes")==null? 0 : Integer.parseInt(doc.get("likes").toString());
+        this.likes = doc.get("likes") == null ? 0 : Integer.parseInt(doc.get("likes").toString());
         JSONObject json = new JSONObject(doc.toJson());
-        if(json.get("_id") instanceof String){
+        if (json.get("_id") instanceof String) {
             this._id = json.getString("_id");
-        }else{
-            this._id=json.getJSONObject("_id").getString("$oid");
+        } else {
+            this._id = json.getJSONObject("_id").getString("$oid");
         }
 
-    }
-
-    //if the json doesn't have some fields is a problem so we must access from t
+        //if the json doesn't have some fields is a problem so we must access from t
     /*public Recipe(Document doc){
         String[] keys=doc.keySet().toArray(new String[doc.keySet().size()]);
         String name="";
@@ -144,8 +138,8 @@ public class Recipe {
                 LogManager.getLogger("Recipe.class").fatal("field "+name+" is missing");
                 System.exit(-1);
             }
-        }
-    }*/
+        }*/
+    }
 
     //neo4j constructor with less fields but all the private fields must be set anyway
     public JSONObject getJSON() { return jsonRepresentation; } //da provare
