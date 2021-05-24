@@ -15,6 +15,7 @@ public class HaloDBDriver {
         clients=new HashMap<>();
         try {
             clients.put("users", HaloDB.open(DBsPath+"users", options));
+            clients.put("drinks", HaloDB.open(DBsPath+"drinks", options));
             clients.put("recipes", HaloDB.open(DBsPath+"recipes", options));
             clients.put("ingredients", HaloDB.open(DBsPath+"ingredients", options));
         }catch(HaloDBException ex){

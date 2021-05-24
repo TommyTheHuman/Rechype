@@ -92,8 +92,8 @@ public class RecipeDao {
         MongoCursor<Document> recipeCursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES).find(filter).skip(offset).limit(quantity).iterator();
         while (recipeCursor.hasNext()){
             Document doc = recipeCursor.next();
-            Recipe user = new Recipe(doc);
-            returnList.add(user);
+            Recipe recipe = new Recipe(doc);
+            returnList.add(recipe);
             returnDocList.add(doc);
         }
         cacheSearch(returnDocList);

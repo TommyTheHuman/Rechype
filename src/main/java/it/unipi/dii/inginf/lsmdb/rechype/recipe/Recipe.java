@@ -29,7 +29,7 @@ public class Recipe {
     private double weightPerServing;
     private double pricePerServing;
     private String _id;
-    private JSONObject jsonRepresentation; //comment
+    private JSONObject jsonRepresentation;
     private int likes;
 
 

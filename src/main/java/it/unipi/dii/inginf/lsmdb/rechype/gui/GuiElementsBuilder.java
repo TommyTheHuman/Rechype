@@ -1,5 +1,6 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
+import it.unipi.dii.inginf.lsmdb.rechype.drink.Drink;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.Ingredient;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
@@ -18,6 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -71,6 +73,7 @@ public class GuiElementsBuilder {
         return block;
     }
 
+    //creating an ingredient block for a selected search vbox
     public HBox createIngredientBlock(Ingredient ingredient, VBox selectedIngredientVBox){
 
         HBox block = new HBox();
@@ -121,6 +124,27 @@ public class GuiElementsBuilder {
         });
         return block;
 
+    }
+
+    public HBox createSimpleIngredientBlock(JSONObject ingredient){
+        HBox block = new HBox();
+        Text nameNode = new Text(ingredient.getString("ingredient"));
+        Text amount = new Text("Amount: "+ingredient.getString("amount"));
+        String imageName=ingredient.getString("ingredient").replace(" ", "-");
+
+        String imageUrl = "https://spoonacular.com/cdn/ingredients_100x100/" + imageName+".jpg";
+        ImageView imageNode = null;
+        try{
+            InputStream imageStream = new URL(imageUrl).openStream();
+            imageNode = new ImageView(new Image(imageStream, 50,50,false,false));
+        }catch(IOException e){
+            LogManager.getLogger("AddIngredientController.class").info("Ingredient's image not found");
+        }
+        block.getChildren().addAll(imageNode, new VBox(nameNode, amount));
+
+        block.setAlignment(Pos.CENTER_LEFT);
+        block.setSpacing(10.0);
+        return block;
     }
 
     public HBox createRecipeBlock(Recipe recipe) {
@@ -203,5 +227,29 @@ public class GuiElementsBuilder {
         });
 
         return mainContainer;
+    }
+
+    public HBox createDrinkBlock(Drink drink){
+        HBox block=new HBox();
+        VBox textBlock=new VBox();
+        block.setAlignment(Pos.CENTER_LEFT);
+        block.setSpacing(10.0);
+        textBlock.getChildren().addAll(new Text("name: "+drink.getName()),new Text("author: "+drink.getAuthor()), new Text("tag: "+drink.getTag()));
+        InputStream imageStream=null;
+        try {
+            imageStream = new URL(drink.getImage()).openStream();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+        ImageView drinkImage = new ImageView(new Image(imageStream, 50, 50, false, false));
+        block.getChildren().addAll(drinkImage, textBlock);
+
+        block.setOnMouseClicked((MouseEvent e) ->{
+            JSONObject par = new JSONObject().put("_id", drink.getId());
+            Main.changeScene("DrinkPage", par);
+            //flushing cache
+            HaloDBDriver.getObject().flush();
+        });
+        return block;
     }
 }
