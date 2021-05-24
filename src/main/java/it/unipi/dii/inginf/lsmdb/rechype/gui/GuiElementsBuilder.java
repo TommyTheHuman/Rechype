@@ -194,6 +194,7 @@ public class GuiElementsBuilder {
 
         mainContainer.getChildren().addAll(imageRecipe, textContainer);
         mainContainer.setSpacing(5);
+        mainContainer.setId("mainContainer");
 
         mainContainer.setOnMouseClicked((MouseEvent e) ->{
             JSONObject par = new JSONObject().put("_id", recipe.getId());

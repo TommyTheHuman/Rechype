@@ -67,8 +67,4 @@ public class Main extends Application {
         mainScene.setRoot(loadFXML(fxml, parameters));
     }
 
-    public static Main getInstance(){
-        return istance;
-    }
-
 }

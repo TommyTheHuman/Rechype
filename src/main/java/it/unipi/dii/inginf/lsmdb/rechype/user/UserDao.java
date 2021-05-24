@@ -17,11 +17,16 @@ import static org.neo4j.driver.Values.parameters;
 
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
 import org.apache.logging.log4j.LogManager;
+import org.bson.BsonArray;
+import org.bson.BsonBinary;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.json.JSONObject;
+import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.TransactionWork;
+import static com.mongodb.client.model.Updates.push;
+import static com.mongodb.client.model.Updates.addToSet;
 import org.neo4j.driver.exceptions.DiscoveryException;
 import org.neo4j.driver.exceptions.Neo4jException;
 import org.neo4j.driver.exceptions.SessionExpiredException;
@@ -84,7 +89,7 @@ class UserDao {
      */
     public JSONObject checkRegistration(String username, String password, String confPassword, String country, int age) {
 
-        Document doc = new Document("_id", username).append("password", password).append("country", country).append("age", age).append("level", 0);
+        Document doc = new Document("_id", username).append("password", password).append("country", country).append("age", age).append("level", 0).append("recipes", new BsonArray());
         JSONObject Json = new JSONObject(doc.toJson());
 
         try (MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(eq("_id", username)).iterator()) {
@@ -238,4 +243,93 @@ class UserDao {
         }
         return neo4j && mongo;
     }
+
+    /***
+     * Adding new nested recipe to user
+     * @param recipe
+     * @return
+     */
+    public String addNestedRecipe(Document recipe, User user){
+        MongoCollection<Document> collUser = null;
+        Document userRecipe = new Document().append("_id", recipe.getString("_id")).append("name", recipe.getString("name")).append("author", recipe.getString("author"))
+                .append("pricePerServing", recipe.getDouble("pricePerServing")).append("image", recipe.getString("image"))
+                .append("vegetarian", recipe.getBoolean("vegetarian")).append("vegan",recipe.getBoolean("vegan")).append("dairyFree",recipe.getBoolean("dairyFree"))
+                .append("glutenFree", recipe.getBoolean("glutenFree")).append("likes", 0);
+        try {
+            collUser = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
+            collUser.updateOne(eq("_id", recipe.getString("author")), push("recipes", userRecipe));
+        } catch (MongoException me) {
+            me.printStackTrace();
+            LogManager.getLogger("RecipeDao.class").error("MongoDB[PARSE]: insert nested recipe in user failed" + recipe.toJson());
+            return "Abort";
+        }
+        return "RecipeOk";
+    }
+
+    public List<Document> getUserRecipe(String user) {
+
+        List<Document> returnList = new ArrayList<>();
+        MongoCursor<Document> cursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(eq("_id", user)).iterator();
+        while (cursor.hasNext()){
+
+            Document doc = cursor.next();
+
+            returnList = (List<Document>) doc.get("recipes");
+
+        }
+
+        return returnList;
+    }
+
+    public String followUser(String myName, String userName, String btnStatus) {
+
+        if(btnStatus.equals("Follow")) {
+            try (Session session = Neo4jDriver.getObject().getDriver().session()) {
+                System.out.println();
+                session.writeTransaction((TransactionWork<Void>) tx -> {
+                    tx.run("MATCH (uu:User) WHERE uu.username = $myName" +
+                                    " MATCH (uu2:User) WHERE uu2.username = $userName" +
+                                    " CREATE (uu)-[rel:FOLLOWS {since:$date}]->(uu2)",
+                            parameters("myName", myName, "userName", userName, "date", java.time.LocalDate.now().toString()));
+                    return null;
+                });
+            } catch (Neo4jException ne) {
+                ne.printStackTrace();
+                LogManager.getLogger("RecipeDao.class").error("Neo4j: follow's relation insert failed");
+                return "Abort";
+            }
+            return "followOk";
+        }else{
+            try (Session session = Neo4jDriver.getObject().getDriver().session()){
+                session.writeTransaction((TransactionWork<Void>) tx -> {
+                    tx.run("MATCH (uu:User {username:$myName})-[rel:FOLLOWS]->(uu2:User {username:$userName}) delete rel",
+                            parameters("myName", myName, "userName", userName));
+                    return null;
+                });
+            }catch(Neo4jException ne){
+                LogManager.getLogger("RecipeDao.class").error("Neo4j: like's relation deletion failed");
+                return "Abort";
+            }
+            return "followDelOk";
+        }
+    }
+
+    public boolean checkUserFollow(String myName, String userName) {
+        //accessing neo4j and check the relationship between the user and the recipe entity
+        try (Session session = Neo4jDriver.getObject().getDriver().session()) {
+            return session.readTransaction((TransactionWork<Boolean>) tx -> {
+                Result res = tx.run("MATCH (u:User {username: $myName })-[rel:FOLLOWS]->(u2:User {username: $userName}) " +
+                                "return rel",
+                        parameters("myName", myName, "userName", userName));
+                if ((res.hasNext())) {
+                    return true;
+                }
+                return false;
+            });
+        } catch (Neo4jException ne) { //somethind goes wrong, a software will parse and solve
+            LogManager.getLogger("UserDao.class").error("Neo4j: follow check failed");
+            return false;
+        }
+    }
+
 }

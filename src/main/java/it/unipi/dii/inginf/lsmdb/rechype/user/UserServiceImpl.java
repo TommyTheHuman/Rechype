@@ -1,5 +1,6 @@
 package it.unipi.dii.inginf.lsmdb.rechype.user;
 
+import org.bson.Document;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -40,4 +41,16 @@ class UserServiceImpl implements UserService {
         else
             return "Abort";
     }
+
+    public List<Document> getNestedRecipes(String user){
+        return userDao.getUserRecipe(user);
+    }
+
+    @Override
+    public String addFollow(String myName, String userName, String btnStatus) { return userDao.followUser(myName, userName, btnStatus);}
+
+    @Override
+    public Boolean checkForFollow(String myName, String userName) {return userDao.checkUserFollow(myName, userName);}
+
+    public String addNewRecipe(Document doc){ return userDao.addNestedRecipe(doc, loggedUser); }
 }

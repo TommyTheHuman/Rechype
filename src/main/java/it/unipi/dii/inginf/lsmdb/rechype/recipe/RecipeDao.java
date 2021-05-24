@@ -4,24 +4,25 @@ import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.InsertOneResult;
 import com.oath.halodb.HaloDB;
 import com.oath.halodb.HaloDBException;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
-import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.*;
 import static org.neo4j.driver.Values.parameters;
-
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
-import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.json.JSONObject;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.TransactionWork;
 import org.neo4j.driver.exceptions.Neo4jException;
 
+import javax.print.Doc;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,25 +30,24 @@ import java.util.regex.Pattern;
 
 public class RecipeDao {
 
-    public String addRecipe(Recipe recipe){
-
-        Document doc = new Document().append("name", recipe.getName()).append("author", recipe.getAuthor())
-                .append("vegetarian", recipe.isVegetarian()).append("glutenFree", recipe.isGlutenFree())
-                .append("dairyFree", recipe.isDairyFree()).append("pricePerServing", recipe.getPricePerServing()).append("weightPerServing", recipe.getWeightPerServing())
-                .append("servings", recipe.getServings()).append("image", recipe.getImage())
-                .append("description", recipe.getDescription()).append("readyInMinutes", recipe.getReadyInMinute())
-                .append("method", recipe.getMethod()).append("likes", recipe.getLikes());
+    public String addRecipe(Document doc){
 
         boolean already_tried = false;
         MongoCollection<Document> coll = null;
-        System.out.println(doc.toJson());
         InsertOneResult res = null;
+        String id = null;
 
         while(true){
+            // Add recipe to mongoDB
             try {
                 if(!already_tried){
                     coll = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
+
+                    //retrieving the inserted id for the current doc to store it in the key-value
                     res = coll.insertOne(doc);
+                    id = res.getInsertedId().toString();
+                    id = id.substring(19, id.length()-1);
+                    doc.append("_id", id);
                 } else {
                     coll = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
                     coll.deleteOne(eq("_id", res.getInsertedId()));
@@ -63,16 +63,18 @@ public class RecipeDao {
                 }
             }
 
+            // Add some fields of recipe in neo4j
             try (Session session = Neo4jDriver.getObject().getDriver().session()) { //try to add
+                String Neo4jId = id;
                 session.writeTransaction((TransactionWork<Void>) tx -> {
-                    tx.run("CREATE (ee:Recipe { name: $name, author: $author, pricePerServing: $pricePerServing, imageUrl: $imageUrl," +
+                    tx.run("CREATE (ee:Recipe { id:$id, name: $name, author: $author, pricePerServing: $pricePerServing, imageUrl: $imageUrl," +
                             "vegetarian: $vegetarian, vegan: $vegan, dairyFree: $dairyFree, glutenFree: $glutenFree, likes: $likes})",
-                            parameters("name", recipe.getName(), "author", recipe.getAuthor(), "pricePerServing", recipe.getPricePerServing(),
-                            "imageUrl", recipe.getImage(), "vegetarian", recipe.isVegetarian(), "vegan", recipe.isVegan(), "dairyFree", recipe.isDairyFree(),
-                            "glutenFree", recipe.isGlutenFree(), "likes", recipe.getLikes()));
+                            parameters("id", Neo4jId,"name", doc.getString("name"), "author", doc.getString("author"), "pricePerServing", doc.getDouble("pricePerServing"),
+                            "imageUrl", doc.getString("image"), "vegetarian", doc.getBoolean("vegetarian"), "vegan", doc.getBoolean("vegan"), "dairyFree", doc.getBoolean("dairyFree"),
+                            "glutenFree", doc.getBoolean("glutenFree"), "likes", 0));
                     return null;
                 });
-                return "recipeAdded";
+                return "RecipeAdded";
             }catch(Neo4jException ne){ //fail, next cycle try to delete on MongoDB
                 LogManager.getLogger("RecipeDao.class").error("Neo4j: recipe insert failed");
                 already_tried=true;
@@ -104,14 +106,14 @@ public class RecipeDao {
             byte[] byteObj = db.get(key.getBytes(StandardCharsets.UTF_8));
             return new JSONObject(new String(byteObj));
         }catch(HaloDBException ex){
-            LogManager.getLogger("UserDao.class").fatal("HaloDB: caching failed");
+            LogManager.getLogger("RecipeDao.class").fatal("HaloDB: caching failed");
             HaloDBDriver.getObject().closeConnection();
             System.exit(-1);
         }
         return new JSONObject();
     }
 
-    private void cacheSearch(List<Document> recipesList){ //caching of recipe's search
+    public void cacheSearch(List<Document> recipesList){ //caching of recipe's search
         for(int i=0; i<recipesList.size(); i++) {
             String idObj = new JSONObject(recipesList.get(i).toJson()).getJSONObject("_id").getString("$oid");
             byte[] _id = idObj.getBytes(StandardCharsets.UTF_8); //key
@@ -126,9 +128,86 @@ public class RecipeDao {
         }
     }
 
-    public String updateRecipeLike(JSONObject _id){
-        return "ciao";
+    public void cacheAddedRecipe(Document doc){
+        String idObj = doc.getString("_id");
+        byte[] _id = idObj.getBytes(StandardCharsets.UTF_8); //key
+        byte[] objToSave = doc.toJson().getBytes(StandardCharsets.UTF_8); //value
+        try {
+            HaloDBDriver.getObject().getClient("recipes").put(_id, objToSave);
+        }catch(Exception e){
+            LogManager.getLogger("RecipeDao.class").fatal("HaloDB: caching failed");
+            HaloDBDriver.getObject().closeConnection();
+            System.exit(-1);
+        }
+    }
+
+    public String updateRecipeLike(String _id, String user){
+
+        boolean already_tried = false;
+        //cross-db consistency between neo4j and mongodb
+        //the while will execute 2 iteration at most
+        while(true){
+
+            //_id in neo4j is the oid field in mongodb
+            if(!already_tried) { //try to add to neo4j
+                try (Session session = Neo4jDriver.getObject().getDriver().session()){
+                    System.out.println();
+                    session.writeTransaction((TransactionWork<Void>) tx -> {
+                        tx.run("MATCH (uu:User) WHERE uu.username = $username" +
+                                        " MATCH (rr:Recipe) WHERE rr.id = $_id" +
+                                        " CREATE (uu)-[rel:LIKES {since:$date}]->(rr)",
+                                parameters("username", user, "_id", _id, "date", java.time.LocalDate.now().toString()));
+                        return null;
+                    });
+                }catch(Neo4jException ne){
+                    ne.printStackTrace();
+                    LogManager.getLogger("RecipeDao.class").error("Neo4j: like's relation insert failed");
+                    return "Abort";
+                }
+            }
+            //second try consists in deleting the relation from neo4j
+            else{
+                //try to delete the relation from neo4j in case the operation on mongo fails
+                try (Session session = Neo4jDriver.getObject().getDriver().session()){
+                    session.writeTransaction((TransactionWork<Void>) tx -> {
+                        tx.run("MATCH (uu:User)-[rel:LIKES]->(rr:Recipe) WHERE uu.username = $username " +
+                                        "AND rr.id=$_id" +
+                                        "DELETE rel",
+                                parameters("username", user, "_id", _id));
+                        return null;
+                    });
+                }catch(Neo4jException ne){
+                    LogManager.getLogger("RecipeDao.class").error("Neo4j[PARSE], like incosistency: _id: "+
+                            _id+" username: "+user);
+                    return "Abort";
+                }
+            }
+            MongoCollection<Document> recipeColl=null;
+            //try to add the redundancy on mongodb
+            try {
+                ObjectId objectId = new ObjectId(_id);
+                recipeColl=MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
+                recipeColl.updateOne(eq("_id", objectId), Updates.inc("likes", 1));
+                //the database are perfectly consistent
+                return "LikeOk";
+            }catch (MongoException me){
+                LogManager.getLogger("UserDao.class").error("MongoDB: failed to insert like in recipes");
+                already_tried=true;
+            }
+        }
     }
 
 
+    public Document getRecipeById(String id) {
+
+        Document recipe = new Document();
+        MongoCursor<Document> cursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES).find(eq("_id", new ObjectId(id))).iterator();
+
+
+        recipe = cursor.next();
+
+
+        return recipe;
+
+    }
 }

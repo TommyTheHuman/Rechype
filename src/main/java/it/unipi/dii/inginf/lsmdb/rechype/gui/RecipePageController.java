@@ -60,6 +60,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
     private RecipeService recipeService;
     private UserServiceFactory userServiceFactory;
     private UserService userService;
+    private JSONObject jsonRecipe;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -70,9 +71,14 @@ public class RecipePageController extends JSONAdder implements Initializable {
     }
 
     public void setGui(){
-        //retrieving the recipe from key-value
-        JSONObject jsonRecipe = recipeService.getCachedRecipe(jsonParameters.getString("_id"));
 
+        if(jsonParameters.get("cached") != null){
+            //retrieve from mongoDB
+            jsonRecipe = new JSONObject(recipeService.searchRecipeById(jsonParameters.getString("_id")).toJson());
+        }else {
+            //retrieving the recipe from key-value
+            jsonRecipe = recipeService.getCachedRecipe(jsonParameters.getString("_id"));
+        }
         //setting text informations
         try{
             authorLabel.setText("Author: "+jsonRecipe.getString("author"));
@@ -112,18 +118,18 @@ public class RecipePageController extends JSONAdder implements Initializable {
         }
 
         //setting recipe's image
-        InputStream inputStream=null;
+        InputStream inputStream = null;
         try {
             inputStream = new URL(jsonRecipe.getString("image")).openStream();
             RecipeImage.setImage(new Image(inputStream));
         }catch(IOException ie){
+            inputStream = null;
             LogManager.getLogger("RecipePageController.class").info("Recipe's image not found");
         }
-
         //setting default image if no image are found
         if(inputStream==null){
             inputStream=RecipePageController.class.getResourceAsStream("/images/icons/cloche.png");
-            ImageView standardIconRecipe=new ImageView(new Image(inputStream));
+            RecipeImage.setImage(new Image(inputStream));
         }
 
         //setting the icons
@@ -222,7 +228,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
         LikeButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                recipeService.addLike(jsonRecipe.getJSONObject("_id"));
+                recipeService.addLike(jsonParameters.getString("_id"), userService.getLoggedUser().getUsername());
             }
         });
     }
