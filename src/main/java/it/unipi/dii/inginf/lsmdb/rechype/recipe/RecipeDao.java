@@ -141,7 +141,7 @@ public class RecipeDao {
         }
     }
 
-    public String updateRecipeLike(String _id, String user){
+    public String addLike(String _id, String user){
 
         boolean already_tried = false;
         //cross-db consistency between neo4j and mongodb
@@ -151,7 +151,6 @@ public class RecipeDao {
             //_id in neo4j is the oid field in mongodb
             if(!already_tried) { //try to add to neo4j
                 try (Session session = Neo4jDriver.getObject().getDriver().session()){
-                    System.out.println();
                     session.writeTransaction((TransactionWork<Void>) tx -> {
                         tx.run("MATCH (uu:User) WHERE uu.username = $username" +
                                         " MATCH (rr:Recipe) WHERE rr.id = $_id" +
@@ -160,7 +159,6 @@ public class RecipeDao {
                         return null;
                     });
                 }catch(Neo4jException ne){
-                    ne.printStackTrace();
                     LogManager.getLogger("RecipeDao.class").error("Neo4j: like's relation insert failed");
                     return "Abort";
                 }
@@ -170,14 +168,12 @@ public class RecipeDao {
                 //try to delete the relation from neo4j in case the operation on mongo fails
                 try (Session session = Neo4jDriver.getObject().getDriver().session()){
                     session.writeTransaction((TransactionWork<Void>) tx -> {
-                        tx.run("MATCH (uu:User)-[rel:LIKES]->(rr:Recipe) WHERE uu.username = $username " +
-                                        "AND rr.id=$_id" +
-                                        "DELETE rel",
+                        tx.run("MATCH (uu:User {username:$username})-[rel:LIKES]->(r:Recipe {id:$_id}) delete rel",
                                 parameters("username", user, "_id", _id));
                         return null;
                     });
                 }catch(Neo4jException ne){
-                    LogManager.getLogger("RecipeDao.class").error("Neo4j[PARSE], like incosistency: _id: "+
+                    LogManager.getLogger("RecipeDao.class").error("Neo4j[PARSE], like add inconsistency: _id: "+
                             _id+" username: "+user);
                     return "Abort";
                 }
@@ -192,6 +188,57 @@ public class RecipeDao {
                 return "LikeOk";
             }catch (MongoException me){
                 LogManager.getLogger("UserDao.class").error("MongoDB: failed to insert like in recipes");
+                already_tried=true;
+            }
+        }
+    }
+
+    public String removeLike(String _id, String username){
+        boolean already_tried = false;
+        //cross-db consistency between neo4j and mongodb
+        //the while will execute 2 iteration at most
+        while(true){
+
+            //_id in neo4j is the oid field in mongodb
+            if(!already_tried) { //try to delete on neo4j
+                try (Session session = Neo4jDriver.getObject().getDriver().session()){
+                    session.writeTransaction((TransactionWork<Void>) tx -> {
+                        tx.run("MATCH (uu:User {username:$username})-[rel:LIKES]->(r:Recipe {id:$_id}) delete rel",
+                                parameters("username", username, "_id", _id));
+                        return null;
+                    });
+                }catch(Neo4jException ne){
+                    LogManager.getLogger("RecipeDao.class").error("Neo4j: like's relation deletion failed");
+                    return "Abort";
+                }
+            }
+            //second try consists in deleting the relation from neo4j
+            else{
+                //try to add again the relation to neo4j in case the operation on mongo fails
+                try (Session session = Neo4jDriver.getObject().getDriver().session()){
+                    session.writeTransaction((TransactionWork<Void>) tx -> {
+                        tx.run("MATCH (uu:User) WHERE uu.username = $username" +
+                                        " MATCH (rr:Recipe) WHERE rr.id = $_id" +
+                                        " CREATE (uu)-[rel:LIKES {since:$date}]->(rr)",
+                                parameters("username", username, "_id", _id));
+                        return null;
+                    });
+                }catch(Neo4jException ne){
+                    LogManager.getLogger("RecipeDao.class").error("Neo4j[PARSE], like delete inconsistency: _id: "+
+                            _id+" username: "+username);
+                    return "Abort";
+                }
+            }
+            MongoCollection<Document> recipeColl=null;
+            //try to update the redundancy on mongodb
+            try {
+                ObjectId objectId = new ObjectId(_id);
+                recipeColl=MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
+                recipeColl.updateOne(eq("_id", objectId), Updates.inc("likes", -1));
+                //the database are perfectly consistent
+                return "LikeOk";
+            }catch (MongoException me){
+                LogManager.getLogger("UserDao.class").error("MongoDB: failed to delete like in recipes");
                 already_tried=true;
             }
         }

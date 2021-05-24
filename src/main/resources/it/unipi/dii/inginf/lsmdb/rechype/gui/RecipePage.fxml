@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.chart.PieChart?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -24,7 +23,6 @@
             <content>
                <AnchorPane prefHeight="969.0" prefWidth="776.0">
                   <children>
-                     <Button fx:id="LikeButton" layoutX="643.0" layoutY="1.0" mnemonicParsing="false" text="Like it!" />
                      <Text fx:id="authorLabel" layoutX="316.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="">
                         <font>
                            <Font size="20.0" />
@@ -37,6 +35,8 @@
                            <ImageView fx:id="VeganIcon" fitHeight="40.0" fitWidth="40.0" layoutX="133.0" layoutY="31.0" pickOnBounds="true" preserveRatio="true" />
                            <ImageView fx:id="VegetarianIcon" fitHeight="40.0" fitWidth="40.0" layoutX="198.0" layoutY="31.0" pickOnBounds="true" preserveRatio="true" />
                            <ImageView fx:id="DairyIcon" fitHeight="40.0" fitWidth="40.0" layoutX="254.0" layoutY="31.0" pickOnBounds="true" preserveRatio="true" />
+                           <ImageView fx:id="LikeButton" fitHeight="30.0" fitWidth="30.0" layoutX="663.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true" />
+                           <ImageView fx:id="SaveButton" fitHeight="30.0" fitWidth="30.0" layoutX="627.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true" />
                            <Text fx:id="PriceIcon" layoutX="501.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" />
                            <Text fx:id="Likes" layoutX="571.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
                         </children>

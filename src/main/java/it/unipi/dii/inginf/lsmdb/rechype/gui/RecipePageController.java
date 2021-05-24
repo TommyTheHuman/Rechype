@@ -19,9 +19,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
+import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -54,12 +56,16 @@ public class RecipePageController extends JSONAdder implements Initializable {
     @FXML private ImageView DairyIcon;
     @FXML private ImageView GlutenIcon;
     @FXML private Text PriceIcon;
-    @FXML private Button LikeButton;
+    @FXML private ImageView LikeButton;
+    @FXML private ImageView SaveButton;
     private ObservableList<PieChart.Data> pieData;
     private RecipeServiceFactory recipeServiceFactory;
     private RecipeService recipeService;
     private UserServiceFactory userServiceFactory;
     private UserService userService;
+    private String imgLikePath;
+    private String imgSavePath;
+    private int likes;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -69,97 +75,97 @@ public class RecipePageController extends JSONAdder implements Initializable {
         userService = userServiceFactory.getService();
     }
 
-    public void setGui(){
+    public void setGui() {
         //retrieving the recipe from key-value
         JSONObject jsonRecipe = recipeService.getCachedRecipe(jsonParameters.getString("_id"));
         //setting text informations
-        try{
-            authorLabel.setText("Author: "+jsonRecipe.getString("author"));
-        }catch(JSONException ex){
+        try {
+            authorLabel.setText("Author: " + jsonRecipe.getString("author"));
+        } catch (JSONException ex) {
             authorLabel.setText("Author: unknown");
         }
-        try{
-            Name.setText("title: "+jsonRecipe.getString("name"));
-        }catch(JSONException ex){
+        try {
+            Name.setText("title: " + jsonRecipe.getString("name"));
+        } catch (JSONException ex) {
             Name.setText("title: unknown");
         }
-        try{ //the description is in html, so we need to parse it
-            Document htmlParsed=Jsoup.parse(jsonRecipe.getString("description"));
-            DescriptionText.setText("description: "+htmlParsed.text());
-        }catch(JSONException ex){
+        try { //the description is in html, so we need to parse it
+            Document htmlParsed = Jsoup.parse(jsonRecipe.getString("description"));
+            DescriptionText.setText("description: " + htmlParsed.text());
+        } catch (JSONException ex) {
             DescriptionText.setText("description: unknown");
         }
-        try{
-            MethodText.setText("method: "+jsonRecipe.getString("method"));
-        }catch(JSONException ex){
+        try {
+            MethodText.setText("method: " + jsonRecipe.getString("method"));
+        } catch (JSONException ex) {
             MethodText.setText("method: unknown");
         }
-        try{
-            Servings.setText("Servings: "+String.valueOf(jsonRecipe.getInt("servings")));
-        }catch(JSONException ex){
+        try {
+            Servings.setText("Servings: " + String.valueOf(jsonRecipe.getInt("servings")));
+        } catch (JSONException ex) {
             Servings.setText("Servings: unknown");
         }
-        try{
-            WeightPerServing.setText("Weight Per Serving: "+String.valueOf(jsonRecipe.getInt("weightPerServing"))+" g");
-        }catch(JSONException ex){
+        try {
+            WeightPerServing.setText("Weight Per Serving: " + String.valueOf(jsonRecipe.getInt("weightPerServing")) + " g");
+        } catch (JSONException ex) {
             WeightPerServing.setText("Weight Per Serving: undefined");
         }
         try {
             ReadyInMinutes.setText("Ready in Minutes: " + String.valueOf(jsonRecipe.getInt("readyInMinutes")));
-        }catch(JSONException ex){
+        } catch (JSONException ex) {
             ReadyInMinutes.setText("Ready in Minutes: undefined");
         }
 
         //setting recipe's image
-        InputStream inputStream=null;
+        InputStream inputStream = null;
         try {
             inputStream = new URL(jsonRecipe.getString("image")).openStream();
             RecipeImage.setImage(new Image(inputStream));
-        }catch(IOException ie){
+        } catch (IOException ie) {
             LogManager.getLogger("RecipePageController.class").info("Recipe's image not found");
         }
 
         //setting default image if no image are found
-        if(inputStream==null){
-            inputStream=RecipePageController.class.getResourceAsStream("/images/icons/cloche.png");
-            ImageView standardIconRecipe=new ImageView(new Image(inputStream));
+        if (inputStream == null) {
+            inputStream = RecipePageController.class.getResourceAsStream("/images/icons/cloche.png");
+            ImageView standardIconRecipe = new ImageView(new Image(inputStream));
         }
 
         //setting the icons
-        if(jsonRecipe.getBoolean("vegan")){
-            inputStream=RecipePageController.class.getResourceAsStream("/images/icons/vegan_on.png");
-        }else{
-            inputStream=RecipePageController.class.getResourceAsStream("/images/icons/vegan.png");
+        if (jsonRecipe.getBoolean("vegan")) {
+            inputStream = RecipePageController.class.getResourceAsStream("/images/icons/vegan_on.png");
+        } else {
+            inputStream = RecipePageController.class.getResourceAsStream("/images/icons/vegan.png");
         }
         VeganIcon.setImage(new Image(inputStream));
         VeganIcon.setPreserveRatio(true);
         VeganIcon.setSmooth(true);
         VeganIcon.setCache(true);
 
-        if(jsonRecipe.getBoolean("vegetarian")){
-            inputStream=RecipePageController.class.getResourceAsStream("/images/icons/vegetarian_on.png");
-        }else{
-            inputStream=RecipePageController.class.getResourceAsStream("/images/icons/vegetarian.png");
+        if (jsonRecipe.getBoolean("vegetarian")) {
+            inputStream = RecipePageController.class.getResourceAsStream("/images/icons/vegetarian_on.png");
+        } else {
+            inputStream = RecipePageController.class.getResourceAsStream("/images/icons/vegetarian.png");
         }
         VegetarianIcon.setImage(new Image(inputStream));
         VegetarianIcon.setPreserveRatio(true);
         VegetarianIcon.setSmooth(true);
         VegetarianIcon.setCache(true);
 
-        if(jsonRecipe.getBoolean("glutenFree")){
-            inputStream=RecipePageController.class.getResourceAsStream("/images/icons/gluten_on.png");
-        }else{
-            inputStream=RecipePageController.class.getResourceAsStream("/images/icons/gluten.png");
+        if (jsonRecipe.getBoolean("glutenFree")) {
+            inputStream = RecipePageController.class.getResourceAsStream("/images/icons/gluten_on.png");
+        } else {
+            inputStream = RecipePageController.class.getResourceAsStream("/images/icons/gluten.png");
         }
         GlutenIcon.setImage(new Image(inputStream));
         GlutenIcon.setPreserveRatio(true);
         GlutenIcon.setSmooth(true);
         GlutenIcon.setCache(true);
 
-        if(jsonRecipe.getBoolean("dairyFree")){
-            inputStream=RecipePageController.class.getResourceAsStream("/images/icons/dairy_on.png");
-        }else{
-            inputStream=RecipePageController.class.getResourceAsStream("/images/icons/dairy.png");
+        if (jsonRecipe.getBoolean("dairyFree")) {
+            inputStream = RecipePageController.class.getResourceAsStream("/images/icons/dairy_on.png");
+        } else {
+            inputStream = RecipePageController.class.getResourceAsStream("/images/icons/dairy.png");
         }
         DairyIcon.setImage(new Image(inputStream));
         DairyIcon.setPreserveRatio(true);
@@ -167,29 +173,28 @@ public class RecipePageController extends JSONAdder implements Initializable {
         DairyIcon.setCache(true);
 
         //price per serving
-        if(jsonRecipe.get("pricePerServing")!=null){
+        if (jsonRecipe.get("pricePerServing") != null) {
 
-            if(jsonRecipe.get("pricePerServing") instanceof Integer){
+            if (jsonRecipe.get("pricePerServing") instanceof Integer) {
                 PriceIcon.setText(Recipe.getPriceSymbol(Double.valueOf(jsonRecipe.getInt("pricePerServing"))));
-            }
-            else{
+            } else {
                 PriceIcon.setText(Recipe.getPriceSymbol(jsonRecipe.getDouble("pricePerServing")));
             }
         }
 
         //defining the amount for each nutritional value and add data to the piechart
-        Map<String, Integer> divi=new HashMap<>(); //divisor for each unit to transform the value in grams
+        Map<String, Integer> divi = new HashMap<>(); //divisor for each unit to transform the value in grams
         divi.put("mg", 1000);
         divi.put("cg", 100);
         divi.put("dg", 10);
         divi.put("g", 1);
         Double amount;
         String name;
-        pieData= FXCollections.observableArrayList();
-        JSONArray nutrients=jsonRecipe.getJSONArray("nutrients");
+        pieData = FXCollections.observableArrayList();
+        JSONArray nutrients = jsonRecipe.getJSONArray("nutrients");
 
 
-        for (int i=0; i<nutrients.length(); i++){
+        for (int i = 0; i < nutrients.length(); i++) {
             try {
                 name = nutrients.getJSONObject(i).getString("name");
                 if (name.equals("Calories")) {
@@ -209,20 +214,97 @@ public class RecipePageController extends JSONAdder implements Initializable {
                 }
                 amount = amount / divi.get(nutrients.getJSONObject(i).getString("unit"));
                 pieData.add(new PieChart.Data(name, amount));
-            }catch(JSONException ex){
+            } catch (JSONException ex) {
                 LogManager.getLogger("RecipePageController.class").warn("Recipes: json retrieve failed");
             }
         }
         NutritionsPie.setData(pieData);
         NutritionsPie.setLegendVisible(false);
         NutritionsPie.setTitle("Nutritional Information");
-        Likes.setText("Likes: "+String.valueOf(jsonRecipe.getInt("likes")));
-        //Like Button event
-        LikeButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                recipeService.addLike(jsonParameters.getString("_id"), userService.getLoggedUser().getUsername());
+        likes=jsonRecipe.getInt("likes");
+        Likes.setText("Likes: " + String.valueOf(likes));
+        LikeButton.setStyle("-fx-cursor: hand;");
+
+        //check if like is already present and then set the right like/like_on image
+        if (!userService.checkRecipeLike(jsonParameters.getString("_id"))) {
+            imgLikePath = "/images/icons/likeIcon.png";
+        } else {
+            imgLikePath = "/images/icons/likeIcon_on.png";
+        }
+        LikeButton.setImage(new Image(imgLikePath));
+        LikeButton.setPreserveRatio(true);
+        LikeButton.setSmooth(true);
+        LikeButton.setCache(true);
+
+        LikeButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            if (imgLikePath.equals("/images/icons/likeIcon.png")) {
+                String res = recipeService.addLike(jsonParameters.getString("_id"), userService.getLoggedUser().getUsername());
+                if (res.equals("LikeOk")) {
+                    imgLikePath = "/images/icons/likeIcon_on.png";
+                    likes=likes+1;
+                    Likes.setText("Likes: "+String.valueOf(likes));
+                    LikeButton.setImage(new Image(imgLikePath));
+                }
+            } else {
+                String res = recipeService.removeLike(jsonParameters.getString("_id"), userService.getLoggedUser().getUsername());
+                if (res.equals("LikeOk")) {
+                    imgLikePath = "/images/icons/likeIcon.png";
+                    likes=likes-1;
+                    Likes.setText("Likes: "+String.valueOf(likes));
+                    LikeButton.setImage(new Image(imgLikePath));
+                }
             }
+            LikeButton.setPreserveRatio(true);
+            LikeButton.setSmooth(true);
+            LikeButton.setCache(true);
+            event.consume();
         });
+
+        //check if the user is the author of the recipe, if it is the favourite button cannot be pressed
+        //in that case no logic is needed
+        if (userService.getLoggedUser().getUsername().equals(jsonRecipe.getString("author"))) {
+            SaveButton.setImage(new Image("/images/icons/saveBtnIcon_on.png"));
+            SaveButton.setPreserveRatio(true);
+            SaveButton.setSmooth(true);
+            SaveButton.setCache(true);
+            SaveButton.setStyle("-fx-cursor: hand;");
+        }else{
+            //check if recipe is already added or not to the user favourites
+            if (!userService.checkSavedRecipe(jsonParameters.getString("_id"))) {
+                imgSavePath = "/images/icons/saveBtnIcon.png";
+            } else {
+                imgSavePath = "/images/icons/saveBtnIcon_on.png";
+            }
+            SaveButton.setImage(new Image(imgSavePath));
+            SaveButton.setPreserveRatio(true);
+            SaveButton.setSmooth(true);
+            SaveButton.setCache(true);
+            SaveButton.setStyle("-fx-cursor: hand;");
+
+            //Using the same function "addNewRecipe" for creation/add to fav operation
+            //The NoParse field is to prevent the parsing from the daemon software, by the fact that there's no consistency
+            //to correct
+            SaveButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+                org.bson.Document recipeDoc = org.bson.Document.parse(jsonRecipe.toString());
+                recipeDoc.append("NoParse", true);
+                if (imgSavePath.equals("/images/icons/saveBtnIcon.png")) {
+                    String res = userService.addNewRecipe(recipeDoc);
+                    if (res.equals("RecipeOk")) {
+                        imgSavePath = "/images/icons/saveBtnIcon_on.png";
+                        SaveButton.setImage(new Image(imgSavePath));
+                    }
+                } else {
+                    String res = userService.removeRecipe(jsonParameters.getString("_id"));
+                    if (res.equals("RecipeOk")) {
+                        imgSavePath = "/images/icons/saveBtnIcon.png";
+                        SaveButton.setImage(new Image(imgSavePath));
+                    }
+                }
+                SaveButton.setPreserveRatio(true);
+                SaveButton.setSmooth(true);
+                SaveButton.setCache(true);
+                event.consume();
+            });
+        }
     }
 }

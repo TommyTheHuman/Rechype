@@ -19,6 +19,9 @@ public interface UserService {
     JSONObject getCachedUser(String key);
     String addNewRecipe(Document doc);
     String deleteUser(String username);
+    boolean checkRecipeLike(String _id);
+    boolean checkSavedRecipe(String _id);
+    String removeRecipe(String _id);
 }
 
 

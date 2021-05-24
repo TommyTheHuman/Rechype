@@ -26,5 +26,6 @@ class RecipeServiceImpl implements RecipeService{
     public void putRecipeInCache(Document recipe){
         recipeDao.cacheAddedRecipe(recipe);
     }
-    public String addLike(String _id, String user) {return recipeDao.updateRecipeLike(_id, user);}
+    public String addLike(String _id, String user) { return recipeDao.addLike(_id, user); }
+    public String removeLike(String _id, String user){ return recipeDao.removeLike(_id, user); }
 }

@@ -13,5 +13,6 @@ public interface RecipeService {
     JSONObject getCachedRecipe(String key);
     void putRecipeInCache(Document recipe);
     String addLike(String _id, String username);
+    String removeLike(String _id, String username);
 
 }
