@@ -101,7 +101,11 @@ public class Recipe {
 
         this.likes = doc.get("likes")==null? 0 : Integer.parseInt(doc.get("likes").toString());
         JSONObject json = new JSONObject(doc.toJson());
-        this._id=json.getJSONObject("_id").getString("$oid");
+        if(json.get("_id") instanceof String){
+            this._id = json.getString("_id");
+        }else{
+            this._id=json.getJSONObject("_id").getString("$oid");
+        }
     }
 
     //if the json doesn't have some fields is a problem so we must access from t

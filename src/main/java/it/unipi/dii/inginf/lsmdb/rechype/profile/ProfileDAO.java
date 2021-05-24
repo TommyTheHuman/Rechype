@@ -11,6 +11,7 @@ import org.bson.Document;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.mongodb.client.model.Updates.push;
 import static com.mongodb.client.model.Filters.eq;
 
 class ProfileDAO {
@@ -20,6 +21,7 @@ class ProfileDAO {
         try(MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.PROFILES).find(eq("_id", username)).iterator()){
             Document doc = cursor.next();
             Profile retProf = new Profile(doc);
+            return retProf;
         }catch(MongoException me){
             LogManager.getLogger("UserDao.class").error("MongoDB: an error occurred");
             System.exit(-1);
@@ -56,6 +58,33 @@ class ProfileDAO {
             LogManager.getLogger("ProfileDAO.class").error("MongoDB[PARSE], profile deletion failed: "+username);
             return false;
         }
+    }
+
+    // add meal in user profile
+    public Boolean addMealToProfile(String title, String type, List<Document> recipes, List<Document> drinks, String username){
+
+        MongoCollection<Document> coll = null;
+        Document doc = new Document().append("title", title).append("type", type).append("recipes", recipes).append("drinks", drinks);
+        try{
+            coll = MongoDriver.getObject().getCollection(MongoDriver.Collections.PROFILES);
+            coll.updateOne(eq("_id", username), push("meals", doc));
+        }catch(MongoException ex){
+            LogManager.getLogger("ProfileDao.class").error("MongoDB: meal insert failed");
+            return false;
+        }
+        return true;
+    }
+
+    public Boolean deleteMealFromProfile(String title, String username){
+        MongoCollection<Document> coll = null;
+        try{
+            coll = MongoDriver.getObject().getCollection(MongoDriver.Collections.PROFILES);
+           // coll.updateOne(eq("_id", username), pull(eq()));
+        }catch(MongoException ex){
+            LogManager.getLogger("ProfileDao.class").error("MongoDB: meal insert failed");
+            return false;
+        }
+        return true;
     }
 
 }

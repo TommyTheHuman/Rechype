@@ -16,6 +16,7 @@ import static com.mongodb.client.model.Filters.eq;
 import static org.neo4j.driver.Values.parameters;
 
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
+import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import org.apache.logging.log4j.LogManager;
 import org.bson.BsonArray;
 import org.bson.BsonBinary;
@@ -263,5 +264,27 @@ class UserDao {
             return "Abort";
         }
         return "RecipeOk";
+    }
+
+    /***
+     * Get nested recipe from user
+     * @param user
+     * @return List<Recipe>
+     */
+    public List<Document> getNestedRecipe(String user){
+        List<Document> returnRecipeList = new ArrayList<>();
+        Bson filter = Filters.in("_id", user);
+        Document doc;
+        try {
+            MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(filter).iterator();
+            doc = cursor.next();
+        }catch(MongoException ex){
+            LogManager.getLogger("UserDao.class").error("MongoDB: an error occured in getting nested recipe.");
+            return null;
+        }
+
+        returnRecipeList = (List<Document>) doc.get("recipes");
+
+        return returnRecipeList;
     }
 }

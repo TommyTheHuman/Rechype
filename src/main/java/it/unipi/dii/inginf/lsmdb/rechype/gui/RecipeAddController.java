@@ -194,7 +194,6 @@ public class RecipeAddController extends JSONAdder implements Initializable {
                             .append("method", method.getText()).append("likes", 0).append("ingredients", docIngredients)
                             .append("nutrients", docNutrients);
 
-                    // check: inserire ricetta innestata sul db user dell'autore corrente.
                     textFieldsError.setOpacity(0);
                     if(recipeService.addRecipe(doc).equals("RecipeAdded")) {
                         userService.addNewRecipe(doc);

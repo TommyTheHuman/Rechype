@@ -1,6 +1,9 @@
 package it.unipi.dii.inginf.lsmdb.rechype.profile;
 
 import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileDAO;
+import org.bson.Document;
+
+import java.util.List;
 
 class ProfileServiceImpl implements ProfileService {
     private static ProfileDAO profileDAO=new ProfileDAO();
@@ -25,4 +28,19 @@ class ProfileServiceImpl implements ProfileService {
         }
     }
 
+    public String addMeal(String title, String type, List<Document> recipes, List<Document> drinks, String username){
+        if(profileDAO.addMealToProfile(title, type, recipes, drinks, username)){
+            return "AddOK";
+        }else{
+            return "Abort";
+        }
+    }
+
+    public String deleteMeal(String title, String username){
+        if(profileDAO.deleteMealFromProfile(title, username)){
+            return "DeleteMealOK";
+        }else{
+            return "Abort";
+        }
+    }
 }
