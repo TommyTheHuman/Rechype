@@ -25,6 +25,9 @@ public interface UserService {
     String addFollow(String myName, String userName, String btnStatus);
     Boolean checkForFollow(String myName, String userName);
 
+    boolean checkRecipeLike(String _id);
+    boolean checkSavedRecipe(String _id);
+    String removeRecipe(String _id);
 }
 
 

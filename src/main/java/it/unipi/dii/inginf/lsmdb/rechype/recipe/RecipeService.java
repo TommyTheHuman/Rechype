@@ -14,5 +14,6 @@ public interface RecipeService {
     void putRecipeInCache(Document recipe);
     String addLike(String _id, String username);
     Document searchRecipeById(String id);
+    String removeLike(String _id, String username);
 
 }

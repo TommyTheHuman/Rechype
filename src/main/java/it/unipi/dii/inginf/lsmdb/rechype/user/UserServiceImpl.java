@@ -22,10 +22,10 @@ class UserServiceImpl implements UserService {
         loggedUser = new User(Json.get("_id").toString(), Json.get("country").toString(), Integer.parseInt(Json.get("age").toString()), Integer.parseInt(Json.get("level").toString()));
         return Json.get("response").toString();
     }
+
     public User getLoggedUser(){
         return loggedUser;
     }
-
 
     public List<User> searchUser(String text, int offset, int quantity) {
         return userDao.getUsersByText(text, offset, quantity);
@@ -51,4 +51,7 @@ class UserServiceImpl implements UserService {
     public List<Document> getRecipes(String username){ return userDao.getUserRecipe(username); }
 
     public String addNewRecipe(Document doc){ return userDao.addNestedRecipe(doc, loggedUser); }
+    public boolean checkRecipeLike(String _id){ return userDao.checkRecipeLike(getLoggedUser().getUsername(), _id); }
+    public boolean checkSavedRecipe(String _id){ return userDao.checkSavedRecipe(getLoggedUser().getUsername(), _id); }
+    public String removeRecipe(String _id){ return userDao.removeNestedRecipe(getLoggedUser().getUsername(), _id); }
 }

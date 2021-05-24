@@ -17,9 +17,7 @@ public class Recipe {
     private String image;
     private String description;
     private String method;
-    private String ingredientsText;
     private List<Ingredient> ingredients;   // DOVRA' ESSERE UN ARRAY DI INGREDIENTS
-    private Integer originalId;
 
     private boolean vegan;
     private boolean glutenFree;
@@ -34,9 +32,6 @@ public class Recipe {
     private JSONObject jsonRepresentation; //comment
     private int likes;
 
-    public Recipe(String ingrText){
-        ingredientsText = ingrText;
-    }
 
     public Recipe(String name, String author, String image, String description,
                   String method, List<Ingredient> ingredients, boolean vegan, boolean glutenFree, boolean dairyFree, boolean vegetarian,
@@ -56,7 +51,6 @@ public class Recipe {
         this.weightPerServing = weightPerServing;
         this.pricePerServing = pricePerServing;
         this._id="";
-        this.ingredientsText = ingredientsText;
         this.likes = 0;
     }
 
