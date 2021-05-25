@@ -10,6 +10,7 @@ import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.bson.conversions.Bson;
+import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,6 +104,31 @@ class ProfileDAO {
             coll.updateOne(eq("_id", username), pull("meals", eq("title", title)));
         }catch(MongoException ex){
             LogManager.getLogger("ProfileDao.class").error("MongoDB: meal insert failed");
+            return false;
+        }
+        return true;
+    }
+
+    public Boolean addIngredientToFridge(List<Document> ingredients, String username){
+        MongoCollection<Document> coll = null;
+        try{
+            coll = MongoDriver.getObject().getCollection(MongoDriver.Collections.PROFILES);
+            coll.updateOne(eq("_id", username), pushEach("fridge", ingredients));
+        }catch(MongoException ex){
+            LogManager.getLogger("ProfileDao.class").error("MongoDB: ingredients insert failed");
+            return false;
+        }
+        return true;
+    }
+
+    public boolean deleteIngredientFromProfile(String username, String ingredient) {
+
+        MongoCollection<Document> coll = null;
+        try{
+            coll = MongoDriver.getObject().getCollection(MongoDriver.Collections.PROFILES);
+            coll.updateOne(eq("_id", username), pull("fridge", eq("name", ingredient)));
+        }catch(MongoException ex){
+            LogManager.getLogger("ProfileDao.class").error("MongoDB: ingredients deletion failed");
             return false;
         }
         return true;
