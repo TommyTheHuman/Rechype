@@ -10,7 +10,15 @@ import java.util.List;
 public class Ingredient {
     private String name;
     private String imageUrl;
+    private double amount;
     private List<Nutrients> nutrition;
+
+
+    public Ingredient(String name, String imageUrl, double amount){
+        this.name = name;
+        this.imageUrl = imageUrl;
+        this.amount = amount;
+    }
 
     public Ingredient(String name, String imageUrl, String nutrition){
         this.name = name;
@@ -76,6 +84,7 @@ public class Ingredient {
 
     public String getName(){ return name; }
     public String getImageUrl(){ return imageUrl; }
+    public Double getQuantity(){ return amount;}
     public List<Nutrients> getNutrients(){ return nutrition; }
 
     public class Nutrients {

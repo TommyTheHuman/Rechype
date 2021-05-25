@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 import static com.mongodb.client.model.Updates.push;
 import static com.mongodb.client.model.Updates.pull;
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.pushEach;
 
 class ProfileDAO {
 
@@ -104,6 +106,32 @@ class ProfileDAO {
             return false;
         }
         return true;
+    }
+
+    public Boolean addIngredientToFridge(List<Document> ingredients, String username){
+        MongoCollection<Document> coll = null;
+        try{
+            coll = MongoDriver.getObject().getCollection(MongoDriver.Collections.PROFILES);
+            coll.updateOne(eq("_id", username), pushEach("fridge", ingredients));
+        }catch(MongoException ex){
+            LogManager.getLogger("ProfileDao.class").error("MongoDB: ingredients insert failed");
+            return false;
+        }
+        return true;
+    }
+
+    public boolean deleteIngredientFromProfile(String username, String ingredient) {
+
+        MongoCollection<Document> coll = null;
+        try{
+            coll = MongoDriver.getObject().getCollection(MongoDriver.Collections.PROFILES);
+            coll.updateOne(eq("_id", username), pull("fridge", eq("name", ingredient)));
+        }catch(MongoException ex){
+            LogManager.getLogger("ProfileDao.class").error("MongoDB: ingredients deletion failed");
+            return false;
+        }
+        return true;
+
     }
 
 }
