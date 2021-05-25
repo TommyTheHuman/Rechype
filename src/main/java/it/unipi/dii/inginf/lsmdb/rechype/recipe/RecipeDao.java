@@ -68,10 +68,10 @@ public class RecipeDao {
                 String Neo4jId = id;
                 session.writeTransaction((TransactionWork<Void>) tx -> {
                     tx.run("CREATE (ee:Recipe { id:$id, name: $name, author: $author, pricePerServing: $pricePerServing, imageUrl: $imageUrl," +
-                            "vegetarian: $vegetarian, vegan: $vegan, dairyFree: $dairyFree, glutenFree: $glutenFree, likes: $likes})",
+                            "vegetarian: $vegetarian, vegan: $vegan, dairyFree: $dairyFree, glutenFree: $glutenFree)",
                             parameters("id", Neo4jId,"name", doc.getString("name"), "author", doc.getString("author"), "pricePerServing", doc.getDouble("pricePerServing"),
                             "imageUrl", doc.getString("image"), "vegetarian", doc.getBoolean("vegetarian"), "vegan", doc.getBoolean("vegan"), "dairyFree", doc.getBoolean("dairyFree"),
-                            "glutenFree", doc.getBoolean("glutenFree"), "likes", 0));
+                            "glutenFree", doc.getBoolean("glutenFree")));
                     return null;
                 });
                 return "RecipeAdded";

@@ -30,6 +30,7 @@ public class SideMenuController extends JSONAdder implements Initializable {
     @FXML private Hyperlink myRecipes;
     @FXML private Hyperlink homePageBtn;
     @FXML private Hyperlink addRecipe;
+    @FXML private Hyperlink addDrink;
 
 
     private User loggedUser;
@@ -76,6 +77,14 @@ public class SideMenuController extends JSONAdder implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 Main.changeScene("RecipeAdd", new JSONObject());
+
+            }
+        });
+
+        addDrink.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Main.changeScene("DrinkAdd", new JSONObject());
 
             }
         });

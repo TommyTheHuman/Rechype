@@ -238,8 +238,9 @@ public class GuiElementsBuilder {
         InputStream imageStream=null;
         try {
             imageStream = new URL(drink.getImage()).openStream();
-        }catch (IOException e) {
-            e.printStackTrace();
+        }catch (IOException ie) {
+            LogManager.getLogger("GuiElementsBuilder.class").info("Recipe's image not found");
+            imageStream = GuiElementsBuilder.class.getResourceAsStream("/images/icons/cloche.png");
         }
         ImageView drinkImage = new ImageView(new Image(imageStream, 50, 50, false, false));
         block.getChildren().addAll(drinkImage, textBlock);

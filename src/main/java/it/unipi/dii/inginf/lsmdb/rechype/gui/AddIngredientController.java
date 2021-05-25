@@ -78,7 +78,10 @@ public class AddIngredientController extends JSONAdder implements Initializable 
                 inputGramsError.setOpacity(0);
                 par.remove("ingredients");
                 par.put("ingredients", finalIngredients);
-                Main.changeScene("RecipeAdd", par);
+                if(par.get("Drink")==null)
+                    Main.changeScene("RecipeAdd", par);
+                else
+                    Main.changeScene("DrinkAdd", par);
             }
 
 
