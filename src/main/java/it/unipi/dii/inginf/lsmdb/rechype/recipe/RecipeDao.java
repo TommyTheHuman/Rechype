@@ -36,7 +36,6 @@ public class RecipeDao {
         MongoCollection<Document> coll = null;
         InsertOneResult res = null;
         String id = null;
-
         while(true){
             // Add recipe to mongoDB
             try {
@@ -68,7 +67,7 @@ public class RecipeDao {
                 String Neo4jId = id;
                 session.writeTransaction((TransactionWork<Void>) tx -> {
                     tx.run("CREATE (ee:Recipe { id:$id, name: $name, author: $author, pricePerServing: $pricePerServing, imageUrl: $imageUrl," +
-                            "vegetarian: $vegetarian, vegan: $vegan, dairyFree: $dairyFree, glutenFree: $glutenFree)",
+                            "vegetarian: $vegetarian, vegan: $vegan, dairyFree: $dairyFree, glutenFree: $glutenFree} )",
                             parameters("id", Neo4jId,"name", doc.getString("name"), "author", doc.getString("author"), "pricePerServing", doc.getDouble("pricePerServing"),
                             "imageUrl", doc.getString("image"), "vegetarian", doc.getBoolean("vegetarian"), "vegan", doc.getBoolean("vegan"), "dairyFree", doc.getBoolean("dairyFree"),
                             "glutenFree", doc.getBoolean("glutenFree")));
@@ -76,6 +75,7 @@ public class RecipeDao {
                 });
                 return "RecipeAdded";
             }catch(Neo4jException ne){ //fail, next cycle try to delete on MongoDB
+                ne.printStackTrace();
                 LogManager.getLogger("RecipeDao.class").error("Neo4j: recipe insert failed");
                 already_tried=true;
             }

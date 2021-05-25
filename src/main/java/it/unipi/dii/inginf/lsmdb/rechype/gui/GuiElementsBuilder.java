@@ -147,16 +147,31 @@ public class GuiElementsBuilder {
 
     public HBox createSimpleIngredientBlock(JSONObject ingredient){
         HBox block = new HBox();
-        Text nameNode = new Text(ingredient.getString("ingredient"));
-        Text amount = new Text("Amount: "+ingredient.getString("amount"));
-        String imageName=ingredient.getString("ingredient").replace(" ", "-");
+        Text nameNode;
+        String imageName;
+        if(ingredient.has("ingredient")) {
+            nameNode = new Text(ingredient.getString("ingredient"));
+            imageName=ingredient.getString("ingredient").replace(" ", "-");
+        }else{
+            nameNode = new Text(ingredient.getString("name"));
+            imageName=ingredient.getString("name").replace(" ", "-");
+        }
+        Text amount;
+        if(ingredient.get("amount") instanceof String)
+            amount = new Text("Amount: "+ingredient.getString("amount"));
+        else
+            amount = new Text("Amount: "+ingredient.get("amount"));
+
 
         String imageUrl = "https://spoonacular.com/cdn/ingredients_100x100/" + imageName+".jpg";
         ImageView imageNode = null;
+        InputStream imageStream;
         try{
-            InputStream imageStream = new URL(imageUrl).openStream();
+            imageStream = new URL(imageUrl).openStream();
             imageNode = new ImageView(new Image(imageStream, 50,50,false,false));
         }catch(IOException e){
+            imageStream = GuiElementsBuilder.class.getResourceAsStream("/images/icons/no.png");
+            imageNode = new ImageView(new Image(imageStream, 50,50,false,false));
             LogManager.getLogger("AddIngredientController.class").info("Ingredient's image not found");
         }
         block.getChildren().addAll(imageNode, new VBox(nameNode, amount));
