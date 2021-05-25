@@ -9,6 +9,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -75,9 +76,22 @@ public class GuiElementsBuilder {
 
         HBox block = new HBox();
         Text nameNode = new Text(ingredient.getName());
-        String imageName = ingredient.getImageUrl();
+        String imageUrl;
+        Label amount = new Label("");
 
-        String imageUrl = "https://spoonacular.com/cdn/ingredients_100x100/" + imageName;
+        if(selectedIngredientVBox == null){
+            imageUrl = ingredient.getImageUrl();
+            String imgOk = imageUrl.replaceAll("\\s", "-");
+            imgOk = imgOk + ".jpg";
+            imageUrl = imgOk;
+            amount.setText(ingredient.getQuantity().toString());
+        }else{
+            String imageName = ingredient.getImageUrl();
+
+            imageUrl = "https://spoonacular.com/cdn/ingredients_100x100/" + imageName;
+
+        }
+
         ImageView imageNode = null;
 
         try{
@@ -86,7 +100,12 @@ public class GuiElementsBuilder {
         }catch(IOException e){
             LogManager.getLogger("AddIngredientController.class").info("Ingredient's image not found");
         }
-        block.getChildren().addAll(imageNode, nameNode);
+
+        if(amount.getText().equals("")) {
+            block.getChildren().addAll(imageNode, nameNode);
+        }else{
+            block.getChildren().addAll(imageNode, nameNode, amount);
+        }
 
         block.setAlignment(Pos.CENTER_LEFT);
         block.setSpacing(10.0);

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" stylesheets="@test.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.inginf.lsmdb.rechype.gui.AddIngredientFridgeController">
+   <children>
+      <ScrollPane prefHeight="540.0" prefWidth="748.0">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+        </content>
+      </ScrollPane>
+   </children>
+   <AnchorPane layoutX="226.0" layoutY="52.0" prefHeight="648.0" prefWidth="775.0">
+      <children>
+         <AnchorPane prefHeight="85.0" prefWidth="775.0">
+            <children>
+               <Pane prefHeight="85.0" prefWidth="775.0">
+                  <children>
+                     <Text layoutX="6.0" layoutY="49.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Search for Ingredients">
+                        <font>
+                           <Font size="19.0" />
+                        </font>
+                     </Text>
+                     <TextField fx:id="ingredientText" layoutX="192.0" layoutY="30.0" />
+                     <Text layoutX="480.0" layoutY="49.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Selected Ingredients">
+                        <font>
+                           <Font size="19.0" />
+                        </font>
+                     </Text>
+                     <Text fx:id="inputQuantityError" fill="RED" layoutX="488.0" layoutY="66.0" strokeType="OUTSIDE" strokeWidth="0.0" text="You must add all inputs" wrappingWidth="146.21630859375" />
+                  </children>
+               </Pane>
+            </children>
+         </AnchorPane>
+         <ScrollPane fx:id="scrollBoxIngredients" hbarPolicy="NEVER" layoutX="61.0" layoutY="92.0" prefHeight="389.0" prefWidth="300.0">
+            <content>
+               <VBox fx:id="searchedIngredientVBox" prefWidth="300.0" />
+            </content>
+         </ScrollPane>
+         <ScrollPane hbarPolicy="NEVER" layoutX="416.0" layoutY="69.0" prefHeight="565.0" prefWidth="300.0">
+            <content>
+               <VBox fx:id="selectedIngredientVBox" prefWidth="300.0" />
+            </content>
+         </ScrollPane>
+         <Button fx:id="doneBtn" layoutX="24.0" layoutY="553.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="199.0" text="Done" />
+      </children>
+   </AnchorPane>
+    <fx:include source="SideMenu.fxml" />
+   <fx:include source="SearchBar.fxml" />
+</AnchorPane>

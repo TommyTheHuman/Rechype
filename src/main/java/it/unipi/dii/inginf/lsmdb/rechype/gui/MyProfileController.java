@@ -1,6 +1,7 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.ingredient.Ingredient;
 import it.unipi.dii.inginf.lsmdb.rechype.profile.Profile;
 import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileService;
 import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileServiceFactory;
@@ -32,6 +33,7 @@ public class MyProfileController extends JSONAdder implements Initializable {
     @FXML private Button addIngredientBtn;
     @FXML private Button createMealBtn;
     @FXML private VBox vboxMeals;
+    @FXML private VBox vboxFridge;
 
     private GuiElementsBuilder builder;
 
@@ -50,6 +52,7 @@ public class MyProfileController extends JSONAdder implements Initializable {
         userServiceFactory = UserServiceFactory.create();
         userService = userServiceFactory.getService();
         vboxMeals.setSpacing(30);
+        vboxFridge.setSpacing(20);
         Profile profile = profileService.getProfile(userService.getLoggedUser().getUsername());
         for(int i = 0; i < profile.getMeals().length(); i++){
             VBox vboxMeal = new VBox(5);
@@ -70,6 +73,8 @@ public class MyProfileController extends JSONAdder implements Initializable {
                 vboxMeal.getChildren().addAll(recipeBox);
                 recipeBox = new HBox();
             }
+
+
             Button deleteBtn = new Button("Delete");
 
             deleteBtn.setOnAction(new EventHandler<ActionEvent>() {
@@ -83,10 +88,39 @@ public class MyProfileController extends JSONAdder implements Initializable {
             vboxMeals.getChildren().addAll(vboxMeal);
         }
 
+
+
+        for(int i = 0; i < profile.getFridge().length(); i++){
+            JSONObject ingredients = profile.getFridge().getJSONObject(i);
+
+            Ingredient ingr = new Ingredient(ingredients.getString("name"), ingredients.getString("image"), ingredients.getDouble("quantity"));
+
+            HBox ingrBox = builder.createIngredientBlock(ingr, null);
+            ingrBox.setOnMouseClicked(null);
+
+            Button deleteBtn = new Button("Delete");
+            VBox container = new VBox(ingrBox, deleteBtn, new Separator(Orientation.HORIZONTAL));
+            deleteBtn.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    profileService.deleteIngredient(profile.getUsername(), ingredients.getString("name"));
+                    vboxFridge.getChildren().removeAll(container);
+                }
+            });
+
+            vboxFridge.getChildren().addAll(container);
+        }
+
+
+
+
+
+
+
         addIngredientBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Main.changeScene("IngredientSearch", new JSONObject());
+                Main.changeScene("IngredientSearchFridge", new JSONObject());
             }
         });
 
