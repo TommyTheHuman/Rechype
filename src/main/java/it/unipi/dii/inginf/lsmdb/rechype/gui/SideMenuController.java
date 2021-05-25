@@ -60,7 +60,6 @@ public class SideMenuController extends JSONAdder implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 Main.changeScene("MyProfile", new JSONObject());
-
             }
         });
 
@@ -68,7 +67,6 @@ public class SideMenuController extends JSONAdder implements Initializable {
             @Override
             public void handle(ActionEvent event) {
                 Main.changeScene("MyRecipes", new JSONObject());
-
             }
         });
 

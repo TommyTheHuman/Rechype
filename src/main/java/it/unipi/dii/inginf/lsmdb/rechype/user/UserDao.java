@@ -272,7 +272,7 @@ class UserDao {
      * @param user
      * @return List<Recipe>
      */
-    public List<Document> getNestedRecipe(String user){
+    public List<Document> getUserRecipe(String user){
         List<Document> returnRecipeList = new ArrayList<>();
         Bson filter = Filters.in("_id", user);
         Document doc;
@@ -283,26 +283,10 @@ class UserDao {
             LogManager.getLogger("UserDao.class").error("MongoDB: an error occured in getting nested recipe.");
             return null;
         }
-
         returnRecipeList = (List<Document>) doc.get("recipes");
-
         return returnRecipeList;
     }
 
-    public List<Document> getUserRecipe(String user) {
-
-        List<Document> returnList = new ArrayList<>();
-        MongoCursor<Document> cursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(eq("_id", user)).iterator();
-        while (cursor.hasNext()){
-
-            Document doc = cursor.next();
-
-            returnList = (List<Document>) doc.get("recipes");
-
-        }
-
-        return returnList;
-    }
 
     public String followUser(String myName, String userName, String btnStatus) {
 

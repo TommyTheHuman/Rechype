@@ -69,7 +69,7 @@ public class AddMealController extends JSONAdder implements Initializable {
 
         // Display user's recipes.
         searchedRecipesVBox.getChildren().clear();
-        recipeDocs = userService.getUserRecipe(userService.getLoggedUser().getUsername());
+        recipeDocs = userService.getRecipes(userService.getLoggedUser().getUsername());
         for(Document doc: recipeDocs){
             Recipe recipe = new Recipe(doc);
             HBox hbox = builder.createRecipeBlock(recipe);

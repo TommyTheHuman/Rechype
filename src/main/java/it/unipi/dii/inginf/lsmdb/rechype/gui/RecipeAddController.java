@@ -199,7 +199,7 @@ public class RecipeAddController extends JSONAdder implements Initializable {
                         userService.addNewRecipe(doc);
                         HaloDBDriver.getObject().flush();
                         recipeService.putRecipeInCache(doc);
-                        JSONObject par = new JSONObject().put("_id", doc.getString("_id"));
+                        JSONObject par = new JSONObject().put("_id", doc.getString("_id")).append("cached", true);
                         Main.changeScene("RecipePage", par);
                     }else{
                         //error on recipeAdd

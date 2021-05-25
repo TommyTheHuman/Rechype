@@ -54,21 +54,19 @@ public class UserProfileController extends JSONAdder implements Initializable {
         }else{
             followBtn.setText("Unfollow");
         }
-        List<Document> recipeList = userService.getNestedRecipes(userText.getText());
+        List<Document> recipeList = userService.getRecipes(userText.getText());
 
         if(recipeList != null){
             for(Document doc :recipeList){
                 Recipe recipe = new Recipe(doc);
                 HBox recipeBlock = builder.createRecipeBlock(recipe);
                 recipeBlock.setOnMouseClicked((MouseEvent e) ->{
-                    JSONObject par = new JSONObject().put("_id", recipe.getId()).append("cached", false);
+                    JSONObject par = new JSONObject().put("_id", recipe.getId());
                     Main.changeScene("RecipePage", par);
                 });
 
                 recipeVBox.getChildren().add(recipeBlock);
-        }
-
-
+             }
         }
 
         followBtn.setOnAction(new EventHandler<ActionEvent>() {

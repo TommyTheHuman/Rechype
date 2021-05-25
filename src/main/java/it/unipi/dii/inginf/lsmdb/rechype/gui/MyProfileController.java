@@ -57,14 +57,13 @@ public class MyProfileController extends JSONAdder implements Initializable {
             title.setFont(Font.font ("Verdana", 20));
             vboxMeal.getChildren().add(title);
             HBox recipeBox = new HBox();
-            //recipeBox.getChildren().add(new ScrollPane());
             JSONArray recipes = profile.getMeals().getJSONObject(i).getJSONArray("recipes");
             for(int j = 0; j < recipes.length(); j++){
                 Document recipeDoc = Document.parse(recipes.getJSONObject(j).toString());
                 Recipe recipe = new Recipe(recipeDoc);
                 HBox singleRecipe = builder.createRecipeBlock(recipe);
                 singleRecipe.setOnMouseClicked((MouseEvent e) ->{
-                    JSONObject par = new JSONObject().put("_id", recipe.getId()).append("cached", false);
+                    JSONObject par = new JSONObject().put("_id", recipe.getId());
                     Main.changeScene("RecipePage", par);
                 });
                 recipeBox.getChildren().add(singleRecipe);

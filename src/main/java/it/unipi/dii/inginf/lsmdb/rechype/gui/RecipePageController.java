@@ -72,12 +72,14 @@ public class RecipePageController extends JSONAdder implements Initializable {
 
     public void setGui(){
 
-        if(jsonParameters.get("cached") != null){
-            //retrieve from mongoDB
-            jsonRecipe = new JSONObject(recipeService.searchRecipeById(jsonParameters.getString("_id")).toJson());
-        }else {
+        if(jsonParameters.has("cached")){
+            System.out.println("preso da cache");
             //retrieving the recipe from key-value
             jsonRecipe = recipeService.getCachedRecipe(jsonParameters.getString("_id"));
+        }else {
+            System.out.println("preso da mongo");
+            //retrieve from mongoDB
+            jsonRecipe = new JSONObject(recipeService.searchRecipeById(jsonParameters.getString("_id")).toJson());
         }
         //setting text informations
         try{

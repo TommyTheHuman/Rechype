@@ -42,17 +42,13 @@ class UserServiceImpl implements UserService {
             return "Abort";
     }
 
-    public List<Document> getNestedRecipes(String user){
-        return userDao.getUserRecipe(user);
-    }
-
     @Override
     public String addFollow(String myName, String userName, String btnStatus) { return userDao.followUser(myName, userName, btnStatus);}
 
     @Override
     public Boolean checkForFollow(String myName, String userName) {return userDao.checkUserFollow(myName, userName);}
 
-    public List<Document> getUserRecipe(String username){ return userDao.getNestedRecipe(username); }
+    public List<Document> getRecipes(String username){ return userDao.getUserRecipe(username); }
 
     public String addNewRecipe(Document doc){ return userDao.addNestedRecipe(doc, loggedUser); }
 }

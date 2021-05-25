@@ -197,7 +197,7 @@ public class GuiElementsBuilder {
         mainContainer.setId("mainContainer");
 
         mainContainer.setOnMouseClicked((MouseEvent e) ->{
-            JSONObject par = new JSONObject().put("_id", recipe.getId());
+            JSONObject par = new JSONObject().put("_id", recipe.getId()).append("cached", true);
             Main.changeScene("RecipePage", par);
             //flushing cache
             HaloDBDriver.getObject().flush();
