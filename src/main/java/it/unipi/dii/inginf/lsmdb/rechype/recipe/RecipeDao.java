@@ -187,7 +187,7 @@ public class RecipeDao {
                 //the database are perfectly consistent
                 return "LikeOk";
             }catch (MongoException me){
-                LogManager.getLogger("UserDao.class").error("MongoDB: failed to insert like in recipes");
+                LogManager.getLogger("RecipeDao.class").error("MongoDB: failed to insert like in recipes");
                 already_tried=true;
             }
         }
@@ -238,7 +238,7 @@ public class RecipeDao {
                 //the database are perfectly consistent
                 return "LikeOk";
             }catch (MongoException me){
-                LogManager.getLogger("UserDao.class").error("MongoDB: failed to delete like in recipes");
+                LogManager.getLogger("RecipeDao.class").error("MongoDB: failed to delete like in recipes");
                 already_tried=true;
             }
         }

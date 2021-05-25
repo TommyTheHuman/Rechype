@@ -42,8 +42,8 @@ class UserServiceImpl implements UserService {
             return "Abort";
     }
 
-    public String addNewRecipe(Document doc){ return userDao.addNestedRecipe(doc, loggedUser); }
-    public boolean checkRecipeLike(String _id){ return userDao.checkRecipeLike(getLoggedUser().getUsername(), _id); }
-    public boolean checkSavedRecipe(String _id){ return userDao.checkSavedRecipe(getLoggedUser().getUsername(), _id); }
-    public String removeRecipe(String _id){ return userDao.removeNestedRecipe(getLoggedUser().getUsername(), _id); }
+    public String addNewRecipe(Document doc, String type){ return userDao.addNestedRecipe(doc, loggedUser, type); }
+    public boolean checkRecipeLike(String _id, String type){ return userDao.checkRecipeLike(getLoggedUser().getUsername(), _id, type); }
+    public boolean checkSavedRecipe(String _id, String type){ return userDao.checkSavedRecipe(getLoggedUser().getUsername(), _id, type); }
+    public String removeRecipe(String _id, String type){ return userDao.removeNestedRecipe(getLoggedUser().getUsername(), _id, type); }
 }

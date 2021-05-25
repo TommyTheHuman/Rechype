@@ -1,18 +1,18 @@
 package it.unipi.dii.inginf.lsmdb.rechype.user;
 
 import com.mongodb.MongoException;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
-import com.mongodb.client.result.InsertOneResult;
 import com.oath.halodb.HaloDB;
 import com.oath.halodb.HaloDBException;
-import com.oath.halodb.HaloDBIterator;
-import com.oath.halodb.Record;
+import static com.mongodb.client.model.Aggregates.*;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
+
+import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.eq;
 import static org.neo4j.driver.Values.parameters;
 
@@ -91,7 +91,8 @@ class UserDao {
      */
     public JSONObject checkRegistration(String username, String password, String confPassword, String country, int age) {
 
-        Document doc = new Document("_id", username).append("password", password).append("country", country).append("age", age).append("level", 0).append("recipes", new BsonArray());
+        Document doc = new Document("_id", username).append("password", password).append("country", country)
+        .append("age", age).append("level", 0).append("recipes", new BsonArray()).append("drinks", new BsonArray());
         JSONObject Json = new JSONObject(doc.toJson());
 
         try (MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(eq("_id", username)).iterator()) {
@@ -102,6 +103,7 @@ class UserDao {
             }
 
         } catch (MongoException me) {
+            me.printStackTrace();
             LogManager.getLogger("UserDao.class").error("MongoDB: an error occurred");
         }
 
@@ -247,22 +249,42 @@ class UserDao {
     }
 
     /***
-     * Adding new nested recipe to user, it can be called during the creation of a new recipe or during the adding
-     * to favourites
+     * Adding new nested recipe to user, it can be called during the creation of a new recipe or during the
+     * adding to favourites. Type discriminates the case of recipe or drink
      * @param recipe
      * @return
      */
-    public String addNestedRecipe(Document recipe, User user){
+    public String addNestedRecipe(Document recipe, User user, String type){
         MongoCollection<Document> collUser = null;
         Document userRecipe = new Document();
-        userRecipe.append("_id", recipe.get("_id").toString()).append("name", recipe.getString("name")).append("author", recipe.getString("author"))
-                .append("pricePerServing", recipe.get("pricePerServing")).append("image", recipe.getString("image"))
-                .append("vegetarian", recipe.getBoolean("vegetarian")).append("vegan", recipe.getBoolean("vegan")).append("dairyFree", recipe.getBoolean("dairyFree"))
-                .append("glutenFree", recipe.getBoolean("glutenFree"));
+        if(type.equals("recipe"))
+            userRecipe.append("_id", recipe.get("_id").toString()).append("name", recipe.getString("name")).append("author", recipe.getString("author"))
+                    .append("pricePerServing", recipe.get("pricePerServing")).append("image", recipe.getString("image"))
+                    .append("vegetarian", recipe.getBoolean("vegetarian")).append("vegan", recipe.getBoolean("vegan")).append("dairyFree", recipe.getBoolean("dairyFree"))
+                    .append("glutenFree", recipe.getBoolean("glutenFree"));
+        else
+            userRecipe.append("_id", recipe.get("_id").toString()).append("name", recipe.getString("name")).append("author", recipe.getString("author"))
+            .append("tag", recipe.getString("tag")).append("image", recipe.getString("image"));
         try {
             collUser = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
-            collUser.updateOne(eq("_id", user.getUsername()), push("recipes", userRecipe));
+            List<Bson> listUpdates = new ArrayList<>();
+            Bson find;
+            if(type.equals("recipe")) {
+                find = eq("_id", user.getUsername());
+                listUpdates.add(Updates.push("recipes", userRecipe));
+            }
+            else {
+                find = eq("_id", user.getUsername());
+                listUpdates.add(Updates.push("drinks", userRecipe));
+            }
+            //increasing the level if the recipe is created
+            //a user cannot add his recipes to favourites because they are already there
+            //so the check on the author username is enough
+            if(user.getUsername().equals(recipe.getString("author")))
+                listUpdates.add(Updates.inc("level", 1));
+            collUser.updateOne(find, Updates.combine(listUpdates));
         } catch (MongoException me) {
+            me.printStackTrace();
             if(recipe.getBoolean("NoParse")==null) //if no parse is needed the log does not specify it
                 LogManager.getLogger("UserDao.class").error("MongoDB[PARSE]: insert nested recipe(creation) in user failed" + recipe.toJson());
             else
@@ -273,18 +295,24 @@ class UserDao {
     }
 
     /***
-     * check if recipe has been liked by user
+     * check if recipe or drink has been liked by user
      * @param username
      * @param _id
      * @return
      */
-    public boolean checkRecipeLike(String username, String _id){
+    public boolean checkRecipeLike(String username, String _id, String type){
         //accessing neo4j and check the relationship between the user and the recipe entity
         try (Session session = Neo4jDriver.getObject().getDriver().session()) {
             return session.readTransaction((TransactionWork<Boolean>) tx -> {
-                    Result res=tx.run("MATCH (u:User {username: $username })-[rel:LIKES]->(r:Recipe {id:$_id}) " +
-                                    "return rel",
-                            parameters("username", username, "_id", _id));
+                    Result res=null;
+                    if(type.equals("recipe"))
+                        res=tx.run("MATCH (u:User {username: $username })-[rel:LIKES]->(r:Recipe {id:$_id}) " +
+                                        "return rel",
+                                parameters("username", username, "_id", _id));
+                    else
+                        res=tx.run("MATCH (u:User {username: $username })-[rel:LIKES]->(d:Drink {id:$_id}) " +
+                                        "return rel",
+                                parameters("username", username, "_id", _id));
                     if ((res.hasNext())) {
                         return true;
                     }
@@ -298,18 +326,24 @@ class UserDao {
     }
 
     /***
-     * check if user has saved the recipe with the specified id
+     * check if user has saved the recipe/drink with the specified id, type refers to recipe/drink
      * @param username
      * @param _id
      * @return
      */
-    public boolean checkSavedRecipe(String username, String _id){
+    public boolean checkSavedRecipe(String username, String _id, String type){
         boolean ret=false;
         //accessing mongodb and check the recipe's array of the user
         MongoCollection coll=MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
         try(MongoCursor<Document> cursor  =coll.find(eq("_id", username)).cursor();){
             Document doc = cursor.next();
-            List<Document> recipes= (List<Document>) doc.get("recipes");
+            List<Document> recipes;
+            if(type.equals("recipe")) {
+                recipes = (List<Document>) doc.get("recipes");
+            }
+            else {
+                recipes = (List<Document>) doc.get("drinks");
+            }
             for(int i=0; i<recipes.size(); i++){
                 if(recipes.get(i).getString("_id").equals(_id))
                     ret=true;
@@ -319,17 +353,20 @@ class UserDao {
     }
 
     /***
-     * removing the nested recipe (_id) on user's entity in mongodb
+     * removing the nested recipe/drink (_id) on user's entity in mongodb
      * @param user
      * @param _id
      * @return
      */
-    public String removeNestedRecipe(String user, String _id){
+    public String removeNestedRecipe(String user, String _id, String type){
         MongoCollection collUser;
         try {
             //deleting nested recipe from user entity
             collUser = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
-            collUser.updateOne(eq("_id", user), Updates.pull("recipes", eq("_id", _id)));
+            if(type.equals("recipe"))
+                collUser.updateOne(eq("_id", user), Updates.pull("recipes", eq("_id", _id)));
+            else
+                collUser.updateOne(eq("_id", user), Updates.pull("drinks", eq("_id", _id)));
         } catch (MongoException me) {
             me.printStackTrace();
             LogManager.getLogger("UserDao.class").error("MongoDB: deletion of nested recipe in user failed");

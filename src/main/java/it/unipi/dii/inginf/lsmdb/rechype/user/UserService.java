@@ -17,11 +17,11 @@ public interface UserService {
     User getLoggedUser();
     List<User> searchUser(String text, int offset, int quantity);
     JSONObject getCachedUser(String key);
-    String addNewRecipe(Document doc);
+    String addNewRecipe(Document doc, String type);
     String deleteUser(String username);
-    boolean checkRecipeLike(String _id);
-    boolean checkSavedRecipe(String _id);
-    String removeRecipe(String _id);
+    boolean checkRecipeLike(String _id, String type);
+    boolean checkSavedRecipe(String _id, String type);
+    String removeRecipe(String _id, String type);
 }
 
 
