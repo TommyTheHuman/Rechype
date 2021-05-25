@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" stylesheets="@test.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.inginf.lsmdb.rechype.gui.MyRecipeController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" stylesheets="@test.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.inginf.lsmdb.rechype.gui.MyProfileController">
    <children>
       <ScrollPane prefHeight="540.0" prefWidth="748.0">
         <content>
@@ -26,27 +26,19 @@
                </Text>
                <Pane layoutY="79.0" prefHeight="107.0" prefWidth="761.0">
                   <children>
-                     <Text layoutX="134.0" layoutY="74.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Food">
+                     <CheckBox layoutX="174.0" layoutY="30.0" mnemonicParsing="false" text="Created By Me" />
+                     <CheckBox layoutX="479.0" layoutY="30.0" mnemonicParsing="false" text="Favourites" />
+                     <Text layoutX="34.0" layoutY="82.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Filters">
                         <font>
-                           <Font size="22.0" />
-                        </font>
-                     </Text>
-                     <Text layoutX="480.0" layoutY="74.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Drinks">
-                        <font>
-                           <Font size="22.0" />
+                           <Font size="17.0" />
                         </font>
                      </Text>
                   </children>
                </Pane>
-               <ScrollPane hbarPolicy="NEVER" layoutX="26.0" layoutY="186.0" prefHeight="397.0" prefWidth="327.0">
-                  <content>
-                     <VBox fx:id="vboxFood" prefWidth="326.0" />
-                  </content>
-               </ScrollPane>
-               <ScrollPane hbarPolicy="NEVER" layoutX="387.0" layoutY="186.0" prefHeight="397.0" prefWidth="327.0">
-                  <content>
-                     <VBox fx:id="vboxDrinks" prefWidth="326.0" />
-                  </content>
+               <ScrollPane hbarPolicy="NEVER" layoutY="186.0" prefHeight="461.0" prefWidth="774.0">
+                 <content>
+                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="116.0" prefWidth="132.0" />
+                 </content>
                </ScrollPane>
             </children>
          </AnchorPane>
