@@ -43,4 +43,22 @@ class ProfileServiceImpl implements ProfileService {
             return "Abort";
         }
     }
+
+    @Override
+    public String addFridge(List<Document> ingredients, String username) {
+        if(profileDAO.addIngredientToFridge(ingredients, username)){
+            return "AddOK";
+        }else{
+            return "Abort";
+        }
+    }
+
+    @Override
+    public String deleteIngredient(String username, String ingredient) {
+        if(profileDAO.deleteIngredientFromProfile(username, ingredient)){
+            return "DeleteIngrOK";
+        }else{
+            return "Abort";
+        }
+    }
 }

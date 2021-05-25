@@ -15,4 +15,8 @@ public interface ProfileService {
     String addMeal(String title, String type, List<Document> recipes, List<Document> drinks, String username);
 
     String deleteMeal(String title, String username);
+
+    String addFridge(List<Document> ingredients, String username);
+
+    String deleteIngredient(String username, String ingredient);
 }
