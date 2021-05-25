@@ -8,10 +8,11 @@ import java.util.List;
 
 public interface DrinkService {
 
-    //String addRecipe(Document doc);
+    String addDrink(Document doc);
     List<Drink> searchDrink(String text, int offset, int quantity);
     JSONObject getCachedDrink(String key);
-    //void putRecipeInCache(Document recipe);
+    void putDrinkInCache(Document drink);
     String addLike(String _id, String username);
     String removeLike(String _id, String username);
+    Document searchDrinkById(String _id);
 }

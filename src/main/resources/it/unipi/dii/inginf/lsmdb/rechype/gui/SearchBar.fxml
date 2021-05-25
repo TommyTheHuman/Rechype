@@ -30,11 +30,11 @@
             <CheckBox fx:id="checkBoxUsers" layoutX="364.0" layoutY="11.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="64.0" text="Users" />
             <Button fx:id="searchBtn" layoutX="168.0" layoutY="7.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="30.0">
                <graphic>
-                  <HBox prefHeight="24.0" prefWidth="25.0">
+                  <HBox prefHeight="20.0" prefWidth="20.0">
                      <children>
-                        <ImageView fitHeight="16.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@images/logout.png" />
+                              <Image url="@images/icons/searchIcon.png" />
                            </image>
                         </ImageView>
                      </children>

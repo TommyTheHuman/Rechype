@@ -5,6 +5,7 @@ import it.unipi.dii.inginf.lsmdb.rechype.ingredient.Ingredient;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientService;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
+import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeService;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeServiceFactory;
@@ -17,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
+import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
 import org.decimal4j.util.DoubleRounder;
 import org.json.JSONObject;
@@ -194,6 +196,7 @@ public class RecipeAddController extends JSONAdder implements Initializable {
                             .append("method", method.getText()).append("likes", 0).append("ingredients", docIngredients)
                             .append("nutrients", docNutrients);
 
+                    // check on correct recipe add
                     textFieldsError.setOpacity(0);
                     if(recipeService.addRecipe(doc).equals("RecipeAdded")) {
                         userService.addNewRecipe(doc, "recipe");
@@ -202,7 +205,7 @@ public class RecipeAddController extends JSONAdder implements Initializable {
                         JSONObject par = new JSONObject().put("_id", doc.getString("_id")).append("cached", true);
                         Main.changeScene("RecipePage", par);
                     }else{
-                        //error on recipeAdd
+                        LogManager.getLogger("RecipeAddController.class").error("MongoDB: failed to insert recipe");
                     }
                 }
             }
@@ -238,6 +241,5 @@ public class RecipeAddController extends JSONAdder implements Initializable {
         vegetarian.setSelected(par.getBoolean("vegetarian"));
         glutenFree.setSelected(par.getBoolean("glutenFree"));
         ingredients.setText(par.get("ingredients").toString());
-
     }
 }
