@@ -79,7 +79,11 @@
                               </children>
                            </VBox>
                            <Text layoutX="459.0" layoutY="241.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ingredients" wrappingWidth="67.6953125" />
-                           <ScrollPane hbarPolicy="NEVER" layoutX="204.0" layoutY="262.0" prefHeight="142.0" prefWidth="574.0" />
+                           <ScrollPane fx:id="ScrollIngredients" hbarPolicy="NEVER" layoutX="204.0" layoutY="262.0" prefHeight="142.0" prefWidth="574.0">
+                              <content>
+                                 <VBox fx:id="ingredientsBox" prefHeight="142.0" prefWidth="503.0" />
+                              </content>
+                           </ScrollPane>
                         </children>
                      </AnchorPane>
                      <AnchorPane layoutY="541.0" prefHeight="428.0" prefWidth="775.0">

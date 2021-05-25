@@ -12,6 +12,6 @@ public interface DrinkService {
     List<Drink> searchDrink(String text, int offset, int quantity);
     JSONObject getCachedDrink(String key);
     //void putRecipeInCache(Document recipe);
-    //String addLike(String _id, String username);
-    //String removeLike(String _id, String username);
+    String addLike(String _id, String username);
+    String removeLike(String _id, String username);
 }

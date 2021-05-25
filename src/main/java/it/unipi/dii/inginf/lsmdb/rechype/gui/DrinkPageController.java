@@ -14,6 +14,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
@@ -48,6 +49,9 @@ public class DrinkPageController extends JSONAdder implements Initializable {
     private UserServiceFactory userServiceFactory;
     private UserService userService;
     private GuiElementsBuilder builder;
+    private String imgLikePath;
+    private String imgSavePath;
+    private int likes;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -73,14 +77,14 @@ public class DrinkPageController extends JSONAdder implements Initializable {
         }
         try {
             Document htmlParsed = Jsoup.parse(jsonDrink.getString("description"));
-            DescriptionText.setText("description: " + htmlParsed.text());
+            DescriptionText.setText(htmlParsed.text());
         }catch(JSONException jex){
-            DescriptionText.setText("description: unknown");
+            DescriptionText.setText("unknown");
         }
         try{
             MethodText.setText(jsonDrink.getString("method"));
         }catch(JSONException jex){
-            MethodText.setText("method: unknown");
+            MethodText.setText("unknown");
         }
 
         //setting the drink's image
@@ -97,9 +101,6 @@ public class DrinkPageController extends JSONAdder implements Initializable {
             inputStreamImg = DrinkPageController.class.getResourceAsStream("/images/icons/cloche.png");
             DrinkImage.setImage(new Image(inputStreamImg));
         }
-
-        //setting likes
-        Likes.setText("Likes: "+String.valueOf(jsonDrink.getInt("likes")));
 
         //adding the list of ingredients
         JSONArray ingredients = jsonDrink.getJSONArray("ingredients");
@@ -143,6 +144,92 @@ public class DrinkPageController extends JSONAdder implements Initializable {
             cocktailIcon.setImage(new Image(inputStream));
         }
 
+        //setting likes
+        likes=jsonDrink.getInt("likes");
+        Likes.setText("Likes: "+String.valueOf(likes));
+        LikeButton.setStyle("-fx-cursor: hand;");
+
+        //setting like events
+        if (!userService.checkRecipeLike(jsonParameters.getString("_id"), "drink")) { //mod
+            imgLikePath = "/images/icons/likeIcon.png";
+        } else {
+            imgLikePath = "/images/icons/likeIcon_on.png";
+        }
+        LikeButton.setImage(new Image(imgLikePath));
+        LikeButton.setPreserveRatio(true);
+        LikeButton.setSmooth(true);
+        LikeButton.setCache(true);
+
+        LikeButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            if (imgLikePath.equals("/images/icons/likeIcon.png")) {
+                String res = drinkService.addLike(jsonParameters.getString("_id"), userService.getLoggedUser().getUsername());
+                if (res.equals("LikeOk")) {
+                    imgLikePath = "/images/icons/likeIcon_on.png";
+                    likes=likes+1;
+                    Likes.setText("Likes: "+String.valueOf(likes));
+                    LikeButton.setImage(new Image(imgLikePath));
+                }
+            } else {
+                String res = drinkService.removeLike(jsonParameters.getString("_id"), userService.getLoggedUser().getUsername());
+                if (res.equals("LikeOk")) {
+                    imgLikePath = "/images/icons/likeIcon.png";
+                    likes=likes-1;
+                    Likes.setText("Likes: "+String.valueOf(likes));
+                    LikeButton.setImage(new Image(imgLikePath));
+                }
+            }
+            LikeButton.setPreserveRatio(true);
+            LikeButton.setSmooth(true);
+            LikeButton.setCache(true);
+            event.consume();
+        });
+
+        //check if the user is the author of the recipe, if it is the favourite button cannot be pressed
+        //in that case no logic is needed
+        if (userService.getLoggedUser().getUsername().equals(jsonDrink.getString("author"))) {
+            SaveButton.setImage(new Image("/images/icons/saveBtnIcon_on.png"));
+            SaveButton.setPreserveRatio(true);
+            SaveButton.setSmooth(true);
+            SaveButton.setCache(true);
+            SaveButton.setStyle("-fx-cursor: hand;");
+        }else{
+            //check if recipe is already added or not to the user favourites
+            if (!userService.checkSavedRecipe(jsonParameters.getString("_id"), "drink")) { //mod
+                imgSavePath = "/images/icons/saveBtnIcon.png";
+            } else {
+                imgSavePath = "/images/icons/saveBtnIcon_on.png";
+            }
+            SaveButton.setImage(new Image(imgSavePath));
+            SaveButton.setPreserveRatio(true);
+            SaveButton.setSmooth(true);
+            SaveButton.setCache(true);
+            SaveButton.setStyle("-fx-cursor: hand;");
+
+            //Using the same function "addNewRecipe" for creation/add to fav operation
+            //The NoParse field is to prevent the parsing from the daemon software, by the fact that there's no consistency
+            //to correct
+            SaveButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+                org.bson.Document drinkDoc = org.bson.Document.parse(jsonDrink.toString());
+                drinkDoc.append("NoParse", true);
+                if (imgSavePath.equals("/images/icons/saveBtnIcon.png")) {
+                    String res = userService.addNewRecipe(drinkDoc, "drink"); //mod
+                    if (res.equals("RecipeOk")){
+                        imgSavePath = "/images/icons/saveBtnIcon_on.png";
+                        SaveButton.setImage(new Image(imgSavePath));
+                    }
+                } else {
+                    String res = userService.removeRecipe(jsonParameters.getString("_id"), "drink"); //mod
+                    if (res.equals("RecipeOk")) {
+                        imgSavePath = "/images/icons/saveBtnIcon.png";
+                        SaveButton.setImage(new Image(imgSavePath));
+                    }
+                }
+                SaveButton.setPreserveRatio(true);
+                SaveButton.setSmooth(true);
+                SaveButton.setCache(true);
+                event.consume();
+            });
+        }
 
     }
 }

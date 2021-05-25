@@ -4,26 +4,22 @@ import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeService;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeServiceFactory;
-import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.scene.chart.*;
-import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.apache.logging.log4j.LogManager;
-import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -49,6 +44,8 @@ public class RecipePageController extends JSONAdder implements Initializable {
     @FXML private Text ReadyInMinutes;
     @FXML private Text Likes;
     @FXML private Text MethodText;
+    @FXML private VBox ingredientsBox;
+    @FXML private ScrollPane ScrollIngredients;
     @FXML private PieChart NutritionsPie;
     @FXML private ImageView RecipeImage;
     @FXML private ImageView VeganIcon;
@@ -67,6 +64,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
     private String imgLikePath;
     private String imgSavePath;
     private int likes;
+    private GuiElementsBuilder builder;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -74,6 +72,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
         recipeService = recipeServiceFactory.getService();
         userServiceFactory = UserServiceFactory.create();
         userService = userServiceFactory.getService();
+        builder = new GuiElementsBuilder();
     }
 
     public void setGui(){
@@ -182,6 +181,13 @@ public class RecipePageController extends JSONAdder implements Initializable {
         DairyIcon.setSmooth(true);
         DairyIcon.setCache(true);
 
+        //adding the list of ingredients
+        JSONArray ingredients = jsonRecipe.getJSONArray("ingredients");
+        for(int i=0; i<ingredients.length(); i++){
+            ingredientsBox.getChildren().addAll(builder.createSimpleIngredientBlock(ingredients.getJSONObject(i)),
+            new Separator(Orientation.HORIZONTAL));
+        }
+
         //price per serving
         if (jsonRecipe.get("pricePerServing") != null) {
 
@@ -236,7 +242,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
         LikeButton.setStyle("-fx-cursor: hand;");
 
         //check if like is already present and then set the right like/like_on image
-        if (!userService.checkRecipeLike(jsonParameters.getString("_id"))) {
+        if (!userService.checkRecipeLike(jsonParameters.getString("_id"), "recipe")){
             imgLikePath = "/images/icons/likeIcon.png";
         } else {
             imgLikePath = "/images/icons/likeIcon_on.png";
@@ -280,7 +286,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
             SaveButton.setStyle("-fx-cursor: hand;");
         }else{
             //check if recipe is already added or not to the user favourites
-            if (!userService.checkSavedRecipe(jsonParameters.getString("_id"))) {
+            if (!userService.checkSavedRecipe(jsonParameters.getString("_id"), "recipe")) {
                 imgSavePath = "/images/icons/saveBtnIcon.png";
             } else {
                 imgSavePath = "/images/icons/saveBtnIcon_on.png";
@@ -298,13 +304,13 @@ public class RecipePageController extends JSONAdder implements Initializable {
                 org.bson.Document recipeDoc = org.bson.Document.parse(jsonRecipe.toString());
                 recipeDoc.append("NoParse", true);
                 if (imgSavePath.equals("/images/icons/saveBtnIcon.png")) {
-                    String res = userService.addNewRecipe(recipeDoc);
+                    String res = userService.addNewRecipe(recipeDoc, "recipe");
                     if (res.equals("RecipeOk")) {
                         imgSavePath = "/images/icons/saveBtnIcon_on.png";
                         SaveButton.setImage(new Image(imgSavePath));
                     }
                 } else {
-                    String res = userService.removeRecipe(jsonParameters.getString("_id"));
+                    String res = userService.removeRecipe(jsonParameters.getString("_id"), "recipe");
                     if (res.equals("RecipeOk")) {
                         imgSavePath = "/images/icons/saveBtnIcon.png";
                         SaveButton.setImage(new Image(imgSavePath));
