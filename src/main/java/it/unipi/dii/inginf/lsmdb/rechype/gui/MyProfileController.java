@@ -63,25 +63,25 @@ public class MyProfileController extends JSONAdder implements Initializable {
                 Document recipeDoc = Document.parse(recipes.getJSONObject(j).toString());
                 Recipe recipe = new Recipe(recipeDoc);
                 HBox singleRecipe = builder.createRecipeBlock(recipe);
-                singleRecipe.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        JSONObject par = new JSONObject().put("_id", recipe.getId()).append("cached", false);
-                        Main.changeScene("RecipePage", par);
-                    }
+                singleRecipe.setOnMouseClicked((MouseEvent e) ->{
+                    JSONObject par = new JSONObject().put("_id", recipe.getId()).append("cached", false);
+                    Main.changeScene("RecipePage", par);
                 });
-                recipeBox.getChildren().add(builder.createRecipeBlock(recipe));
+                recipeBox.getChildren().add(singleRecipe);
                 vboxMeal.getChildren().addAll(recipeBox);
                 recipeBox = new HBox();
             }
             Button deleteBtn = new Button("Delete");
+
             deleteBtn.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
                     profileService.deleteMeal(title.getText(), profile.getUsername());
+                    vboxMeals.getChildren().remove(vboxMeal);
                 }
             });
-            vboxMeals.getChildren().addAll(vboxMeal, deleteBtn, new Separator(Orientation.HORIZONTAL));
+            vboxMeal.getChildren().addAll(deleteBtn, new Separator(Orientation.HORIZONTAL));
+            vboxMeals.getChildren().addAll(vboxMeal);
         }
 
         addIngredientBtn.setOnAction(new EventHandler<ActionEvent>() {

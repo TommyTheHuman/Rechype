@@ -29,11 +29,7 @@ class ProfileServiceImpl implements ProfileService {
     }
 
     public String addMeal(String title, String type, List<Document> recipes, List<Document> drinks, String username){
-        if(profileDAO.addMealToProfile(title, type, recipes, drinks, username)){
-            return "AddOK";
-        }else{
-            return "Abort";
-        }
+        return profileDAO.addMealToProfile(title, type, recipes, drinks, username);
     }
 
     public String deleteMeal(String title, String username){

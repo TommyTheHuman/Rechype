@@ -91,27 +91,37 @@ public class AddMealController extends JSONAdder implements Initializable {
                 if(checkField()){
                     String mealTypeText = mealType.getValue().toString();
                     String title = mealTitle.getText();
-                    profileService.addMeal(title, mealTypeText, recipesSelected, drinksSelected, userService.getLoggedUser().getUsername());
-                    Main.changeScene("MyProfile", null);
+                    String returnValue = profileService.addMeal(title, mealTypeText, recipesSelected, drinksSelected, userService.getLoggedUser().getUsername());
+                    if(returnValue.equals("DuplicateTitle")){
+                        errorMsg.setText("Duplicate Meal Title.");
+                        errorMsg.setOpacity(100);
+                        return;
+                    }
+                    if(returnValue.equals("AddOK")) {
+                        errorMsg.setOpacity(0);
+                        Main.changeScene("MyProfile", null);
+                    }else{
+                        errorMsg.setText("An error occured");
+                        errorMsg.setOpacity(100);
+                    }
                 }
             }
         });
-
     }
 
     private boolean checkField(){
-        if(mealType.getSelectionModel().isEmpty() || mealTitle.equals("")){
+        if(mealType.getSelectionModel().isEmpty() || mealTitle.getText().equals("")){
             errorMsg.setText("Complete all fields.");
             errorMsg.setOpacity(100);
             return false;
-        }else {
-            if(recipesSelected.size() < 2) {
-                errorMsg.setText("Add some recipes.");
-                errorMsg.setOpacity(100);
-                return false;
-            }
-            errorMsg.setOpacity(0);
-            return true;
         }
+        if(recipesSelected.size() < 2) {
+            errorMsg.setText("Add some recipes.");
+            errorMsg.setOpacity(100);
+            return false;
+        }
+        errorMsg.setOpacity(0);
+        return true;
+
     }
 }

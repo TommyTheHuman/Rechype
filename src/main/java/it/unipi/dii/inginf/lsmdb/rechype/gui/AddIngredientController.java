@@ -84,7 +84,7 @@ public class AddIngredientController extends JSONAdder implements Initializable 
 
         });
 
-        //      When the user type a more than 3 letters create the boxes contaning the ingredient and display those in searchedIngredientVBox
+        // When the user type a more than 3 letters create the boxes contaning the ingredient and display those in searchedIngredientVBox
         ingredientText.setOnKeyTyped(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {

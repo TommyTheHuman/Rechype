@@ -7,11 +7,14 @@ import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.mongodb.client.model.Updates.push;
+import static com.mongodb.client.model.Updates.pull;
 import static com.mongodb.client.model.Filters.eq;
 
 class ProfileDAO {
@@ -61,25 +64,41 @@ class ProfileDAO {
     }
 
     // add meal in user profile
-    public Boolean addMealToProfile(String title, String type, List<Document> recipes, List<Document> drinks, String username){
+    public String addMealToProfile(String title, String type, List<Document> recipes, List<Document> drinks, String username){
 
-        MongoCollection<Document> coll = null;
+        List<String> existingTitle = new ArrayList<>();
+
+        try(MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.PROFILES).find(eq("_id", username)).iterator()){
+            Document doc = cursor.next();
+            List<Document> existingMeals = (List<Document>) doc.get("meals");
+            for(int i=0; i<existingMeals.size(); i++){
+                existingTitle.add(existingMeals.get(i).getString("title"));
+            }
+        }catch(MongoException ex){
+            LogManager.getLogger("ProfileDao.class").error("MongoDB: meal insert failed on check other meal's title");
+        }
+
+        if(existingTitle.contains(title)){
+            return "DuplicateTitle";
+        }
+
+        MongoCollection<Document>  coll = null;
         Document doc = new Document().append("title", title).append("type", type).append("recipes", recipes).append("drinks", drinks);
         try{
             coll = MongoDriver.getObject().getCollection(MongoDriver.Collections.PROFILES);
             coll.updateOne(eq("_id", username), push("meals", doc));
         }catch(MongoException ex){
             LogManager.getLogger("ProfileDao.class").error("MongoDB: meal insert failed");
-            return false;
+            return "Abort";
         }
-        return true;
+        return "AddOK";
     }
 
     public Boolean deleteMealFromProfile(String title, String username){
         MongoCollection<Document> coll = null;
         try{
             coll = MongoDriver.getObject().getCollection(MongoDriver.Collections.PROFILES);
-           // coll.updateOne(eq("_id", username), pull(eq()));
+            coll.updateOne(eq("_id", username), pull("meals", eq("title", title)));
         }catch(MongoException ex){
             LogManager.getLogger("ProfileDao.class").error("MongoDB: meal insert failed");
             return false;
