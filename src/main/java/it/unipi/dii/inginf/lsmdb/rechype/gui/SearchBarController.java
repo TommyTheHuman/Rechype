@@ -13,6 +13,8 @@ import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -24,6 +26,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -36,9 +39,15 @@ public class SearchBarController extends JSONAdder implements Initializable {
     @FXML private CheckBox checkBoxUsers;
     @FXML private CheckBox checkBoxDrinks;
     @FXML private CheckBox checkBoxRecipes;
+    @FXML private CheckBox checkGluten;
+    @FXML private CheckBox checkDairy;
+    @FXML private CheckBox checkVegan;
+    @FXML private CheckBox checkVegetarian;
+    @FXML private ComboBox selectPrice;
     @FXML private ScrollPane scrollSearch;
     @FXML private AnchorPane searchAnchor;
     @FXML private Text errorMsg;
+    @FXML private AnchorPane filterAnchor;
     
     private String lastSearchedText;
     private GuiElementsBuilder builder;
@@ -69,8 +78,15 @@ public class SearchBarController extends JSONAdder implements Initializable {
         drinkServiceFactory = DrinkServiceFactory.create();
         drinkService = drinkServiceFactory.getService();
 
+        List<String> price = new ArrayList<>();
+        price.add("$");
+        price.add("$$");
+        price.add("$$$");
+        ObservableList<String> obsList = FXCollections.observableArrayList(price);
+
         searchAnchor.setVisible(false);
         checkBoxDrinks.selectedProperty().setValue(true);
+        filterAnchor.setVisible(false);
 
         //clear al the checkbox at load
         checkBoxUsers.setSelected(false);
@@ -141,6 +157,7 @@ public class SearchBarController extends JSONAdder implements Initializable {
         });
 
         checkBoxRecipes.setOnAction((event) ->{
+            filterAnchor.setVisible(true);
             checkBoxUsers.setSelected(false);
             checkBoxDrinks.setSelected(false);
             checkBoxRecipes.setSelected(true);

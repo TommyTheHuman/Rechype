@@ -49,13 +49,13 @@
       </AnchorPane>
       <AnchorPane fx:id="filterAnchor" layoutY="42.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="0.0" prefWidth="0.0">
          <children>
-            <Pane id="pane" prefHeight="198.0" prefWidth="176.0" stylesheets="@test.css">
+            <Pane id="pane" layoutY="-40.0" prefHeight="198.0" prefWidth="168.0" stylesheets="@test.css">
                <children>
-                  <CheckBox layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="GlutenFree" />
-                  <CheckBox layoutX="14.0" layoutY="42.0" mnemonicParsing="false" text="DairyFree" />
-                  <CheckBox layoutX="14.0" layoutY="70.0" mnemonicParsing="false" text="Vegan" />
-                  <CheckBox layoutX="14.0" layoutY="98.0" mnemonicParsing="false" text="Vegetarian" />
-                  <ComboBox layoutX="13.0" layoutY="147.0" prefWidth="150.0" promptText="Select a price" />
+                  <CheckBox fx:id="checkGluten" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="GlutenFree" />
+                  <CheckBox fx:id="checkDairy" layoutX="14.0" layoutY="42.0" mnemonicParsing="false" text="DairyFree" />
+                  <CheckBox fx:id="checkVegan" layoutX="14.0" layoutY="70.0" mnemonicParsing="false" text="Vegan" />
+                  <CheckBox fx:id="checkVegetarian" layoutX="14.0" layoutY="98.0" mnemonicParsing="false" text="Vegetarian" />
+                  <ComboBox fx:id="selectPrice" layoutX="13.0" layoutY="147.0" prefWidth="150.0" promptText="Select a price" />
                </children>
             </Pane>
          </children>
