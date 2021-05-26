@@ -71,10 +71,7 @@ public class DrinkPageController extends JSONAdder implements Initializable {
             //retrieve from mongodb
             jsonDrink = new JSONObject(drinkService.searchDrinkById(jsonParameters.getString("_id")).toJson());
         }
-        else{
-            //retrieve from mongodb
-            jsonDrink = new JSONObject(drinkService.searchDrinkById(jsonParameters.getString("_id")).toJson());
-        }
+
         try {
             authorLabel.setText("Author: " + jsonDrink.getString("author"));
         }catch(JSONException jex){
