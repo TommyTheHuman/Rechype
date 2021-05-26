@@ -23,6 +23,7 @@ import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import org.json.JSONObject;
 
@@ -43,6 +44,10 @@ public class SearchBarController extends JSONAdder implements Initializable {
     @FXML private ScrollPane scrollSearch;
     @FXML private AnchorPane searchAnchor;
     @FXML private Text errorMsg;
+    @FXML private Text textAge;
+    @FXML private Text textUserFilter;
+    @FXML private Text textDrinksFilter;
+    @FXML private Text textRecipeFilter;
     @FXML private AnchorPane filterAnchor;
     @FXML private Button closeFilters;
 
@@ -310,6 +315,7 @@ public class SearchBarController extends JSONAdder implements Initializable {
         checkVegetarian.setDisable(true);
         selectPrice.setDisable(true);
         recipeLikeSort.setDisable(true);
+        textRecipeFilter.setFill(Color.rgb(171,171,171));
     }
 
     private void recipeEnable(){
@@ -319,6 +325,7 @@ public class SearchBarController extends JSONAdder implements Initializable {
         checkVegetarian.setDisable(false);
         selectPrice.setDisable(false);
         recipeLikeSort.setDisable(false);
+        textRecipeFilter.setFill(Color.BLACK);
     }
 
     private void drinkDisable(){
@@ -327,11 +334,13 @@ public class SearchBarController extends JSONAdder implements Initializable {
 
         drinkLikeSort.setDisable(true);
         drinkType.setDisable(true);
+        textDrinksFilter.setFill(Color.rgb(171,171,171));
     }
 
     private void drinkEnable(){
         drinkLikeSort.setDisable(false);
         drinkType.setDisable(false);
+        textDrinksFilter.setFill(Color.BLACK);
     }
 
     private void userDisable(){
@@ -340,10 +349,14 @@ public class SearchBarController extends JSONAdder implements Initializable {
 
         userAgeFilter.setText("");
         userLevelFilter.setValue("");
+        textUserFilter.setFill(Color.rgb(171,171,171));
+        textAge.setFill(Color.rgb(171,171,171));
     }
 
     private void userEnable(){
         userAgeFilter.setDisable(false);
         userLevelFilter.setDisable(false);
+        textUserFilter.setFill(Color.BLACK);
+        textAge.setFill(Color.BLACK);
     }
 }

@@ -113,7 +113,7 @@ public class RecipeDao {
         }
 
         if(filters.has(("Price"))) {
-            Bson priceFilter = Filters.gte("pricePerServing", Recipe.symbolToPrice(filters.getString("Price")));
+            Bson priceFilter = Filters.lte("pricePerServing", Recipe.symbolToPrice(filters.getString("Price")));
             filtersList.add(priceFilter);
         }
         MongoCursor<Document> recipeCursor;

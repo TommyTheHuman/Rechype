@@ -84,7 +84,7 @@ public class MyProfileController extends JSONAdder implements Initializable {
                 HBox singleDrink = builder.createDrinkBlock(drink);
                 singleDrink.setOnMouseClicked((MouseEvent e) ->{
                     JSONObject par = new JSONObject().put("_id", drink.getId());
-                    Main.changeScene("RecipePage", par);
+                    Main.changeScene("DrinkPage", par);
                 });
                 recipeBox.getChildren().add(singleDrink);
                 vboxMeal.getChildren().addAll(recipeBox);

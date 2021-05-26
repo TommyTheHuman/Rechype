@@ -17,7 +17,7 @@
                   <children>
                      <Text fx:id="authorLabel" layoutX="550.0" layoutY="20.0" strokeType="OUTSIDE" strokeWidth="0.0" text="">
                         <font>
-                           <Font size="20.0" />
+                           <Font size="14.0" />
                         </font>
                      </Text>
                      <Pane layoutY="47.0" prefHeight="90.0" prefWidth="775.0">
@@ -28,14 +28,17 @@
                               </font></Text>
                            <ImageView fx:id="LikeButton" fitHeight="30.0" fitWidth="30.0" layoutX="663.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true" />
                            <ImageView fx:id="SaveButton" fitHeight="30.0" fitWidth="30.0" layoutX="627.0" layoutY="6.0" pickOnBounds="true" preserveRatio="true" />
-                           <Text fx:id="Likes" layoutX="571.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+                           <Text fx:id="Likes" layoutX="700.0" layoutY="30.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
                         </children>
                      </Pane>
                      <AnchorPane layoutY="137.0" prefHeight="402.0" prefWidth="775.0">
                         <children>
                            <Pane layoutX="187.0">
                               <children>
-                                 <Text layoutX="14.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Description" />
+                                 <Text layoutX="14.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Description">
+                                    <font>
+                                       <Font size="14.0" />
+                                    </font></Text>
                                  <Text fx:id="DescriptionText" layoutX="14.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="The recipe Everything Seasoning could satisfy your Southern craving in roughly &lt;b&gt;5 minutes&lt;/b&gt;. This marinade has &lt;b&gt;257 calories&lt;/b&gt;, &lt;b&gt;9g of protein&lt;/b&gt;, and &lt;b&gt;16g of fat&lt;/b&gt; per serving. This caveman, gluten free, primal, and whole 30 recipe serves 1 and costs &lt;b&gt;$4.69 per serving&lt;/b&gt;. 47 people have made this recipe and would make it again. Head to the store and pick up sesame seeds, poppy seeds, sesame seeds, and a few other things to make it today. All things considered, we decided this recipe &lt;b&gt;deserves a spoonacular score of 99%&lt;/b&gt;. This score is excellent. Try &lt;a href=&quot;https://spoonacular.com/recipes/all-around-seasoning-mix-395391&quot;&gt;All-Around Seasoning Mix&lt;/a&gt;, &lt;a href=&quot;https://spoonacular.com/recipes/tex-mex-seasoning-mix-385091&quot;&gt;Tex-Mex Seasoning Mix&lt;/a&gt;, and &lt;a href=&quot;https://spoonacular.com/recipes/taco-seasoning-mix-406398&quot;&gt;Taco Seasoning Mix&lt;/a&gt; for similar recipes." wrappingWidth="506.3999786376953" />
                               </children>
                            </Pane>
@@ -55,7 +58,10 @@
                                  </Pane>
                               </children>
                            </VBox>
-                           <Text layoutX="459.0" layoutY="241.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ingredients" wrappingWidth="67.6953125" />
+                           <Text layoutX="459.0" layoutY="241.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ingredients" wrappingWidth="67.6953125">
+                              <font>
+                                 <Font size="14.0" />
+                              </font></Text>
                            <ScrollPane fx:id="ScrollIngredients" hbarPolicy="NEVER" layoutX="204.0" layoutY="262.0" prefHeight="142.0" prefWidth="574.0">
                               <content>
                                  <VBox fx:id="ingredientsBox" prefHeight="139.0" prefWidth="548.0" />
@@ -65,7 +71,10 @@
                      </AnchorPane>
                      <AnchorPane layoutY="541.0" prefHeight="428.0" prefWidth="775.0">
                         <children>
-                           <Text layoutX="14.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Method" />
+                           <Text layoutX="14.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Method">
+                              <font>
+                                 <Font size="14.0" />
+                              </font></Text>
                            <Text fx:id="MethodText" layoutX="15.0" layoutY="52.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" wrappingWidth="684.1426086425781" />
                         </children>
                      </AnchorPane>

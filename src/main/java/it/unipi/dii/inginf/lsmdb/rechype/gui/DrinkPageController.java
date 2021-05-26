@@ -153,7 +153,7 @@ public class DrinkPageController extends JSONAdder implements Initializable {
 
         //setting likes
         likes=jsonDrink.getInt("likes");
-        Likes.setText("Likes: "+String.valueOf(likes));
+        Likes.setText(String.valueOf(likes));
         LikeButton.setStyle("-fx-cursor: hand;");
 
         //setting like events
@@ -173,7 +173,7 @@ public class DrinkPageController extends JSONAdder implements Initializable {
                 if (res.equals("LikeOk")) {
                     imgLikePath = "/images/icons/likeIcon_on.png";
                     likes=likes+1;
-                    Likes.setText("Likes: "+String.valueOf(likes));
+                    Likes.setText(String.valueOf(likes));
                     LikeButton.setImage(new Image(imgLikePath));
                 }
             } else {
@@ -181,7 +181,7 @@ public class DrinkPageController extends JSONAdder implements Initializable {
                 if (res.equals("LikeOk")) {
                     imgLikePath = "/images/icons/likeIcon.png";
                     likes=likes-1;
-                    Likes.setText("Likes: "+String.valueOf(likes));
+                    Likes.setText(String.valueOf(likes));
                     LikeButton.setImage(new Image(imgLikePath));
                 }
             }

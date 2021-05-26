@@ -236,7 +236,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
         NutritionsPie.setLegendVisible(false);
         NutritionsPie.setTitle("Nutritional Information");
         likes=jsonRecipe.getInt("likes");
-        Likes.setText("Likes: " + String.valueOf(likes));
+        Likes.setText(String.valueOf(likes));
         LikeButton.setStyle("-fx-cursor: hand;");
 
         //check if like is already present and then set the right like/like_on image
@@ -256,7 +256,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
                 if (res.equals("LikeOk")) {
                     imgLikePath = "/images/icons/likeIcon_on.png";
                     likes=likes+1;
-                    Likes.setText("Likes: "+String.valueOf(likes));
+                    Likes.setText(String.valueOf(likes));
                     LikeButton.setImage(new Image(imgLikePath));
                 }
             } else {
@@ -264,7 +264,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
                 if (res.equals("LikeOk")) {
                     imgLikePath = "/images/icons/likeIcon.png";
                     likes=likes-1;
-                    Likes.setText("Likes: "+String.valueOf(likes));
+                    Likes.setText(String.valueOf(likes));
                     LikeButton.setImage(new Image(imgLikePath));
                 }
             }

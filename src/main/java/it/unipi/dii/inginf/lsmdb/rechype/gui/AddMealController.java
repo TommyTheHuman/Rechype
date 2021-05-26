@@ -136,7 +136,7 @@ public class AddMealController extends JSONAdder implements Initializable {
             errorMsg.setOpacity(100);
             return false;
         }
-        if(recipesSelected.size() + recipesSelected.size() < 2) {
+        if((recipesSelected.size() + recipesSelected.size()) < 2) {
             errorMsg.setText("Add some recipes.");
             errorMsg.setOpacity(100);
             return false;
