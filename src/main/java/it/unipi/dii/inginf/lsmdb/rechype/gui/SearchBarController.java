@@ -24,6 +24,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -39,15 +40,25 @@ public class SearchBarController extends JSONAdder implements Initializable {
     @FXML private CheckBox checkBoxUsers;
     @FXML private CheckBox checkBoxDrinks;
     @FXML private CheckBox checkBoxRecipes;
+    @FXML private ScrollPane scrollSearch;
+    @FXML private AnchorPane searchAnchor;
+    @FXML private Text errorMsg;
+    @FXML private AnchorPane filterAnchor;
+    @FXML private Button closeFilters;
+
+
     @FXML private CheckBox checkGluten;
     @FXML private CheckBox checkDairy;
     @FXML private CheckBox checkVegan;
     @FXML private CheckBox checkVegetarian;
     @FXML private ComboBox selectPrice;
-    @FXML private ScrollPane scrollSearch;
-    @FXML private AnchorPane searchAnchor;
-    @FXML private Text errorMsg;
-    @FXML private AnchorPane filterAnchor;
+    @FXML private CheckBox recipeLikeSort;
+
+    @FXML private CheckBox drinkLikeSort;
+    @FXML private ComboBox drinkType;
+
+    @FXML private TextField userAgeFilter;
+    @FXML private ComboBox userLevelFilter;
     
     private String lastSearchedText;
     private GuiElementsBuilder builder;
@@ -61,6 +72,8 @@ public class SearchBarController extends JSONAdder implements Initializable {
 
     private DrinkServiceFactory drinkServiceFactory;
     private DrinkService drinkService;
+
+    private JSONObject filters = new JSONObject();
 
 
     @Override
@@ -78,11 +91,40 @@ public class SearchBarController extends JSONAdder implements Initializable {
         drinkServiceFactory = DrinkServiceFactory.create();
         drinkService = drinkServiceFactory.getService();
 
+        //Only numbers into the text field
+        userAgeFilter.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    userAgeFilter.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
+
+        //populate recipe combo box filter
         List<String> price = new ArrayList<>();
         price.add("$");
         price.add("$$");
         price.add("$$$");
-        ObservableList<String> obsList = FXCollections.observableArrayList(price);
+        price.add("$$$$");
+        ObservableList<String> priceList = FXCollections.observableArrayList(price);
+        selectPrice.setItems(priceList);
+
+        //populate user combobox filter
+        List<String> level = new ArrayList<>();
+        level.add("bronze");
+        level.add("silver");
+        level.add("gold");
+        ObservableList<String> lvlList = FXCollections.observableArrayList(level);
+        userLevelFilter.setItems(lvlList);
+
+        //populate drink combobox filter
+        List<String> type = new ArrayList<>();
+        type.add("beer");
+        type.add("cocktail");
+        type.add("other");
+        ObservableList<String> typeList = FXCollections.observableArrayList(type);
+        drinkType.setItems(typeList);
 
         searchAnchor.setVisible(false);
         checkBoxDrinks.selectedProperty().setValue(true);
@@ -102,7 +144,17 @@ public class SearchBarController extends JSONAdder implements Initializable {
                     lastSearchedText = searchText.getText();
 
                     if(checkBoxUsers.isSelected()) {
-                        List<User> listOfUsers = userService.searchUser(lastSearchedText, 0, 10);
+
+                        filters = new JSONObject();
+                        if(userAgeFilter.getText().length() > 0) {
+                            filters.put("Age", userAgeFilter.getText());
+                        }
+
+                        if(!userLevelFilter.getSelectionModel().isEmpty()){
+                            filters.put("Level", userLevelFilter.getValue().toString());
+                        }
+
+                        List<User> listOfUsers = userService.searchUser(lastSearchedText, 0, 10, filters);
 
                         for (User user : listOfUsers) {
                             resultBox.getChildren().addAll(builder.createUserBlock(user), new Separator(Orientation.HORIZONTAL));
@@ -110,7 +162,16 @@ public class SearchBarController extends JSONAdder implements Initializable {
                     }
 
                     if(checkBoxRecipes.isSelected()){
-                        List<Recipe> listOfRecipes = recipeService.searchRecipe(lastSearchedText, 0, 10);
+
+                        filters = new JSONObject();
+                        filters.put("DairyFree", checkDairy.isSelected()).put("GlutenFree", checkGluten.isSelected()).put("Vegan", checkVegan.isSelected())
+                                .put("Vegetarian", checkVegetarian.isSelected()).put("RecipeSort", recipeLikeSort.isSelected());
+
+                        if(!selectPrice.getSelectionModel().isEmpty()){
+                            filters.put("Price", selectPrice.getValue().toString());
+                        }
+
+                        List<Recipe> listOfRecipes = recipeService.searchRecipe(lastSearchedText, 0, 10, filters);
 
                         for (Recipe recipe : listOfRecipes) {
                             resultBox.getChildren().addAll(builder.createRecipeBlock(recipe), new Separator(Orientation.HORIZONTAL));
@@ -118,7 +179,14 @@ public class SearchBarController extends JSONAdder implements Initializable {
                     }
 
                     if(checkBoxDrinks.isSelected()){
-                        List<Drink> listOfDrinks = drinkService.searchDrink(lastSearchedText, 0, 10);
+
+                        filters = new JSONObject();
+                        filters.put("DrinkSort", drinkLikeSort.isSelected());
+                        if(!drinkType.getSelectionModel().isEmpty()){
+                            filters.put("tag", drinkType.getValue().toString());
+                        }
+
+                        List<Drink> listOfDrinks = drinkService.searchDrink(lastSearchedText, 0, 10, filters);
 
                         for (Drink drink : listOfDrinks) {
                             resultBox.getChildren().addAll(builder.createDrinkBlock(drink), new Separator(Orientation.HORIZONTAL));
@@ -145,12 +213,24 @@ public class SearchBarController extends JSONAdder implements Initializable {
         });
 
         checkBoxUsers.setOnAction((event) ->{
+            filterAnchor.setVisible(true);
+
+            userEnable();
+            recipeDisable();
+            drinkDisable();
+
             checkBoxUsers.setSelected(true);
             checkBoxDrinks.setSelected(false);
             checkBoxRecipes.setSelected(false);
         });
 
         checkBoxDrinks.setOnAction((event) ->{
+            filterAnchor.setVisible(true);
+
+            drinkEnable();
+            recipeDisable();
+            userDisable();
+
             checkBoxUsers.setSelected(false);
             checkBoxDrinks.setSelected(true);
             checkBoxRecipes.setSelected(false);
@@ -158,10 +238,27 @@ public class SearchBarController extends JSONAdder implements Initializable {
 
         checkBoxRecipes.setOnAction((event) ->{
             filterAnchor.setVisible(true);
+
+            recipeEnable();
+            userDisable();
+            drinkDisable();
+
             checkBoxUsers.setSelected(false);
             checkBoxDrinks.setSelected(false);
             checkBoxRecipes.setSelected(true);
         });
+
+
+        closeFilters.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                userDisable();
+                drinkDisable();
+                recipeDisable();
+                filterAnchor.setVisible(false);
+            }
+        });
+
 
         scrollSearch.vvalueProperty().addListener(new ChangeListener<Number>() {
             int offset=0;
@@ -170,19 +267,19 @@ public class SearchBarController extends JSONAdder implements Initializable {
                 if(scrollSearch.getVvalue()==scrollSearch.getVmax()){
                     offset=resultBox.getChildren().size()/2;
                     if(checkBoxUsers.isSelected()){
-                        List<User> listOfUsers = userService.searchUser(lastSearchedText, offset, 10);
+                        List<User> listOfUsers = userService.searchUser(lastSearchedText, offset, 10, filters);
                         for (User user : listOfUsers) {
                                 resultBox.getChildren().addAll(builder.createUserBlock(user), new Separator(Orientation.HORIZONTAL));
                         };
                     }
                     else if(checkBoxRecipes.isSelected()){
-                        List<Recipe> listOfRecipes = recipeService.searchRecipe(lastSearchedText, offset, 10);
+                        List<Recipe> listOfRecipes = recipeService.searchRecipe(lastSearchedText, offset, 10, filters);
                         for (Recipe recipe : listOfRecipes) {
                             resultBox.getChildren().addAll(builder.createRecipeBlock(recipe), new Separator(Orientation.HORIZONTAL));
                         };
                     }
                     else if(checkBoxDrinks.isSelected()){
-                        List<Drink> listOfDrinks = drinkService.searchDrink(lastSearchedText, offset, 10);
+                        List<Drink> listOfDrinks = drinkService.searchDrink(lastSearchedText, offset, 10, filters);
                         for(Drink drink: listOfDrinks){
                             resultBox.getChildren().addAll(builder.createDrinkBlock(drink), new Separator(Orientation.HORIZONTAL));
                         }
@@ -198,5 +295,55 @@ public class SearchBarController extends JSONAdder implements Initializable {
             return true;
         else
             return false;
+    }
+
+    private void recipeDisable(){
+        checkDairy.setSelected(false);
+        checkVegan.setSelected(false);
+        checkGluten.setSelected(false);
+        checkVegetarian.setSelected(false);
+        recipeLikeSort.setSelected(false);
+        selectPrice.setValue("");
+        checkGluten.setDisable(true);
+        checkDairy.setDisable(true);
+        checkVegan.setDisable(true);
+        checkVegetarian.setDisable(true);
+        selectPrice.setDisable(true);
+        recipeLikeSort.setDisable(true);
+    }
+
+    private void recipeEnable(){
+        checkGluten.setDisable(false);
+        checkDairy.setDisable(false);
+        checkVegan.setDisable(false);
+        checkVegetarian.setDisable(false);
+        selectPrice.setDisable(false);
+        recipeLikeSort.setDisable(false);
+    }
+
+    private void drinkDisable(){
+        drinkLikeSort.setSelected(false);
+        drinkType.setValue("");
+
+        drinkLikeSort.setDisable(true);
+        drinkType.setDisable(true);
+    }
+
+    private void drinkEnable(){
+        drinkLikeSort.setDisable(false);
+        drinkType.setDisable(false);
+    }
+
+    private void userDisable(){
+        userAgeFilter.setDisable(true);
+        userLevelFilter.setDisable(true);
+
+        userAgeFilter.setText("");
+        userLevelFilter.setValue("");
+    }
+
+    private void userEnable(){
+        userAgeFilter.setDisable(false);
+        userLevelFilter.setDisable(false);
     }
 }

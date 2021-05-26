@@ -9,7 +9,7 @@ import java.util.List;
 public interface DrinkService {
 
     String addDrink(Document doc);
-    List<Drink> searchDrink(String text, int offset, int quantity);
+    List<Drink> searchDrink(String text, int offset, int quantity, JSONObject filters);
     JSONObject getCachedDrink(String key);
     void putDrinkInCache(Document drink);
     String addLike(String _id, String username);

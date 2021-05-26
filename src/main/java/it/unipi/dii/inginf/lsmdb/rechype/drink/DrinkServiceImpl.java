@@ -8,9 +8,7 @@ import java.util.List;
 class DrinkServiceImpl implements DrinkService{
     DrinkDao drinkDao=new DrinkDao();
 
-    public List<Drink> searchDrink(String text, int offset, int quantity){
-    return drinkDao.getDrinksByText(text, offset, quantity); }
-
+    public List<Drink> searchDrink(String text, int offset, int quantity, JSONObject filters){return drinkDao.getDrinksByText(text, offset, quantity, filters); }
     public String addDrink(Document doc){ return drinkDao.addDrink(doc); }
     public void putDrinkInCache(Document drink){
         drinkDao.cacheAddedDrink(drink);

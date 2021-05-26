@@ -101,10 +101,6 @@ public class Recipe {
     /*public Recipe(Document doc){
         String[] keys=doc.keySet().toArray(new String[doc.keySet().size()]);
         String name="";
-        for(int i=0; i<keys.length; i++){
-            try {
-                name=keys[i];
-                Field field=this.getClass().getDeclaredField(keys[i]);
 
                 if(name.equals("_id")) {
                     JSONObject json = new JSONObject(doc.toJson());
@@ -212,6 +208,21 @@ public class Recipe {
         }
         else{
             return "$";
+        }
+    }
+
+    public static int symbolToPrice(String symbol){
+        if(symbol.equals("$$$$")){
+            return 1500;
+        }
+        else if(symbol.equals("$$$")){
+            return 1000;
+        }
+        else if(symbol.equals("$$")){
+            return 500;
+        }
+        else{
+            return 0;
         }
     }
 

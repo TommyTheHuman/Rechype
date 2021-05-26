@@ -9,7 +9,7 @@ import java.util.List;
 public interface RecipeService {
 
     String addRecipe(Document doc);
-    List<Recipe> searchRecipe(String text, int offset, int quantity);
+    List<Recipe> searchRecipe(String text, int offset, int quantity, JSONObject filters);
     JSONObject getCachedRecipe(String key);
     void putRecipeInCache(Document recipe);
     String addLike(String _id, String username);

@@ -15,8 +15,8 @@ class RecipeServiceImpl implements RecipeService{
         return recipeDao.addRecipe(doc);
     }
 
-    public List<Recipe> searchRecipe(String text, int offset, int quantity) {
-        return recipeDao.getRecipesByText(text, offset, quantity);
+    public List<Recipe> searchRecipe(String text, int offset, int quantity, JSONObject filters) {
+        return recipeDao.getRecipesByText(text, offset, quantity, filters);
     }
 
     public JSONObject getCachedRecipe(String key){

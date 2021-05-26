@@ -30,4 +30,14 @@ public class User implements Serializable {
     public String getCountry() { return country; }
     public int getAge() { return age; }
     public int getLevel() { return level; }
+
+    public static int levelToInt(String lvl){
+        if(lvl.equals("bronze")){
+            return 0;
+        }else if(lvl.equals("silver")){
+            return 10;
+        }else{
+            return 15;
+        }
+    }
 }

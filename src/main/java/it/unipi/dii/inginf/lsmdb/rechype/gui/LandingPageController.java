@@ -58,7 +58,7 @@ public class LandingPageController extends JSONAdder implements Initializable {
         profileServiceFactory = ProfileServiceFactory.create();
         profileService = profileServiceFactory.getService();
 
-
+        //prevent the user from insert letters into the text field
         regAge.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {

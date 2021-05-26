@@ -4,6 +4,7 @@ import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.InsertOneResult;
 import com.oath.halodb.HaloDB;
@@ -81,14 +82,25 @@ class DrinkDao {
         }
     }
 
-    List<Drink> getDrinksByText(String drinkName, int offset, int quantity){
+    List<Drink> getDrinksByText(String drinkName, int offset, int quantity, JSONObject filters){
         //create the case Insensitive pattern and perform the mongo query
         List<Drink> returnList = new ArrayList<>();
         List<Document> returnDocList = new ArrayList<>();
         Pattern pattern = Pattern.compile(".*" + drinkName + ".*", Pattern.CASE_INSENSITIVE);
-        Bson filter = Filters.regex("name", pattern);
-        MongoCursor<Document> drinkCursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.DRINKS)
-        .find(filter).skip(offset).limit(quantity).iterator();
+        Bson nameFilter = Filters.regex("name", pattern);
+        List<Bson> listFilters=new ArrayList<>();
+        listFilters.add(nameFilter);
+        if(filters.has("tag")){
+            listFilters.add(Filters.eq("tag", filters.getString("tag")));
+        }
+        MongoCursor<Document> drinkCursor;
+        if(filters.getBoolean("DrinkSort")){
+            drinkCursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.DRINKS)
+                    .find(Filters.and(listFilters)).sort(Sorts.orderBy(Sorts.descending("likes"))).skip(offset).limit(quantity).iterator();
+        }else {
+            drinkCursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.DRINKS)
+                    .find(Filters.and(listFilters)).skip(offset).limit(quantity).iterator();
+        }
         while(drinkCursor.hasNext()){
             Document doc = drinkCursor.next();
             Drink drink = new Drink(doc);

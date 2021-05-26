@@ -159,15 +159,28 @@ class UserDao {
      * @param quantity
      * @return
      */
-    public List<User> getUsersByText(String userName, int offset, int quantity){
+    public List<User> getUsersByText(String userName, int offset, int quantity, JSONObject filters){
         //List of users to build gui and list of documents to caching
         List<User> returnList = new ArrayList<>();
         List<Document> returnDocList = new ArrayList<>();
 
+        List<Bson> listFilters = new ArrayList<>();
         //create the case insensitive pattern and perform the mongo query
         Pattern pattern = Pattern.compile(".*" + userName + ".*", Pattern.CASE_INSENSITIVE);
-        Bson filter = Filters.regex("_id", pattern);
-        MongoCursor<Document> cursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(filter)
+        Bson nameRegex = Filters.regex("_id", pattern);
+        listFilters.add(nameRegex);
+        if(filters.has("Age")){
+            Bson ageFilter = Filters.gte("age", Integer.parseInt(filters.getString("Age")));
+            listFilters.add(ageFilter);
+        }
+        if(filters.has("Level")){
+            Bson lvlFilter = Filters.gte("level", User.levelToInt(filters.getString("Level")));
+            listFilters.add(lvlFilter);
+        }
+
+
+
+        MongoCursor<Document> cursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(Filters.and(listFilters))
         .skip(offset).limit(quantity).iterator();
         while (cursor.hasNext()){
 

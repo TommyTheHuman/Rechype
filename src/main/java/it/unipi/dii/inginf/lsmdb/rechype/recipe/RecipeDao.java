@@ -4,8 +4,10 @@ import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.InsertOneResult;
+import com.mongodb.internal.operation.OrderBy;
 import com.oath.halodb.HaloDB;
 import com.oath.halodb.HaloDBException;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
@@ -82,14 +84,47 @@ public class RecipeDao {
         }
     }
 
-    public List<Recipe> getRecipesByText(String recipeName, int offset, int quantity){
+    public List<Recipe> getRecipesByText(String recipeName, int offset, int quantity, JSONObject filters){
+
+        System.out.println(filters);
 
         //create the case Insensitive pattern and perform the mongo query
+        List<Bson> filtersList = new ArrayList<>();
         List<Recipe> returnList = new ArrayList<>();
         List<Document> returnDocList = new ArrayList<>();
         Pattern pattern = Pattern.compile(".*" + recipeName + ".*", Pattern.CASE_INSENSITIVE);
-        Bson filter = Filters.regex("name", pattern);
-        MongoCursor<Document> recipeCursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES).find(filter).skip(offset).limit(quantity).iterator();
+        Bson regexName = Filters.regex("name", pattern);
+        filtersList.add(regexName);
+        if(filters.getBoolean("GlutenFree")){
+            Bson glutenFilter = Filters.eq("glutenFree", true);
+            filtersList.add(glutenFilter);
+        }
+        if(filters.getBoolean("DairyFree")){
+            Bson dairyFilter = Filters.eq("dairyFree", true);
+            filtersList.add(dairyFilter);
+        }
+        if(filters.getBoolean("Vegetarian")){
+            Bson vegetarianFilter = Filters.eq("vegetarian", true);
+            filtersList.add(vegetarianFilter);
+        }
+        if(filters.getBoolean("Vegan")){
+            Bson veganFilter = Filters.eq("vegan", true);
+            filtersList.add(veganFilter);
+        }
+
+        if(filters.has(("Price"))) {
+            Bson priceFilter = Filters.gte("pricePerServing", Recipe.symbolToPrice(filters.getString("Price")));
+            filtersList.add(priceFilter);
+        }
+        MongoCursor<Document> recipeCursor;
+        if(filters.getBoolean("RecipeSort")) {
+            recipeCursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES)
+                    .find(Filters.and(filtersList)).sort(Sorts.orderBy(Sorts.descending("likes"))).skip(offset).limit(quantity).iterator();
+        }else{
+            recipeCursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES)
+                    .find(Filters.and(filtersList)).skip(offset).limit(quantity).iterator();
+        }
+
         while (recipeCursor.hasNext()){
             Document doc = recipeCursor.next();
             Recipe recipe = new Recipe(doc);

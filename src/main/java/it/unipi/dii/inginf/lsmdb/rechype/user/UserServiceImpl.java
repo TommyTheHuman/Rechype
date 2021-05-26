@@ -31,8 +31,8 @@ class UserServiceImpl implements UserService {
         return loggedUser;
     }
 
-    public List<User> searchUser(String text, int offset, int quantity) {
-        return userDao.getUsersByText(text, offset, quantity);
+    public List<User> searchUser(String text, int offset, int quantity, JSONObject filters) {
+        return userDao.getUsersByText(text, offset, quantity, filters);
     }
 
     public JSONObject getCachedUser(String key){
