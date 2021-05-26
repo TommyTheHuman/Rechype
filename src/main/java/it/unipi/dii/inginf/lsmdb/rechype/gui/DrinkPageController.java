@@ -78,7 +78,7 @@ public class DrinkPageController extends JSONAdder implements Initializable {
             authorLabel.setText("Author: unknown");
         }
         try{
-            Name.setText("Title: "+jsonDrink.getString("name"));
+            Name.setText(jsonDrink.getString("name"));
         }catch(JSONException jex){
             Name.setText("Title: unknown");
         }
