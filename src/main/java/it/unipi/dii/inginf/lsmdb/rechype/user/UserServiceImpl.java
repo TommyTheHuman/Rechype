@@ -19,8 +19,12 @@ class UserServiceImpl implements UserService {
 
     public String register(String username, String password, String confPassword, String country, int age){
         JSONObject Json =  userDao.checkRegistration(username, password, confPassword, country, age);
-        loggedUser = new User(Json.get("_id").toString(), Json.get("country").toString(), Integer.parseInt(Json.get("age").toString()), Integer.parseInt(Json.get("level").toString()));
-        return Json.get("response").toString();
+        String response = Json.get("response").toString();
+        if(response.equals("RegOk")) {
+            loggedUser = new User(Json.get("_id").toString(), Json.get("country").toString(),
+                    Integer.parseInt(Json.get("age").toString()), Integer.parseInt(Json.get("level").toString()));
+        }
+        return response;
     }
 
     public User getLoggedUser(){

@@ -44,16 +44,10 @@ public class UserProfileController extends JSONAdder implements Initializable {
     @Override
     public void setGui(){
         JSONObject fields=userService.getCachedUser(jsonParameters.getString("_id"));
-        userText.setText(fields.getString("_id").toString());
+        userText.setText(fields.getString("_id"));
         User user = userService.getLoggedUser();
 
         builder = new GuiElementsBuilder();
-        Boolean testFollow = userService.checkForFollow(user.getUsername(), userText.getText().toString());
-        if(!testFollow){
-            followBtn.setText("Follow");
-        }else{
-            followBtn.setText("Unfollow");
-        }
         List<Document> recipeList = userService.getRecipes(userText.getText());
 
         if(recipeList != null){
@@ -69,25 +63,39 @@ public class UserProfileController extends JSONAdder implements Initializable {
              }
         }
 
-        followBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
+        if(!user.getUsername().equals(fields.getString("_id"))) {
 
-                String result = userService.addFollow(user.getUsername(), userText.getText().toString(), followBtn.getText().toString());
-                if((result != "followOk") && (result != "followDelOk")){
-                    errMsg.setText("Error in adding Follow");
-                    errMsg.setStyle("-fx-text-fill: red;");
-                }
-
-                Boolean test = userService.checkForFollow(user.getUsername(), userText.getText().toString());
-                if(!test){
-                    followBtn.setText("Follow");
-                }else{
-                    followBtn.setText("Unfollow");
-                }
-
+            Boolean testFollow = userService.checkForFollow(user.getUsername(), userText.getText());
+            if(!testFollow){
+                followBtn.setText("Follow");
+            }else{
+                followBtn.setText("Unfollow");
             }
-        });
+
+            followBtn.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+
+                    String result = userService.addFollow(user.getUsername(), userText.getText().toString(), followBtn.getText().toString());
+                    if ((result != "followOk") && (result != "followDelOk")) {
+                        errMsg.setText("Error in adding Follow");
+                        errMsg.setStyle("-fx-text-fill: red;");
+                    }
+
+                    Boolean test = userService.checkForFollow(user.getUsername(), userText.getText().toString());
+                    if (!test) {
+                        followBtn.setText("Follow");
+                    } else {
+                        followBtn.setText("Unfollow");
+                    }
+
+                }
+            });
+        }
+        else{
+            followBtn.setText("Follow");
+            followBtn.setDisable(true);
+        }
 
     }
 

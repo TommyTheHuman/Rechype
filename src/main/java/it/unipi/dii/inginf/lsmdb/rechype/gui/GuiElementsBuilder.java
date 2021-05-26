@@ -49,11 +49,21 @@ public class GuiElementsBuilder {
 
         InputStream inputFlag;
         inputFlag = GuiElementsBuilder.class.getResourceAsStream("/images/flags/" + user.getCountry() + ".png");
-        InputStream inputAvatar = GuiElementsBuilder.class.getResourceAsStream("/images/levels/" + String.valueOf(user.getLevel()) + ".png");
+
+        //setting the icon based on level
+        InputStream inputAvatar = GuiElementsBuilder.class.getResourceAsStream("/images/levels/0.png");
+        if(user.getLevel()<5){
+            inputAvatar = GuiElementsBuilder.class.getResourceAsStream("/images/levels/0.png");
+        }
+        else if(user.getLevel()<10){
+            inputAvatar = GuiElementsBuilder.class.getResourceAsStream("/images/levels/1.png");
+        }
+        else if(user.getLevel()<15){
+            inputAvatar = GuiElementsBuilder.class.getResourceAsStream("/images/levels/2.png");
+        }
 
         if (inputFlag == null) {
             inputFlag = GuiElementsBuilder.class.getResourceAsStream("/images/flags/Default.png");
-
         }
         countryNode = new ImageView(new Image(inputFlag));
         levelNode = new ImageView(new Image(inputAvatar,50, 50, false, false));

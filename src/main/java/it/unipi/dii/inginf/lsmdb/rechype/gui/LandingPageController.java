@@ -99,11 +99,12 @@ public class LandingPageController extends JSONAdder implements Initializable {
                 String confPassword = regConfirmPassword.getText();
                 String age = regAge.getText();
                 String country;
+                String resultProfile;
                 int ageNum;
 
                 clearFields();
 
-                if(username.equals("") || password.equals("") || confPassword.equals("") || age.equals("") || regCountry.getSelectionModel().isEmpty()){
+                if (username.equals("") || password.equals("") || confPassword.equals("") || age.equals("") || regCountry.getSelectionModel().isEmpty()) {
                     regMsg.setText("All fields must be filled");
                     regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");
                 }else {
@@ -113,42 +114,39 @@ public class LandingPageController extends JSONAdder implements Initializable {
                     if (!password.equals(confPassword)) {
                         regMsg.setText("You must insert the same password in both fields");
                         regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");
-                    }else {
+                    } else {
                         result = userService.register(username, password, confPassword, country, ageNum);
                     }
                 }
 
-                String resultProfile = profileService.createProfile(username);
-                //checking the consistency between the collection Profile and User
-                //If something goes wrong one of the 2
-                if(result.equals("RegOk") && resultProfile.equals("ProfileOk")){
-                    Main.changeScene("HomePage", new JSONObject());
-                }
-
-                if(result.equals("Abort") || resultProfile.equals("Abort")){
-
-                    if(!(resultProfile.equals("Abort") && result.equals("Abort"))){
-                        //consistency: delete on Profile and User collection
-                        if(resultProfile.equals("Abort")){
-                            if(userService.deleteUser(username).equals("Abort")){
-                                LogManager.getLogger("LandingPageController.class").info("inconsistency will be solved during parsing");
-                            }
-                        }else{
-                            if(profileService.deleteProfile(username).equals("Abort")){
-                                LogManager.getLogger("LandingPageController.class").info("inconsistency will be solved during parsing");
-                            }
-                        }
-                    }
-
-                    regMsg.setText("Error occurred during the registration");
-                    regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");
-                }
-
-
-
                 if(result.equals("usernameProb")){
                     regMsg.setText("Username already in use, try a different one");
                     regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");
+                    return;
+                }
+                else if(result.equals("Abort")){
+                    regMsg.setText("Error occurred during the registration");
+                    regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");
+                    return;
+                }
+                else{
+                    //create profile and checking if the creation goes well
+                    resultProfile = profileService.createProfile(username);
+                    if(resultProfile.equals("ProfileOk")){
+                        Main.changeScene("HomePage", new JSONObject());
+                        return;
+                    }
+                    else{
+                        //if the profile is not created the user must be deleted
+                        result=userService.deleteUser(username);
+                        if(result.equals("Abort")){
+                            LogManager.getLogger("LandingPageController.class").info("inconsistency will be solved during parsing");
+                        }else{
+                            LogManager.getLogger("LandingPageController.class").info("consistency between user and profile solved");
+                        }
+                        regMsg.setText("Error occurred during the registration");
+                        regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");
+                    }
                 }
             }
         });

@@ -65,12 +65,12 @@ public class DrinkPageController extends JSONAdder implements Initializable {
     public void setGui() {
         JSONObject jsonDrink;
         if(jsonParameters.has("cached")){
-            //retrieve from mongodb
-            jsonDrink = new JSONObject(drinkService.searchDrinkById(jsonParameters.getString("_id")).toJson());
-        }
-        else{
             //retrieve from key-value
             jsonDrink = drinkService.getCachedDrink(jsonParameters.getString("_id"));
+        }
+        else{
+            //retrieve from mongodb
+            jsonDrink = new JSONObject(drinkService.searchDrinkById(jsonParameters.getString("_id")).toJson());
         }
         try {
             authorLabel.setText("Author: " + jsonDrink.getString("author"));
