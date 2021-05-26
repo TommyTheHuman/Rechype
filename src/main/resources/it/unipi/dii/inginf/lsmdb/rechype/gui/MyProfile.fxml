@@ -19,7 +19,7 @@
    </children>
    <AnchorPane layoutX="226.0" layoutY="52.0" prefHeight="648.0" prefWidth="775.0">
       <children>
-         <TabPane layoutY="74.0" prefHeight="574.0" prefWidth="775.0" tabClosingPolicy="UNAVAILABLE">
+         <TabPane fx:id="tabPane" layoutY="74.0" prefHeight="574.0" prefWidth="775.0" tabClosingPolicy="UNAVAILABLE">
            <tabs>
              <Tab text="My Meals">
                <content>

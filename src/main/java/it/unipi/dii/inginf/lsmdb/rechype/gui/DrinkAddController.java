@@ -101,7 +101,6 @@ public class DrinkAddController extends JSONAdder implements Initializable {
                         ingredientNames.add(details[0]);
                         details[1] = details[1].replaceAll("\\s+", "");
                         details[1] = details[1].substring(0, details[1].length() - 1);
-                        System.out.println(details[1]+"g");
                         amount.add(details[1]+"g");
                     }
 
@@ -148,7 +147,6 @@ public class DrinkAddController extends JSONAdder implements Initializable {
         if(title.getText().equals("") || imageUrl.getText().equals("") ||
             description.getText().equals("") || method.getText().equals("") ||
             ingredients.getText().equals("") || ComboBoxTag.getSelectionModel().isEmpty()){
-
                 textFieldsError.setOpacity(100);
                 return false;
         }

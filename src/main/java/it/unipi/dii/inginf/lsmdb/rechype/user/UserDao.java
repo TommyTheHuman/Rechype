@@ -396,6 +396,19 @@ class UserDao {
         return returnRecipeList;
     }
 
+    public Document getUserRecipeAndDrinks(String user){
+        Bson filter = Filters.in("_id", user);
+        Document doc;
+        try {
+            MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(filter).iterator();
+            doc = cursor.next();
+        }catch(MongoException ex){
+            LogManager.getLogger("UserDao.class").error("MongoDB: an error occured in getting nested recipe.");
+            return null;
+        }
+        return doc;
+    }
+
 
     public String followUser(String myName, String userName, String btnStatus) {
 

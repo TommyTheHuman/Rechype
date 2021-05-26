@@ -1,6 +1,7 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.drink.Drink;
 import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileService;
 import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
@@ -32,9 +33,9 @@ import java.util.ResourceBundle;
 public class AddMealController extends JSONAdder implements Initializable {
 
     @FXML private ComboBox mealType;
-    @FXML private VBox searchedRecipesVBox;
+    @FXML private VBox recipesBox;
+    @FXML private VBox drinksBox;
     @FXML private VBox selectedRecipesVBox;
-    @FXML private VBox searchedDrinksVbox;
     @FXML private TextField mealTitle;
     @FXML private Button saveMealButton;
     @FXML private Text errorMsg;
@@ -68,8 +69,9 @@ public class AddMealController extends JSONAdder implements Initializable {
         errorMsg.setOpacity(0);
 
         // Display user's recipes.
-        searchedRecipesVBox.getChildren().clear();
-        recipeDocs = userService.getRecipes(userService.getLoggedUser().getUsername());
+        recipesBox.getChildren().clear();
+        Document docUser = userService.getRecipeAndDrinks(userService.getLoggedUser().getUsername());
+        recipeDocs = (List<Document>) docUser.get("recipes");
         for(Document doc: recipeDocs){
             Recipe recipe = new Recipe(doc);
             HBox hbox = builder.createRecipeBlock(recipe);
@@ -81,8 +83,27 @@ public class AddMealController extends JSONAdder implements Initializable {
                     hbox.setOnMouseClicked(null);
                 }
             });
-            searchedRecipesVBox.getChildren().add(hbox);
+            recipesBox.getChildren().add(hbox);
         }
+
+        List<Document> drinksDoc = (List<Document>) docUser.get("drinks");
+
+        for(Document doc: drinksDoc){
+            Drink drink = new Drink(doc);
+
+            HBox hbox = builder.createDrinkBlock(drink);
+            hbox.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    drinksSelected.add(doc);
+                    selectedRecipesVBox.getChildren().add(hbox);
+                    hbox.setOnMouseClicked(null);
+                }
+            });
+            drinksBox.getChildren().add(hbox);
+
+        }
+
 
         // Create meal and back to My Profile
         saveMealButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -115,7 +136,7 @@ public class AddMealController extends JSONAdder implements Initializable {
             errorMsg.setOpacity(100);
             return false;
         }
-        if(recipesSelected.size() < 2) {
+        if(recipesSelected.size() + recipesSelected.size() < 2) {
             errorMsg.setText("Add some recipes.");
             errorMsg.setOpacity(100);
             return false;
@@ -124,4 +145,7 @@ public class AddMealController extends JSONAdder implements Initializable {
         return true;
 
     }
+
+    @Override
+    public void setGui(){}
 }

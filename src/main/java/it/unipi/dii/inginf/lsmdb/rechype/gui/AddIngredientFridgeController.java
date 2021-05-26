@@ -74,7 +74,6 @@ public class AddIngredientFridgeController extends JSONAdder implements Initiali
             @Override
             public void handle(ActionEvent event) {
                 JSONObject par = jsonParameters;
-                String finalIngredients = "";
                 Integer counter = 0;
 
                 List<Document> listOfIngredients = new ArrayList<>();
@@ -92,11 +91,6 @@ public class AddIngredientFridgeController extends JSONAdder implements Initiali
                         String imageUrl = "https://spoonacular.com/cdn/ingredients_100x100/" + builder.idSelectedIngredient.get(counter);
                         Document ingredient = new Document().append("name", builder.idSelectedIngredient.get(counter)).append("quantity", quantityString).append("image", imageUrl);
                         listOfIngredients.add(ingredient);
-                        /*if(counter == builder.idSelectedIngredient.size()-1){
-                            finalIngredients = finalIngredients + builder.idSelectedIngredient.get(counter) + ": " + quantityString + "g ";
-                        }else {
-                            finalIngredients = finalIngredients + builder.idSelectedIngredient.get(counter) + ": " + quantityString + "g, ";
-                        }*/
                         counter++;
                     }
                 }
@@ -104,7 +98,8 @@ public class AddIngredientFridgeController extends JSONAdder implements Initiali
                 loggedUser = userService.getLoggedUser();
                 inputQuantityError.setOpacity(0);
                 profileService.addFridge(listOfIngredients, loggedUser.getUsername());
-                Main.changeScene("HomePage", par);
+                par.append("changeTab", true);
+                Main.changeScene("MyProfile", par);
             }
 
 

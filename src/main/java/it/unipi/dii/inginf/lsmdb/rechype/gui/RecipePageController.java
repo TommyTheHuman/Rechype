@@ -78,11 +78,9 @@ public class RecipePageController extends JSONAdder implements Initializable {
     public void setGui(){
 
         if(jsonParameters.has("cached")){
-            System.out.println("preso da cache");
             //retrieving the recipe from key-value
             jsonRecipe = recipeService.getCachedRecipe(jsonParameters.getString("_id"));
         }else {
-            System.out.println("preso da mongo");
             //retrieve from mongoDB
             jsonRecipe = new JSONObject(recipeService.searchRecipeById(jsonParameters.getString("_id")).toJson());
         }
@@ -93,7 +91,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
             authorLabel.setText("Author: unknown");
         }
         try {
-            Name.setText("Title: " + jsonRecipe.getString("name"));
+            Name.setText(jsonRecipe.getString("name"));
         } catch (JSONException ex) {
             Name.setText("Title: unknown");
         }

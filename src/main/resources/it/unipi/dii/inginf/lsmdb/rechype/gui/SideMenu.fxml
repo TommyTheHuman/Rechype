@@ -7,12 +7,16 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 <AnchorPane prefHeight="604.0" prefWidth="227.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.inginf.lsmdb.rechype.gui.SideMenuController">
    <children>
       <ImageView fitHeight="88.0" fitWidth="117.0" layoutX="53.0" layoutY="21.0" pickOnBounds="true" preserveRatio="true" fx:id="userImage"/>
-      <Text fx:id="userName" layoutX="25.0" layoutY="143.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="151.869140625" />
+      <Text fx:id="userName" layoutX="25.0" layoutY="143.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="151.869140625">
+         <font>
+            <Font size="21.0" />
+         </font></Text>
       <Separator layoutY="156.0" prefHeight="8.0" prefWidth="227.0" />
       <Hyperlink fx:id="personalProfile" layoutX="24.0" layoutY="192.0" text="My Profile" />
       <Hyperlink fx:id="myRecipes" layoutX="24.0" layoutY="234.0" text="My Recipes" />

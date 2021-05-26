@@ -20,13 +20,16 @@ public class Drink {
     public Drink(Document doc){
         JSONObject jsonObject = new JSONObject(doc.toJson());
         jsonRepresentation = jsonObject;
-
-        _id=jsonObject.getJSONObject("_id").getString("$oid");
+        if(jsonObject.has("description")){
+            _id=jsonObject.getJSONObject("_id").getString("$oid");
+            description=jsonObject.getString("description");
+            method=jsonObject.getString("method");
+        }else{
+            _id=jsonObject.getString("_id");
+        }
         name=jsonObject.getString("name");
         author=jsonObject.getString("author");
-        description=jsonObject.getString("description");
         image=jsonObject.getString("image");
-        method=jsonObject.getString("method");
         tag=jsonObject.getString("tag");
     }
 

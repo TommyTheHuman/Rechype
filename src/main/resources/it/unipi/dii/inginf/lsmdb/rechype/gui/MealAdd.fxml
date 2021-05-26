@@ -60,7 +60,7 @@
                               <children>
                                  <ScrollPane hbarPolicy="NEVER" layoutY="9.0" prefHeight="486.0" prefWidth="300.0">
                                     <content>
-                                       <VBox fx:id="searchedRecipesVBox" prefWidth="300.0" />
+                                       <VBox fx:id="recipesBox" prefWidth="300.0" />
                                     </content>
                                  </ScrollPane>
                               </children>
@@ -73,7 +73,7 @@
                               <children>
                                  <ScrollPane fx:id="searchedDrinksVBox" hbarPolicy="NEVER" prefHeight="486.0" prefWidth="300.0">
                                     <content>
-                                       <VBox fx:id="searchedRecipesVBox1" prefWidth="300.0" />
+                                       <VBox fx:id="drinksBox" prefWidth="300.0" />
                                     </content>
                                  </ScrollPane>
                               </children>

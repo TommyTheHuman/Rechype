@@ -1,6 +1,7 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.drink.Drink;
 import it.unipi.dii.inginf.lsmdb.rechype.profile.Profile;
 import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileService;
 import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileServiceFactory;
@@ -47,7 +48,9 @@ public class MyRecipeController extends JSONAdder implements Initializable {
         vboxFood.setSpacing(20);
         vboxDrinks.setSpacing(20);
 
-        List<Document> recipesDoc = userService.getRecipes(userService.getLoggedUser().getUsername());
+        Document docUser = userService.getRecipeAndDrinks(userService.getLoggedUser().getUsername());
+
+        List<Document> recipesDoc = (List<Document>) docUser.get("recipes");
         for(Document doc: recipesDoc){
             Recipe rec = new Recipe(doc);
             HBox boxRecipe = builder.createRecipeBlock(rec);
@@ -57,6 +60,19 @@ public class MyRecipeController extends JSONAdder implements Initializable {
             });
             vboxFood.getChildren().addAll(boxRecipe, new Separator(Orientation.HORIZONTAL));
         }
+
+        List<Document> drinksDoc = (List<Document>) docUser.get("drinks");
+        for(Document doc: drinksDoc){
+            Drink drink = new Drink(doc);
+            HBox boxRecipe = builder.createDrinkBlock(drink);
+            boxRecipe.setOnMouseClicked((MouseEvent e) ->{
+                JSONObject par = new JSONObject().put("_id", drink.getId());
+                Main.changeScene("DrinkPage", par);
+            });
+            vboxDrinks.getChildren().addAll(boxRecipe, new Separator(Orientation.HORIZONTAL));
+        }
+
+
     }
 
     @Override

@@ -46,7 +46,6 @@ public class GuiElementsBuilder {
         Text ageNode = new Text(String.valueOf(user.getAge()));
         ImageView countryNode = null;
         ImageView levelNode = null;
-
         InputStream inputFlag;
         inputFlag = GuiElementsBuilder.class.getResourceAsStream("/images/flags/" + user.getCountry() + ".png");
 

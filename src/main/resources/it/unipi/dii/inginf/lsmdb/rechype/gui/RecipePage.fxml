@@ -23,14 +23,17 @@
             <content>
                <AnchorPane prefHeight="969.0" prefWidth="776.0">
                   <children>
-                     <Text fx:id="authorLabel" layoutX="316.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="">
+                     <Text fx:id="authorLabel" layoutX="550.0" layoutY="20.0" strokeType="OUTSIDE" strokeWidth="0.0" text="">
                         <font>
-                           <Font size="20.0" />
+                           <Font size="14.0" />
                         </font>
                      </Text>
                      <Pane layoutY="47.0" prefHeight="90.0" prefWidth="775.0">
                         <children>
-                           <Text fx:id="Name" layoutX="7.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="c" wrappingWidth="721.6000022888184" />
+                           <Text fx:id="Name" layoutX="14.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="c" wrappingWidth="721.6000022888184">
+                              <font>
+                                 <Font size="21.0" />
+                              </font></Text>
                            <ImageView fx:id="GlutenIcon" fitHeight="40.0" fitWidth="40.0" layoutX="315.0" layoutY="31.0" pickOnBounds="true" />
                            <ImageView fx:id="VeganIcon" fitHeight="40.0" fitWidth="40.0" layoutX="133.0" layoutY="31.0" pickOnBounds="true" preserveRatio="true" />
                            <ImageView fx:id="VegetarianIcon" fitHeight="40.0" fitWidth="40.0" layoutX="198.0" layoutY="31.0" pickOnBounds="true" preserveRatio="true" />

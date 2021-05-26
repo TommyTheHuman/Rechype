@@ -27,6 +27,7 @@ public interface UserService {
     boolean checkRecipeLike(String _id, String type);
     boolean checkSavedRecipe(String _id, String type);
     String removeRecipe(String _id, String type);
+    Document getRecipeAndDrinks(String user);
 }
 
 

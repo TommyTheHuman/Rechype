@@ -1,6 +1,7 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.drink.Drink;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.Ingredient;
 import it.unipi.dii.inginf.lsmdb.rechype.profile.Profile;
 import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileService;
@@ -16,6 +17,7 @@ import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
+import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -34,6 +36,7 @@ public class MyProfileController extends JSONAdder implements Initializable {
     @FXML private Button createMealBtn;
     @FXML private VBox vboxMeals;
     @FXML private VBox vboxFridge;
+    @FXML private TabPane tabPane;
 
     private GuiElementsBuilder builder;
 
@@ -74,6 +77,19 @@ public class MyProfileController extends JSONAdder implements Initializable {
                 recipeBox = new HBox();
             }
 
+            JSONArray drinks = profile.getMeals().getJSONObject(i).getJSONArray("drinks");
+            for(int j = 0; j < drinks.length(); j++){
+                Document drinkDoc = Document.parse(drinks.getJSONObject(j).toString());
+                Drink drink = new Drink(drinkDoc);
+                HBox singleDrink = builder.createDrinkBlock(drink);
+                singleDrink.setOnMouseClicked((MouseEvent e) ->{
+                    JSONObject par = new JSONObject().put("_id", drink.getId());
+                    Main.changeScene("RecipePage", par);
+                });
+                recipeBox.getChildren().add(singleDrink);
+                vboxMeal.getChildren().addAll(recipeBox);
+                recipeBox = new HBox();
+            }
 
             Button deleteBtn = new Button("Delete");
 
@@ -87,8 +103,6 @@ public class MyProfileController extends JSONAdder implements Initializable {
             vboxMeal.getChildren().addAll(deleteBtn, new Separator(Orientation.HORIZONTAL));
             vboxMeals.getChildren().addAll(vboxMeal);
         }
-
-
 
         for(int i = 0; i < profile.getFridge().length(); i++){
             JSONObject ingredients = profile.getFridge().getJSONObject(i);
@@ -111,12 +125,6 @@ public class MyProfileController extends JSONAdder implements Initializable {
             vboxFridge.getChildren().addAll(container);
         }
 
-
-
-
-
-
-
         addIngredientBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -130,5 +138,12 @@ public class MyProfileController extends JSONAdder implements Initializable {
                 Main.changeScene("MealAdd", new JSONObject());
             }
         });
+    }
+
+    @Override
+    public void setGui(){
+        if(jsonParameters != null && jsonParameters.has("changeTab")){
+            tabPane.getSelectionModel().select(1);
+        }
     }
 }

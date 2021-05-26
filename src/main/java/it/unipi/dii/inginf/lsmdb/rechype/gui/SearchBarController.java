@@ -21,6 +21,7 @@ import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.util.List;
@@ -37,6 +38,8 @@ public class SearchBarController extends JSONAdder implements Initializable {
     @FXML private CheckBox checkBoxRecipes;
     @FXML private ScrollPane scrollSearch;
     @FXML private AnchorPane searchAnchor;
+    @FXML private Text errorMsg;
+    
     private String lastSearchedText;
     private GuiElementsBuilder builder;
 
@@ -77,35 +80,43 @@ public class SearchBarController extends JSONAdder implements Initializable {
         searchBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                resultBox.getChildren().clear();
-                lastSearchedText = searchText.getText();
+                if(checkField()){
+                    errorMsg.setOpacity(0);
+                    resultBox.getChildren().clear();
+                    lastSearchedText = searchText.getText();
 
-                if(checkBoxUsers.isSelected()) {
-                    List<User> listOfUsers = userService.searchUser(lastSearchedText, 0, 10);
+                    if(checkBoxUsers.isSelected()) {
+                        List<User> listOfUsers = userService.searchUser(lastSearchedText, 0, 10);
 
-                    for (User user : listOfUsers) {
-                        resultBox.getChildren().addAll(builder.createUserBlock(user), new Separator(Orientation.HORIZONTAL));
+                        for (User user : listOfUsers) {
+                            resultBox.getChildren().addAll(builder.createUserBlock(user), new Separator(Orientation.HORIZONTAL));
+                        }
                     }
+
+                    if(checkBoxRecipes.isSelected()){
+                        List<Recipe> listOfRecipes = recipeService.searchRecipe(lastSearchedText, 0, 10);
+
+                        for (Recipe recipe : listOfRecipes) {
+                            resultBox.getChildren().addAll(builder.createRecipeBlock(recipe), new Separator(Orientation.HORIZONTAL));
+                        }
+                    }
+
+                    if(checkBoxDrinks.isSelected()){
+                        List<Drink> listOfDrinks = drinkService.searchDrink(lastSearchedText, 0, 10);
+
+                        for (Drink drink : listOfDrinks) {
+                            resultBox.getChildren().addAll(builder.createDrinkBlock(drink), new Separator(Orientation.HORIZONTAL));
+                        }
+                    }
+
+                    resultBox.setStyle("-fx-background-color: white !important");
+                    searchAnchor.setVisible(true);
+                }else{
+                    errorMsg.setText("Choose category.");
+                    errorMsg.setOpacity(100);
                 }
 
-                if(checkBoxRecipes.isSelected()){
-                    List<Recipe> listOfRecipes = recipeService.searchRecipe(lastSearchedText, 0, 10);
 
-                    for (Recipe recipe : listOfRecipes) {
-                        resultBox.getChildren().addAll(builder.createRecipeBlock(recipe), new Separator(Orientation.HORIZONTAL));
-                    }
-                }
-
-                if(checkBoxDrinks.isSelected()){
-                    List<Drink> listOfDrinks = drinkService.searchDrink(lastSearchedText, 0, 10);
-
-                    for (Drink drink : listOfDrinks) {
-                        resultBox.getChildren().addAll(builder.createDrinkBlock(drink), new Separator(Orientation.HORIZONTAL));
-                    }
-                }
-
-                resultBox.setStyle("-fx-background-color: white !important");
-                searchAnchor.setVisible(true);
             }
         });
 
@@ -163,5 +174,12 @@ public class SearchBarController extends JSONAdder implements Initializable {
             }
         });
 
+    }
+
+    private boolean checkField(){
+        if(checkBoxDrinks.isSelected() || checkBoxRecipes.isSelected() || checkBoxUsers.isSelected())
+            return true;
+        else
+            return false;
     }
 }

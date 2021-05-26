@@ -58,5 +58,5 @@ class UserServiceImpl implements UserService {
 
     public List<Document> getRecipes(String username){ return userDao.getUserRecipe(username); }
 
-
+    public Document getRecipeAndDrinks(String username){ return userDao.getUserRecipeAndDrinks(username); }
 }

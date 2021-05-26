@@ -248,11 +248,14 @@ public class RecipeDao {
     public Document getRecipeById(String id) {
 
         Document recipe = new Document();
-        MongoCursor<Document> cursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES).find(eq("_id", new ObjectId(id))).iterator();
-
-
-        recipe = cursor.next();
-
+        try{
+            MongoCursor<Document> cursor  = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES).find(eq("_id", new ObjectId(id))).iterator();
+            if(cursor.hasNext()){
+                recipe = cursor.next();
+            }
+        }catch (MongoException ex){
+            LogManager.getLogger("RecipeDao.class").error("MongoDB: failed to get recipe by id");
+        }
 
         return recipe;
 
