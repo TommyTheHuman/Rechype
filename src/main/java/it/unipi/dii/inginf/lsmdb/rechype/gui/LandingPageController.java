@@ -68,8 +68,6 @@ public class LandingPageController extends JSONAdder implements Initializable {
             }
         });
 
-
-
         loginBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -157,11 +155,7 @@ public class LandingPageController extends JSONAdder implements Initializable {
 
     }
 
-
-
-
-
-    private ObservableList<String> getNations(){
+    public static ObservableList<String> getNations(){
         String[] countries = Locale.getISOCountries();
         int maxSize = countries.length;
 

@@ -23,6 +23,27 @@ import org.json.JSONObject;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.TransactionWork;
 import org.neo4j.driver.exceptions.Neo4jException;
+import com.mongodb.ConnectionString;
+import com.mongodb.client.*;
+import com.mongodb.client.model.Accumulators;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
+import org.bson.Document;
+import org.bson.json.JsonWriterSettings;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.function.Consumer;
+
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Updates.*;
+import static com.mongodb.client.model.Aggregates.*;
+import static com.mongodb.client.model.Projections.*;
+import static com.mongodb.client.model.Accumulators.*;
+import static com.mongodb.client.model.Accumulators.addToSet;
+import static com.mongodb.client.model.Accumulators.sum;
+import static com.mongodb.client.model.Sorts.descending;
 
 import javax.print.Doc;
 import java.nio.charset.StandardCharsets;
@@ -294,5 +315,49 @@ public class RecipeDao {
 
         return recipe;
 
+    }
+
+
+    // ANALYTICS
+
+    // Get user with the higher number of likes by category if specified
+   /* db.recipes.aggregate( [
+    {$match:{author:{$nin:["Spoonacular", "CocktailsDB", "PunkAPI"]}}},
+    {$group:{_id:"$author", count:{$sum:"$likes"}}},
+    {$sort:{count:-1}}
+])
+
+    */
+    public List<Document> getRankingUserByLike(String category){
+        MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
+        List<Bson> filters = new ArrayList<>();
+        filters.add(nin("author", "Spoonacular", "PunkAPI", "CocktailDB"));
+        if(category.equals("vegan")){
+            filters.add(eq("vegan", true));
+        }
+        if(category.equals("vegetarian")){
+            filters.add(eq("vegetarian", true));
+        }
+        if(category.equals("dairyFree")){
+            filters.add(eq("dairyFree", true));
+        }
+        if(category.equals("glutenFree")){
+            filters.add(eq("glutenFree", true));
+        }
+
+        Bson match = match(and(filters));
+        Bson group = group("$author", sum("likes", "$likes"));
+        Bson sort = sort(descending("likes"));
+        Bson project = project(fields(excludeId(), computed("author", "$_id"), include("likes")));
+        Bson limit = limit(10);
+
+        List<Document> results = null;
+        try{
+            results = collRecipe.aggregate(Arrays.asList(match, group, sort, limit, project)).into(new ArrayList<>());
+        } catch (MongoException ex){
+            LogManager.getLogger("RecipeDao.class").error("MongoDB: fail analytics: Ranking user by like");
+        }
+
+        return results;
     }
 }

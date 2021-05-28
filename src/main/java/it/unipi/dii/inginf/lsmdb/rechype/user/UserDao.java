@@ -8,12 +8,16 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.oath.halodb.HaloDB;
 import com.oath.halodb.HaloDBException;
-import static com.mongodb.client.model.Aggregates.*;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
 
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.nin;
+import static com.mongodb.client.model.Filters.lte;
+import static com.mongodb.client.model.Filters.gte;
+import static com.mongodb.client.model.Filters.and;
+
 import static org.neo4j.driver.Values.parameters;
 
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
@@ -39,6 +43,7 @@ import javax.print.Doc;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -468,10 +473,39 @@ class UserDao {
                 }
                 return false;
             });
-        } catch (Neo4jException ne) { //somethind goes wrong, a software will parse and solve
+        } catch (Neo4jException ne) { //something goes wrong, a software will parse and solve
             LogManager.getLogger("UserDao.class").error("Neo4j: follow check failed");
             return false;
         }
     }
 
+
+
+    public List<Document> getUserRankingByRecipesNumber(int minAge, int maxAge, String country) {
+        MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
+        List<Bson> filters = new ArrayList<>();
+        if(minAge != -1){
+            filters.add(lte("age", maxAge));
+            filters.add(gte("age", minAge));
+        }
+        if(!country.equals("noCountry")) {
+            filters.add(eq("country", country));
+        }
+        Bson match = match(and(filters));
+        Bson unwind = unwind("$recipes");
+        Bson group1 = new Document("$group", new Document("_id", new Document("author", "$recipes.author").append("price", "recipes.pricePerServing").append("numRec", new Document("$sum", 1L))));
+        Bson group2 = Document.parse(
+                "{ $group: " +
+                "    {"
+        );
+
+        List<Document> results = null;
+        try{
+            results = collRecipe.aggregate(Arrays.asList(match, unwind, group1)).into(new ArrayList<>());
+        } catch (MongoException ex){
+            LogManager.getLogger("RecipeDao.class").error("MongoDB: fail analytics: Ranking user by recipe's number");
+        }
+
+        return results;
+    }
 }
