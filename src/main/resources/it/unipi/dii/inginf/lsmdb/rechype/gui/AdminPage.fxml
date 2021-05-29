@@ -63,10 +63,8 @@
                                  <Font size="33.0" />
                               </font>
                            </Text>
-                           <Text layoutX="68.0" layoutY="692.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Choose category" />
-                           <ComboBox fx:id="comboNation1" layoutX="175.0" layoutY="700.0" prefWidth="150.0" />
-                           <Text layoutX="226.0" layoutY="692.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nation" />
-                           <ComboBox layoutX="26.0" layoutY="700.0" prefWidth="150.0" />
+                           <Text layoutX="68.0" layoutY="692.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Choose level" />
+                           <ComboBox fx:id="comboLevel" layoutX="26.0" layoutY="700.0" prefWidth="150.0" />
                         </children>
                      </AnchorPane>
                   </children>
