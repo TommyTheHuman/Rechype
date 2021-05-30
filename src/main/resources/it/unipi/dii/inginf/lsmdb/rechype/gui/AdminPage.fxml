@@ -25,38 +25,33 @@
                   <children>
                      <AnchorPane minHeight="-Infinity" prefHeight="1980.0" prefWidth="992.0">
                         <children>
-                           <ScrollPane layoutX="35.0" layoutY="128.0" prefHeight="476.0" prefWidth="387.0">
-                              <content>
-                                 <VBox prefWidth="385.0" />
-                              </content>
-                           </ScrollPane>
-                           <Text layoutX="2.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Best User by number of recipes">
-                              <font>
-                                 <Font size="33.0" />
-                              </font>
-                           </Text>
-                           <Text layoutX="80.0" layoutY="92.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Choose age" />
-                           <ComboBox fx:id="comboNation" layoutX="187.0" layoutY="100.0" prefWidth="150.0" />
-                           <Text layoutX="238.0" layoutY="92.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nation" />
-                           <ScrollPane layoutX="555.0" layoutY="128.0" prefHeight="476.0" prefWidth="387.0">
+                           <ScrollPane layoutX="35.0" layoutY="141.0" prefHeight="463.0" prefWidth="387.0">
                               <content>
                                  <VBox fx:id="vboxBestUserByLike" prefWidth="385.0" />
                               </content>
                            </ScrollPane>
-                           <Text layoutX="603.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Best User by like ">
+                           <Text layoutX="80.0" layoutY="92.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Choose age" />
+                           <ComboBox fx:id="comboNation" layoutX="187.0" layoutY="100.0" prefWidth="150.0" />
+                           <Text layoutX="238.0" layoutY="92.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nation" />
+                           <ScrollPane layoutX="555.0" layoutY="143.0" prefHeight="461.0" prefWidth="387.0">
+                              <content>
+                                 <VBox fx:id="vboxBestUserByLikeCat" prefWidth="385.0" />
+                              </content>
+                           </ScrollPane>
+                           <Text layoutX="327.0" layoutY="59.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Best User by like ">
                               <font>
                                  <Font size="33.0" />
                               </font>
                            </Text>
                            <ComboBox fx:id="comboCategory" layoutX="614.0" layoutY="98.0" prefWidth="150.0" />
                            <Text layoutX="642.0" layoutY="92.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Choose category" />
-                           <Button fx:id="goBtnBestUserByRecipeNumber" layoutX="381.0" layoutY="100.0" mnemonicParsing="false" text="Go" />
-                           <Button fx:id="goBtnBestUserByLike" layoutX="806.0" layoutY="98.0" mnemonicParsing="false" text="Go" />
+                           <Button fx:id="goBtnBestUserByLikeAgeCountry" layoutX="347.0" layoutY="100.0" mnemonicParsing="false" text="Go" />
+                           <Button fx:id="goBtnBestUserByLike" layoutX="777.0" layoutY="98.0" mnemonicParsing="false" text="Go" />
                            <ComboBox fx:id="comboAge" layoutX="38.0" layoutY="100.0" prefWidth="150.0" />
                            <Text fx:id="errorMsg" fill="RED" layoutX="436.0" layoutY="115.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                            <ScrollPane layoutX="62.0" layoutY="756.0" prefHeight="476.0" prefWidth="387.0">
                               <content>
-                                 <VBox fx:id="vboxBestUserByLike1" prefWidth="385.0" />
+                                 <VBox fx:id="vboxBestUserByHealth" prefWidth="385.0" />
                               </content>
                            </ScrollPane>
                            <Text layoutX="61.0" layoutY="664.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Best User by health">
@@ -94,6 +89,8 @@
                               </font>
                            </Text>
                            <Button fx:id="goBtnMostSavedRecipes" layoutX="427.0" layoutY="1352.0" mnemonicParsing="false" text="Go" />
+                           <Button fx:id="btnClearUserByLike" layoutX="445.0" layoutY="101.0" mnemonicParsing="false" text="Clear fields" />
+                           <Button fx:id="btnClearUserHealth" layoutX="400.0" layoutY="700.0" mnemonicParsing="false" text="Clear fields" />
                         </children>
                      </AnchorPane>
                   </children>
@@ -108,4 +105,5 @@
       </font>
    </Text>
    <Button fx:id="logoutBtn" layoutX="42.0" layoutY="25.0" mnemonicParsing="false" text="Back to login" />
+   <Button layoutX="68.0" layoutY="-203.0" mnemonicParsing="false" text="Button" />
 </AnchorPane>

@@ -12,7 +12,7 @@
 
 <AnchorPane prefHeight="604.0" prefWidth="227.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.unipi.dii.inginf.lsmdb.rechype.gui.SideMenuController">
    <children>
-      <ImageView fitHeight="88.0" fitWidth="117.0" layoutX="53.0" layoutY="21.0" pickOnBounds="true" preserveRatio="true" fx:id="userImage"/>
+      <ImageView fx:id="userImage" fitHeight="88.0" fitWidth="117.0" layoutX="53.0" layoutY="21.0" pickOnBounds="true" preserveRatio="true" />
       <Text fx:id="userName" layoutX="25.0" layoutY="143.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="151.869140625">
          <font>
             <Font size="21.0" />
@@ -27,11 +27,11 @@
       <Separator layoutY="632.0" prefHeight="8.0" prefWidth="227.0" />
       <Hyperlink layoutX="88.0" layoutY="652.0" text="Settings" />
       <Separator layoutX="224.0" orientation="VERTICAL" prefHeight="700.0" prefWidth="6.0" />
-      <Button fx:id="logOut" layoutX="170.0" layoutY="108.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="42.0">
+      <Button fx:id="logOut" layoutX="160.0" layoutY="108.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="42.0">
          <graphic>
             <HBox prefHeight="42.0" prefWidth="42.0">
                <children>
-                  <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="-11.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@images/logout.png" />
                      </image>

@@ -496,7 +496,7 @@ class UserDao {
         List<Bson> filters = new ArrayList<>();
         if(!level.equals("noLevel")) {
             int lvl = User.levelToInt(level);
-            filters.add(lte("level", lvl));
+            filters.add(gte("level", lvl));
         }
         if(filters.size() > 0){
             stages.add(match(and(filters)));
@@ -509,6 +509,8 @@ class UserDao {
         stages.add(unwind("$recipe.nutrients"));
 
         stages.add(match(eq("recipe.nutrients.name", "Calories")));
+
+        stages.add(match(gt("recipe.nutrients.amount", 0)));
 
         Document healthIndex = Document.parse("{$divide:[\"$recipe.weightPerServing\", \"$recipe.nutrients.amount\"]}");
 

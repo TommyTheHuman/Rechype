@@ -387,7 +387,7 @@ public class RecipeDao {
         stages.add(unwind("$user"));
 
         //group stage
-        stages.add(group("$user._id", sum("count", "$likes")));
+        stages.add(group("$user._id", sum("likes", "$likes")));
 
         stages.add(sort(descending("likes")));
 
@@ -439,7 +439,7 @@ public class RecipeDao {
         if(nutrient.equals("noNutrient")) {
            stages.add(skip(50));
         }
-
+        stages.add(limit(20));
         List<Document> results = null;
         try{
             results = collRecipe.aggregate(stages).into(new ArrayList<>());
