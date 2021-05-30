@@ -51,15 +51,13 @@ class UserServiceImpl implements UserService {
     public boolean checkRecipeLike(String _id, String type){ return userDao.checkRecipeLike(getLoggedUser().getUsername(), _id, type); }
     public boolean checkSavedRecipe(String _id, String type){ return userDao.checkSavedRecipe(getLoggedUser().getUsername(), _id, type); }
     public String removeRecipe(String _id, String type){ return userDao.removeNestedRecipe(getLoggedUser().getUsername(), _id, type); }
-    @Override
     public String addFollow(String myName, String userName, String btnStatus) { return userDao.followUser(myName, userName, btnStatus);}
-
-    @Override
     public Boolean checkForFollow(String myName, String userName) {return userDao.checkUserFollow(myName, userName);}
-
     public List<Document> getRecipes(String username){ return userDao.getUserRecipe(username); }
-
     public Document getRecipeAndDrinks(String username){ return userDao.getUserRecipeAndDrinks(username); }
+    public List<Document> getDrinks(String username) {return userDao.getDrinkRecipe(username);}
+    public List<Document> getTophealthyUsers(String level) {return userDao.getHealthRankByLevel(level);}
+    public List<Document> getMostSavedRecipes() {return userDao.mostSavedRecipes();}
 
-    public List<Document> getRankingByRecipesNumber(int minAge, int maxAge, String country){ return userDao.getUserRankingByRecipesNumber(minAge, maxAge, country);};
+    ;
 }

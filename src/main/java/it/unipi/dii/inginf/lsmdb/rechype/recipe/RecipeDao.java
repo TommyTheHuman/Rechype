@@ -328,7 +328,7 @@ public class RecipeDao {
 ])
 
     */
-    public List<Document> getRankingUserByLike(String category){
+    public List<Document> getRankingUserByLikeAndCategory(String category){
         MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
         List<Bson> filters = new ArrayList<>();
         filters.add(nin("author", "Spoonacular", "PunkAPI", "CocktailDB"));
@@ -355,7 +355,97 @@ public class RecipeDao {
         try{
             results = collRecipe.aggregate(Arrays.asList(match, group, sort, limit, project)).into(new ArrayList<>());
         } catch (MongoException ex){
-            LogManager.getLogger("RecipeDao.class").error("MongoDB: fail analytics: Ranking user by like");
+            LogManager.getLogger("RecipeDao.class").error("MongoDB: fail analytics: Ranking user by like and category");
+        }
+
+        return results;
+    }
+
+
+    public List<Document> getUserRankingByLikeNumber(int minAge, int maxAge, String country) {
+        MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
+        List<Bson> stages = new ArrayList<>();
+        List<Bson> filters = new ArrayList<>();
+
+        //LookUp stage --> attaches a user doc to a recipe doc
+        stages.add(lookup("users", "author", "_id", "user"));
+
+        if(minAge != -1){
+            filters.add(lte("user.age", maxAge));
+            filters.add(gte("user.age", minAge));
+        }
+        if(!country.equals("noCountry")) {
+            filters.add(eq("user.country", country));
+        }
+        if(filters.size() > 0) {
+            // MATCH on Age range and/or Country
+            Bson match = match(and(filters));
+            stages.add(match);
+        }
+
+        //unwind stage
+        stages.add(unwind("$user"));
+
+        //group stage
+        stages.add(group("$user._id", sum("count", "$likes")));
+
+        stages.add(sort(descending("likes")));
+
+        List<Document> results = null;
+        try{
+            results = collRecipe.aggregate(stages).into(new ArrayList<>());
+        } catch (MongoException ex){
+            ex.printStackTrace();
+            LogManager.getLogger("RecipeDao.class").error("MongoDB: fail analytics: Ranking user by like's number");
+        }
+
+        return results;
+    }
+
+    public List<Document> getIngredientRanking(String nutrient, int minutes) {
+        MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
+        List<Bson> stages = new ArrayList<>();
+        List<Bson> filters = new ArrayList<>();
+
+        if(minutes != -1){
+            stages.add(match(lte("readyInMinutes", minutes)));
+        }
+        stages.add(unwind("$ingredients"));
+
+        if(!nutrient.equals("noNutrient")) {
+
+
+            stages.add(unwind("$nutrients"));
+
+            filters.add(eq("nutrients.name", nutrient));
+            int num;
+            if(nutrient.equals("Fat")){
+                num = 15;
+                filters.add(lte("nutrients.amount", num));
+            }
+            if(nutrient.equals("Calories")){
+                num = 250;
+                filters.add(lte("nutrients.amount", num));
+            }
+            if(nutrient.equals("Protein")){
+                num = 100;
+                filters.add(gte("nutrients.amount", num));
+            }
+            stages.add(match(and(filters)));
+        }
+
+        stages.add(group("$ingredients.ingredient", sum("count", 1)));
+        stages.add(sort(descending("count")));
+        if(nutrient.equals("noNutrient")) {
+           stages.add(skip(50));
+        }
+
+        List<Document> results = null;
+        try{
+            results = collRecipe.aggregate(stages).into(new ArrayList<>());
+        } catch (MongoException ex){
+            ex.printStackTrace();
+            LogManager.getLogger("RecipeDao.class").error("MongoDB: fail analytics: Ranking user by level and healthScore");
         }
 
         return results;

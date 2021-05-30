@@ -12,12 +12,23 @@ import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
 
 import static com.mongodb.client.model.Aggregates.*;
+import static com.mongodb.client.model.Accumulators.*;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.nin;
 import static com.mongodb.client.model.Filters.lte;
 import static com.mongodb.client.model.Filters.gte;
 import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Updates.*;
+import static com.mongodb.client.model.Aggregates.*;
+import static com.mongodb.client.model.Projections.*;
+import static com.mongodb.client.model.Accumulators.*;
+import static com.mongodb.client.model.Accumulators.addToSet;
+import static com.mongodb.client.model.Accumulators.sum;
+import static com.mongodb.client.model.Sorts.descending;
 
+import static com.mongodb.client.model.Projections.*;
+import static com.mongodb.client.model.Sorts.descending;
 import static org.neo4j.driver.Values.parameters;
 
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
@@ -479,31 +490,88 @@ class UserDao {
         }
     }
 
-
-
-    public List<Document> getUserRankingByRecipesNumber(int minAge, int maxAge, String country) {
-        MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
+    public List<Document> getHealthRankByLevel(String level){
+        MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
+        List<Bson> stages = new ArrayList<>();
         List<Bson> filters = new ArrayList<>();
-        if(minAge != -1){
-            filters.add(lte("age", maxAge));
-            filters.add(gte("age", minAge));
+        if(!level.equals("noLevel")) {
+            int lvl = User.levelToInt(level);
+            filters.add(lte("level", lvl));
         }
-        if(!country.equals("noCountry")) {
-            filters.add(eq("country", country));
+        if(filters.size() > 0){
+            stages.add(match(and(filters)));
         }
-        Bson match = match(and(filters));
-        Bson unwind = unwind("$recipes");
-        Bson group1 = new Document("$group", new Document("_id", new Document("author", "$recipes.author").append("price", "recipes.pricePerServing").append("numRec", new Document("$sum", 1L))));
-        Bson group2 = Document.parse(
-                "{ $group: " +
-                "    {"
-        );
+
+        stages.add(lookup("recipes", "_id", "author", "recipe"));
+
+        stages.add(unwind("$recipe"));
+
+        stages.add(unwind("$recipe.nutrients"));
+
+        stages.add(match(eq("recipe.nutrients.name", "Calories")));
+
+        Document healthIndex = Document.parse("{$divide:[\"$recipe.weightPerServing\", \"$recipe.nutrients.amount\"]}");
+
+        stages.add(project(fields(
+                excludeId(),
+                include("_id"),
+                computed("healthIndex", healthIndex)
+                )
+        ));
+
+        stages.add(match(lte("healthIndex", 0.8)));
+
+        stages.add(group("$_id", sum("count", 1)));
+
+        stages.add(sort(descending("count")));
 
         List<Document> results = null;
         try{
-            results = collRecipe.aggregate(Arrays.asList(match, unwind, group1)).into(new ArrayList<>());
+            results = collRecipe.aggregate(stages).into(new ArrayList<>());
         } catch (MongoException ex){
-            LogManager.getLogger("RecipeDao.class").error("MongoDB: fail analytics: Ranking user by recipe's number");
+            ex.printStackTrace();
+            LogManager.getLogger("RecipeDao.class").error("MongoDB: fail analytics: Ranking user by level and healthScore");
+        }
+
+        return results;
+    }
+
+
+
+    public List<Document> getDrinkRecipe(String username) {
+
+        List<Document> returnDrinkList = new ArrayList<>();
+        Bson filter = Filters.in("_id", username);
+        Document doc;
+        try {
+            MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(filter).iterator();
+            doc = cursor.next();
+        }catch(MongoException ex){
+            LogManager.getLogger("UserDao.class").error("MongoDB: an error occured in getting nested recipe.");
+            return null;
+        }
+        returnDrinkList = (List<Document>) doc.get("drinks");
+        return returnDrinkList;
+
+
+    }
+
+    public List<Document> mostSavedRecipes() {
+        MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
+        List<Bson> stages = new ArrayList<>();
+        List<Bson> filters = new ArrayList<>();
+
+        stages.add(unwind("$recipes"));
+        stages.add(group("$recipes._id", first("name", "$recipes.name"), sum("count", 1)));
+        stages.add(sort(descending("count")));
+        stages.add(project(fields(excludeId(), include("name"), include("count"))));
+
+        List<Document> results = null;
+        try{
+            results = collRecipe.aggregate(stages).into(new ArrayList<>());
+        } catch (MongoException ex){
+            ex.printStackTrace();
+            LogManager.getLogger("RecipeDao.class").error("MongoDB: fail analytics: Ranking user by like's number");
         }
 
         return results;

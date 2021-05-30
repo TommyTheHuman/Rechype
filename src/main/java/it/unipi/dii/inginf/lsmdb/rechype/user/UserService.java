@@ -28,8 +28,9 @@ public interface UserService {
     boolean checkSavedRecipe(String _id, String type);
     String removeRecipe(String _id, String type);
     Document getRecipeAndDrinks(String user);
-    List<Document> getRankingByRecipesNumber(int minAge, int maxAge, String country);
-
+    List<Document> getDrinks(String text);
+    List<Document> getTophealthyUsers(String level);
+    List<Document> getMostSavedRecipes();
 }
 
 

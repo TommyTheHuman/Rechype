@@ -1,6 +1,7 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.drink.Drink;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
@@ -49,6 +50,7 @@ public class UserProfileController extends JSONAdder implements Initializable {
 
         builder = new GuiElementsBuilder();
         List<Document> recipeList = userService.getRecipes(userText.getText());
+        List<Document> drinkList = userService.getDrinks(userText.getText());
 
         if(recipeList != null){
             for(Document doc :recipeList){
@@ -61,6 +63,18 @@ public class UserProfileController extends JSONAdder implements Initializable {
 
                 recipeVBox.getChildren().add(recipeBlock);
              }
+
+            for(Document docDrink :drinkList){
+                Drink drink = new Drink(docDrink);
+                HBox drinkBlock = builder.createDrinkBlock(drink);
+                drinkBlock.setOnMouseClicked((MouseEvent e) ->{
+                    JSONObject par = new JSONObject().put("_id", drink.getId());
+                    Main.changeScene("DrinkPage", par);
+                });
+
+                recipeVBox.getChildren().add(drinkBlock);
+            }
+
         }
 
         if(!user.getUsername().equals(fields.getString("_id"))) {
