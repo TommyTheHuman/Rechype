@@ -50,7 +50,6 @@ public class AddIngredientController extends JSONAdder implements Initializable 
         ingredientService = ingredientServiceFactory.getService();
 
         builder = new GuiElementsBuilder();
-
         backToRecipeBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -68,9 +67,17 @@ public class AddIngredientController extends JSONAdder implements Initializable 
                             return;
                         }
                         if(counter == builder.idSelectedIngredient.size()-1){
-                            finalIngredients = finalIngredients + builder.idSelectedIngredient.get(counter) + ": " + quantityString + "g ";
+                            if(!par.has("Drink")) {
+                                finalIngredients = finalIngredients + builder.idSelectedIngredient.get(counter) + ": " + quantityString + "g ";
+                            }else{
+                                finalIngredients = finalIngredients + builder.idSelectedIngredient.get(counter)+": "+quantityString;
+                            }
                         }else {
-                            finalIngredients = finalIngredients + builder.idSelectedIngredient.get(counter) + ": " + quantityString + "g, ";
+                            if(!par.has("Drink")){
+                                finalIngredients = finalIngredients + builder.idSelectedIngredient.get(counter) + ": " + quantityString + "g, ";
+                            }else{
+                                finalIngredients = finalIngredients + builder.idSelectedIngredient.get(counter)+": "+quantityString+", ";
+                            }
                         }
                         counter++;
                     }
@@ -78,8 +85,9 @@ public class AddIngredientController extends JSONAdder implements Initializable 
                 inputGramsError.setOpacity(0);
                 par.remove("ingredients");
                 par.put("ingredients", finalIngredients);
-                if(par.has("Drink"))
+                if(par.has("Drink")) {
                     Main.changeScene("DrinkAdd", par);
+                }
                 else
                     Main.changeScene("RecipeAdd", par);
             }
@@ -95,7 +103,6 @@ public class AddIngredientController extends JSONAdder implements Initializable 
                 searchedIngredientVBox.getChildren().clear();
                 if(text.length() > 2){
                     for(Ingredient ingr: ingredientService.searchIngredients(text, 0, 10)){
-
                         searchedIngredientVBox.getChildren().addAll(builder.createIngredientBlock(ingr, selectedIngredientVBox), new Separator(Orientation.HORIZONTAL));
                     }
                 }
@@ -121,11 +128,15 @@ public class AddIngredientController extends JSONAdder implements Initializable 
     @Override
     public void setGui(){
         JSONObject par = jsonParameters;
+        if(jsonParameters.has("Drink"))
+            selectedIngredientVBox.setId("NoGrams");
         if(!(par.get("ingredients").equals(""))){
             String ingredientsString = par.get("ingredients").toString();
             String[] singleIngredient = ingredientsString.trim().split(", ");
             for(String ingr: singleIngredient){
-                ingr = ingr.substring(0, ingr.length() - 1);
+                if(!par.has("Drink")) {
+                    ingr = ingr.substring(0, ingr.length() - 1);
+                }
                 String[] details = ingr.trim().split(":");
                 builder.idSelectedIngredient.add(details[0]);
 
@@ -136,7 +147,13 @@ public class AddIngredientController extends JSONAdder implements Initializable 
                 quantity.setPrefWidth(50);
                 Button deleteIngredient = new Button("Delete");
                 HBox nameBox = new HBox(nameNode);
-                HBox handleBox = new HBox(deleteIngredient, quantity, gramsNode);
+                HBox handleBox;
+                if(par.has("Drink")) {
+                    handleBox = new HBox(deleteIngredient, quantity);
+                }
+                else {
+                    handleBox = new HBox(deleteIngredient, quantity, gramsNode);
+                }
                 handleBox.setSpacing(10.0);
                 VBox vbox = new VBox(nameBox, handleBox, new Separator(Orientation.HORIZONTAL));
                 vbox.setSpacing(10.0);

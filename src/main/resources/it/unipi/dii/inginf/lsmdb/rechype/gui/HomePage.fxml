@@ -19,36 +19,111 @@
       <children>
          <ScrollPane hbarPolicy="NEVER" prefHeight="648.0" prefWidth="775.0">
             <content>
-               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="648.0" prefWidth="768.0">
+               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="2300.0" prefWidth="768.0">
                   <children>
                      <VBox layoutX="-3.0" prefHeight="553.0" prefWidth="775.0">
                         <children>
                            <AnchorPane prefHeight="309.0" prefWidth="775.0">
                               <children>
-                                 <Text layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Best Recipes">
+                                 <Text layoutX="9.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Suggested Recipes">
                                     <font>
                                        <Font size="43.0" />
                                     </font>
                                  </Text>
                                  <Separator layoutX="6.0" layoutY="53.0" prefHeight="12.0" prefWidth="768.0" />
-                                 <ScrollPane hbarPolicy="NEVER" layoutY="59.0" prefHeight="256.0" prefWidth="775.0">
+                                 <ScrollPane hbarPolicy="NEVER" layoutX="154.0" layoutY="59.0" prefHeight="262.0" prefWidth="472.0">
                                     <content>
-                                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+                                       <VBox fx:id="boxSuggestedRecipes" prefWidth="466.0" />
+                                    </content>
+                                 </ScrollPane>
+                              </children>
+                           </AnchorPane>
+                           <AnchorPane prefHeight="250.0" prefWidth="775.0">
+                              <children>
+                                 <Text layoutX="14.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Suggested Drinks">
+                                    <font>
+                                       <Font size="43.0" />
+                                    </font>
+                                 </Text>
+                                 <Separator layoutX="6.0" layoutY="53.0" prefHeight="12.0" prefWidth="768.0" />
+                                 <ScrollPane hbarPolicy="NEVER" layoutX="150.0" layoutY="57.0" prefHeight="262.0" prefWidth="474.0">
+                                    <content>
+                                       <VBox fx:id="boxSuggestedDrinks" prefWidth="466.0" />
+                                    </content>
+                                 </ScrollPane>
+                              </children>
+                           </AnchorPane>
+                           <AnchorPane prefHeight="250.0" prefWidth="775.0">
+                              <children>
+                                 <Text layoutX="14.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Suggested Users">
+                                    <font>
+                                       <Font size="43.0" />
+                                    </font>
+                                 </Text>
+                                 <Separator layoutX="6.0" layoutY="53.0" prefHeight="12.0" prefWidth="768.0" />
+                                 <ScrollPane hbarPolicy="NEVER" layoutX="150.0" layoutY="57.0" prefHeight="262.0" prefWidth="474.0">
+                                    <content>
+                                       <VBox fx:id="boxSuggestedUsers" prefWidth="466.0" />
                                     </content>
                                  </ScrollPane>
                               </children>
                            </AnchorPane>
                            <AnchorPane prefHeight="309.0" prefWidth="775.0">
                               <children>
-                                 <Text layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Top Users">
+                                 <Text layoutX="9.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Best Recipes">
                                     <font>
                                        <Font size="43.0" />
                                     </font>
                                  </Text>
                                  <Separator layoutX="6.0" layoutY="53.0" prefHeight="12.0" prefWidth="768.0" />
-                                 <ScrollPane hbarPolicy="NEVER" layoutY="59.0" prefHeight="256.0" prefWidth="775.0">
+                                 <ScrollPane hbarPolicy="NEVER" layoutX="154.0" layoutY="59.0" prefHeight="262.0" prefWidth="472.0">
                                     <content>
-                                       <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
+                                       <VBox fx:id="boxBestRecipes" prefWidth="466.0" />
+                                    </content>
+                                 </ScrollPane>
+                              </children>
+                           </AnchorPane>
+                           <AnchorPane prefHeight="309.0" prefWidth="775.0">
+                              <children>
+                                 <Text layoutX="9.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Best Drinks">
+                                    <font>
+                                       <Font size="43.0" />
+                                    </font>
+                                 </Text>
+                                 <Separator layoutX="6.0" layoutY="53.0" prefHeight="12.0" prefWidth="768.0" />
+                                 <ScrollPane hbarPolicy="NEVER" layoutX="154.0" layoutY="59.0" prefHeight="262.0" prefWidth="472.0">
+                                    <content>
+                                       <VBox fx:id="boxBestDrinks" prefWidth="466.0" />
+                                    </content>
+                                 </ScrollPane>
+                              </children>
+                           </AnchorPane>
+                           <AnchorPane prefHeight="309.0" prefWidth="775.0">
+                              <children>
+                                 <Text layoutX="9.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Best Users">
+                                    <font>
+                                       <Font size="43.0" />
+                                    </font>
+                                 </Text>
+                                 <Separator layoutX="6.0" layoutY="53.0" prefHeight="12.0" prefWidth="768.0" />
+                                 <ScrollPane hbarPolicy="NEVER" layoutX="154.0" layoutY="59.0" prefHeight="262.0" prefWidth="472.0">
+                                    <content>
+                                       <VBox fx:id="boxBestUsers" prefWidth="466.0" />
+                                    </content>
+                                 </ScrollPane>
+                              </children>
+                           </AnchorPane>
+                           <AnchorPane prefHeight="309.0" prefWidth="775.0">
+                              <children>
+                                 <Text layoutX="9.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Best Ingredients">
+                                    <font>
+                                       <Font size="43.0" />
+                                    </font>
+                                 </Text>
+                                 <Separator layoutX="6.0" layoutY="53.0" prefHeight="12.0" prefWidth="768.0" />
+                                 <ScrollPane hbarPolicy="NEVER" layoutX="154.0" layoutY="59.0" prefHeight="262.0" prefWidth="472.0">
+                                    <content>
+                                       <VBox fx:id="boxBestIngredients" prefWidth="466.0" />
                                     </content>
                                  </ScrollPane>
                               </children>
@@ -61,6 +136,6 @@
          </ScrollPane>
       </children>
    </AnchorPane>
-    <fx:include source="SideMenu.fxml" />
+   <fx:include source="SideMenu.fxml" />
    <fx:include source="SearchBar.fxml" />
 </AnchorPane>

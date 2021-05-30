@@ -19,4 +19,5 @@ class DrinkServiceImpl implements DrinkService{
         return drinkDao.getDrinkByKey(key);
     }
     public Document searchDrinkById(String _id) { return drinkDao.getDrinkById(_id); }
+    public List<Document> getBestDrinks() { return drinkDao.getBestDrinks(); }
 }

@@ -112,6 +112,7 @@ public class LandingPageController extends JSONAdder implements Initializable {
                     if (!password.equals(confPassword)) {
                         regMsg.setText("You must insert the same password in both fields");
                         regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");
+                        return;
                     } else {
                         result = userService.register(username, password, confPassword, country, ageNum);
                     }

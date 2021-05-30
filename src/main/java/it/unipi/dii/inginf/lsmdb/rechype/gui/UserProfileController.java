@@ -44,7 +44,14 @@ public class UserProfileController extends JSONAdder implements Initializable {
 
     @Override
     public void setGui(){
-        JSONObject fields=userService.getCachedUser(jsonParameters.getString("_id"));
+        JSONObject fields;
+        if(jsonParameters.has("cached")){
+            //retrieving the recipe from key-value
+            fields = userService.getCachedUser(jsonParameters.getString("_id"));
+        }else {
+            //retrieve from mongoDB
+            fields = new JSONObject(userService.getUserById(jsonParameters.getString("_id")).toJson());
+        }
         userText.setText(fields.getString("_id"));
         User user = userService.getLoggedUser();
 

@@ -75,7 +75,7 @@ public class GuiElementsBuilder {
         block.setId(user.getUsername());
 
         block.setOnMouseClicked((MouseEvent e) ->{
-            JSONObject par = new JSONObject().put("_id", user.getUsername());
+            JSONObject par = new JSONObject().put("_id", user.getUsername()).append("cached", true);
             Main.changeScene("UserProfile", par);
             //flushing cache
             HaloDBDriver.getObject().flush();
@@ -132,7 +132,11 @@ public class GuiElementsBuilder {
                 quantity.setPrefWidth(50);
                 Text grams = new Text("g");
                 HBox blockSelected = new HBox(selectedNode);
-                HBox controllerIngredient = new HBox(deleteIngredient, quantity, grams);
+                HBox controllerIngredient;
+                if(selectedIngredientVBox.getId().equals("NoGrams"))
+                    controllerIngredient = new HBox(deleteIngredient, quantity);
+                else
+                    controllerIngredient = new HBox(deleteIngredient, quantity, grams);
                 controllerIngredient.setSpacing(10.0);
                 VBox vbox = new VBox();
                 vbox.getChildren().addAll(blockSelected, controllerIngredient, new Separator(Orientation.HORIZONTAL));
@@ -158,21 +162,24 @@ public class GuiElementsBuilder {
         HBox block = new HBox();
         Text nameNode;
         String imageName;
-        if(ingredient.has("ingredient")) {
-            nameNode = new Text(ingredient.getString("ingredient"));
-            imageName=ingredient.getString("ingredient").replace(" ", "-");
-        }else{
-            nameNode = new Text(ingredient.getString("name"));
-            imageName=ingredient.getString("name").replace(" ", "-");
+        String imageUrl;
+        nameNode = new Text(ingredient.getString("ingredient"));
+        if(!ingredient.has("image")) {
+            imageName = ingredient.getString("ingredient").replace(" ", "-");
+            imageUrl = "https://spoonacular.com/cdn/ingredients_100x100/" + imageName+".jpg";
         }
-        Text amount;
-        if(ingredient.get("amount") instanceof String)
-            amount = new Text("Amount: "+ingredient.getString("amount"));
-        else
-            amount = new Text("Amount: "+ingredient.get("amount"));
+        else {
+            imageName = ingredient.getString("image");
+            imageUrl="https://spoonacular.com/cdn/ingredients_100x100/" + imageName;
+        }
+        Text amount=null;
+        if(ingredient.has("amount")) {
+            if (ingredient.get("amount") instanceof String)
+                amount = new Text("Amount: " + ingredient.getString("amount"));
+            else
+                amount = new Text("Amount: " + ingredient.get("amount"));
+        }
 
-
-        String imageUrl = "https://spoonacular.com/cdn/ingredients_100x100/" + imageName+".jpg";
         ImageView imageNode = null;
         InputStream imageStream;
         try{
@@ -183,8 +190,10 @@ public class GuiElementsBuilder {
             imageNode = new ImageView(new Image(imageStream, 50,50,false,false));
             LogManager.getLogger("AddIngredientController.class").info("Ingredient's image not found");
         }
-        block.getChildren().addAll(imageNode, new VBox(nameNode, amount));
-
+        if(amount!=null)
+            block.getChildren().addAll(imageNode, new VBox(nameNode, amount));
+        else
+            block.getChildren().addAll(imageNode, new VBox(nameNode));
         block.setAlignment(Pos.CENTER_LEFT);
         block.setSpacing(10.0);
         return block;

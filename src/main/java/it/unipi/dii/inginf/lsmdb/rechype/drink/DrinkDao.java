@@ -16,9 +16,12 @@ import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.TransactionWork;
+import org.neo4j.driver.Value;
 import org.neo4j.driver.exceptions.Neo4jException;
 
 import java.nio.charset.StandardCharsets;
@@ -68,10 +71,25 @@ class DrinkDao {
             try (Session session = Neo4jDriver.getObject().getDriver().session()) { //try to add
                 String Neo4jId = id;
                 session.writeTransaction((TransactionWork<Void>) tx -> {
-                    tx.run("CREATE (d:Drink { id:$id, name: $name, author: $author, imageUrl: $imageUrl, " +
-                                    "tag: $tag})",
+                    //creating the string for adding all the ingredient's relation
+                    String totalQueryMatch="";
+                    String totalQueryCreate="";
+                    JSONArray ingredientsJson=new JSONObject(doc.toJson()).getJSONArray("ingredients");
+                    for(int i=0; i<ingredientsJson.length(); i++){
+                        totalQueryMatch=totalQueryMatch+"MATCH(i"+i+":Ingredient) WHERE i"+i+".id=\""
+                                +ingredientsJson.getJSONObject(i).getString("ingredient")+"\" ";
+                        totalQueryCreate=totalQueryCreate+"CREATE (d)-[:CONTAINS]->(i"+i+") ";
+                    }
+                    tx.run(
+                            "MATCH (u:User) WHERE u.username=$owner "+
+                            totalQueryMatch+
+                            "CREATE (d:Drink { id:$id, name: $name, author: $author, imageUrl: $imageUrl, " +
+                            "tag: $tag}) "+
+                            "CREATE (u)-[rel:OWNS {since:date($date)}]->(d) "+
+                            totalQueryCreate,
                             parameters("id", Neo4jId,"name", doc.getString("name"), "author", doc.getString("author"),
-                                    "imageUrl", doc.getString("image"), "tag", doc.getString("tag")));
+                                    "imageUrl", doc.getString("image"), "tag", doc.getString("tag"), "owner", doc.getString("author"),
+                                    "date", java.time.LocalDate.now().toString()));
                     return null;
                 });
                 return "DrinkAdded";
@@ -139,7 +157,7 @@ class DrinkDao {
                     session.writeTransaction((TransactionWork<Void>) tx -> {
                         tx.run("MATCH (uu:User) WHERE uu.username = $username" +
                                         " MATCH (d:Drink) WHERE d.id = $_id" +
-                                        " CREATE (uu)-[rel:LIKES {since:$date}]->(d)",
+                                        " CREATE (uu)-[rel:LIKES {since:date($date)}]->(d)",
                                 parameters("username", user, "_id", _id, "date", java.time.LocalDate.now().toString()));
                         return null;
                     });
@@ -204,7 +222,7 @@ class DrinkDao {
                     session.writeTransaction((TransactionWork<Void>) tx -> {
                         tx.run("MATCH (uu:User) WHERE uu.username = $username" +
                                         " MATCH (d:Drink) WHERE rr.id = $_id" +
-                                        " CREATE (uu)-[rel:LIKES {since:$date}]->(d)",
+                                        " CREATE (uu)-[rel:LIKES {since:date($date)}]->(d)",
                                 parameters("username", username, "_id", _id));
                         return null;
                     });
@@ -262,7 +280,7 @@ class DrinkDao {
 
     public Document getDrinkById(String id){
 
-            Document drink = new Document();
+            Document drink;
             MongoCursor<Document> cursor  = MongoDriver.getObject()
             .getCollection(MongoDriver.Collections.DRINKS)
             .find(eq("_id", new ObjectId(id))).iterator();
@@ -270,6 +288,38 @@ class DrinkDao {
             drink = cursor.next();
 
             return drink;
+    }
+
+    public List<Document> getBestDrinks(){
+        List<Document> drinks = new ArrayList<>();
+        String todayDate = java.time.LocalDate.now().toString();
+        try (Session session = Neo4jDriver.getObject().getDriver().session()) {
+            session.readTransaction((TransactionWork<Void>) tx -> {
+                Result res = tx.run(
+                        "MATCH (:User)-[likes:LIKES]->(d:Drink) " +
+                                "WHERE date($date)-duration({days:7})<likes.since<=date($date)+duration({days:7}) " +
+                                "return d AS DrinkNode, count(likes) AS totalLikes " +
+                                "ORDER BY totalLikes DESC, DrinkNode.name ASC LIMIT 10",
+                        parameters("date", todayDate));
+                while(res.hasNext()){
+                    //building each recipe's document
+                    Value drink=res.next().get("DrinkNode");
+                    Document doc=new Document();
+                    doc.put("author", drink.get("author").asString());
+                    doc.put("_id", new ObjectId(drink.get("id").asString()).toString());
+                    doc.put("image", drink.get("imageUrl").asString());
+                    doc.put("name", drink.get("name").asString());
+                    doc.put("tag", drink.get("tag").asString());
+                    drinks.add(doc);
+                }
+                return null;
+            });
+        }catch(Neo4jException ne){
+            ne.printStackTrace();
+            LogManager.getLogger("DrinkDao.class").info("Neo4j was not able to retrieve the drink's " +
+            "global suggestions");
+        }
+        return drinks;
     }
 
 }

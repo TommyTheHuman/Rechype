@@ -29,7 +29,10 @@ public class Drink {
         }
         name=jsonObject.getString("name");
         author=jsonObject.getString("author");
-        image=jsonObject.getString("image");
+        if(jsonObject.get("image") instanceof String)
+            image=jsonObject.getString("image");
+        else
+            image="";
         tag=jsonObject.getString("tag");
     }
 

@@ -7,13 +7,10 @@ import it.unipi.dii.inginf.lsmdb.rechype.ingredient.Ingredient;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientService;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
-import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeService;
-import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -77,12 +74,13 @@ public class DrinkAddController extends JSONAdder implements Initializable {
         addIngredientButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-
-                JSONObject par = new JSONObject().put("title", title.getText())
+                JSONObject par = new JSONObject()
+                        .put("Drink", "true")
+                        .put("title", title.getText())
                         .put("imageUrl", imageUrl.getText())
                         .put("description", description.getText()).put("method", method.getText())
-                        .put("ingredients", ingredients.getText()).put("tag", ComboBoxTag.getValue())
-                        .put("Drink", "true");
+                        .put("ingredients", ingredients==null?"":ingredients.getText())
+                        .put("tag", ComboBoxTag.getValue()==null? "": ComboBoxTag.getValue());
                 Main.changeScene("IngredientSearch", par);
             }
         });
@@ -100,14 +98,12 @@ public class DrinkAddController extends JSONAdder implements Initializable {
                         String[] details = ingr.trim().split(":");
                         ingredientNames.add(details[0]);
                         details[1] = details[1].replaceAll("\\s+", "");
-                        details[1] = details[1].substring(0, details[1].length() - 1);
-                        amount.add(details[1]+"g");
+                        amount.add(details[1]);
                     }
 
                     List<Ingredient> cachedIngredients = new ArrayList<>();
                     JSONObject jsonIngredient;
                     List<Document> docIngredients = new ArrayList<>();
-                    List<Document> docNutrients = new ArrayList<>();
                     Ingredient auxIngr;
 
                     Integer counter = 0;

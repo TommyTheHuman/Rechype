@@ -130,7 +130,7 @@ public class RecipeAddController extends JSONAdder implements Initializable {
                         jsonIngredient = ingredientService.getCachedIngredient(ingr);
                         auxIngr = new Ingredient(jsonIngredient);
                         cachedIngredients.add(auxIngr);
-                        docIngredients.add(new Document().append("name", auxIngr.getName()).append("amount", amount.get(counter)));
+                        docIngredients.add(new Document().append("ingredient", auxIngr.getName()).append("amount", amount.get(counter)));
                         counter++;
                     }
 
@@ -196,7 +196,8 @@ public class RecipeAddController extends JSONAdder implements Initializable {
                             .append("method", method.getText()).append("likes", 0).append("ingredients", docIngredients)
                             .append("nutrients", docNutrients);
 
-                    // check on correct recipe add
+                    //if the recipe is correctly added then the user's recipes redundacy is updated
+                    //if the recipe is created by the user the level is increased on neo4j and mongodb
                     textFieldsError.setOpacity(0);
                     if(recipeService.addRecipe(doc).equals("RecipeAdded")) {
                         userService.addNewRecipe(doc, "recipe");

@@ -19,9 +19,9 @@ import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+import org.json.JSONArray;
 import org.json.JSONObject;
-import org.neo4j.driver.Session;
-import org.neo4j.driver.TransactionWork;
+import org.neo4j.driver.*;
 import org.neo4j.driver.exceptions.Neo4jException;
 import com.mongodb.ConnectionString;
 import com.mongodb.client.*;
@@ -53,6 +53,11 @@ import java.util.regex.Pattern;
 
 public class RecipeDao {
 
+    /***
+     * Adding a new recipe and creating the relations with its ingredients
+     * @param doc
+     * @return
+     */
     public String addRecipe(Document doc){
 
         boolean already_tried = false;
@@ -85,15 +90,31 @@ public class RecipeDao {
                 }
             }
 
-            // Add some fields of recipe in neo4j
+            // Add recipes to neo4j along with the relation with ingredients and owner (the user)
             try (Session session = Neo4jDriver.getObject().getDriver().session()) { //try to add
                 String Neo4jId = id;
+
                 session.writeTransaction((TransactionWork<Void>) tx -> {
-                    tx.run("CREATE (ee:Recipe { id:$id, name: $name, author: $author, pricePerServing: $pricePerServing, imageUrl: $imageUrl," +
-                            "vegetarian: $vegetarian, vegan: $vegan, dairyFree: $dairyFree, glutenFree: $glutenFree} )",
-                            parameters("id", Neo4jId,"name", doc.getString("name"), "author", doc.getString("author"), "pricePerServing", doc.getDouble("pricePerServing"),
+                    //creating the strings of the queries for adding all the ingredient's relation
+                    String totalQueryMatch="";
+                    String totalQueryCreate="";
+                    JSONArray ingredientsJson=new JSONObject(doc.toJson()).getJSONArray("ingredients");
+                    for(int i=0; i<ingredientsJson.length(); i++){
+                        totalQueryMatch=totalQueryMatch+"MATCH(i"+i+":Ingredient) WHERE i"+i+".id=\""
+                        +ingredientsJson.getJSONObject(i).getString("ingredient")+"\" ";
+                        totalQueryCreate=totalQueryCreate+"CREATE (ee)-[:CONTAINS]->(i"+i+") ";
+                    }
+                    tx.run(
+                            "MATCH (u:User) WHERE u.username=$owner " +
+                            totalQueryMatch+
+                            "CREATE (ee:Recipe { id:$id, name: $name, author: $author, pricePerServing: $pricePerServing, imageUrl: $imageUrl," +
+                            "vegetarian: $vegetarian, vegan: $vegan, dairyFree: $dairyFree, glutenFree: $glutenFree} ) " +
+                            "CREATE (u)-[rel:OWNS {since:date($date)}]->(ee) "+
+                            totalQueryCreate,
+                            parameters("id", Neo4jId,"name", doc.getString("name"), "author", doc.getString("author"), "pricePerServing", doc.get("pricePerServing"),
                             "imageUrl", doc.getString("image"), "vegetarian", doc.getBoolean("vegetarian"), "vegan", doc.getBoolean("vegan"), "dairyFree", doc.getBoolean("dairyFree"),
-                            "glutenFree", doc.getBoolean("glutenFree")));
+                            "glutenFree", doc.getBoolean("glutenFree"), "owner", doc.getString("author"), "date", java.time.LocalDate.now().toString()));
+
                     return null;
                 });
                 return "RecipeAdded";
@@ -106,8 +127,6 @@ public class RecipeDao {
     }
 
     public List<Recipe> getRecipesByText(String recipeName, int offset, int quantity, JSONObject filters){
-
-        System.out.println(filters);
 
         //create the case Insensitive pattern and perform the mongo query
         List<Bson> filtersList = new ArrayList<>();
@@ -210,7 +229,7 @@ public class RecipeDao {
                     session.writeTransaction((TransactionWork<Void>) tx -> {
                         tx.run("MATCH (uu:User) WHERE uu.username = $username" +
                                         " MATCH (rr:Recipe) WHERE rr.id = $_id" +
-                                        " CREATE (uu)-[rel:LIKES {since:$date}]->(rr)",
+                                        " CREATE (uu)-[rel:LIKES {since:date($date)}]->(rr)",
                                 parameters("username", user, "_id", _id, "date", java.time.LocalDate.now().toString()));
                         return null;
                     });
@@ -275,7 +294,7 @@ public class RecipeDao {
                     session.writeTransaction((TransactionWork<Void>) tx -> {
                         tx.run("MATCH (uu:User) WHERE uu.username = $username" +
                                         " MATCH (rr:Recipe) WHERE rr.id = $_id" +
-                                        " CREATE (uu)-[rel:LIKES {since:$date}]->(rr)",
+                                        " CREATE (uu)-[rel:LIKES {since:date($date)}]->(rr)",
                                 parameters("username", username, "_id", _id));
                         return null;
                     });
@@ -315,6 +334,47 @@ public class RecipeDao {
 
         return recipe;
 
+    }
+
+    /***
+     * GLOBAL SUGGESTION
+     * Retrieving best recipes: The recipes that have obtained more likes in the week
+     * @return
+     */
+    public List<Document> getBestRecipes() {
+        List<Document> recipes = new ArrayList<>();
+        String todayDate = java.time.LocalDate.now().toString();
+        try (Session session = Neo4jDriver.getObject().getDriver().session()) {
+            session.readTransaction((TransactionWork<Void>) tx -> {
+                Result res = tx.run(
+                        "MATCH (:User)-[likes:LIKES]->(r:Recipe) " +
+                                "WHERE date($date)-duration({days:7})<likes.since<=date($date)+duration({days:7}) " +
+                                "return r AS RecipeNode, count(likes) AS totalLikes " +
+                                "ORDER BY totalLikes DESC, RecipeNode.name ASC LIMIT 10",
+                        parameters("date", todayDate));
+                while (res.hasNext()) {
+                    //building each recipe's document
+                    Value recipe = res.next().get("RecipeNode");
+                    Document doc = new Document();
+                    doc.put("author", recipe.get("author").asString());
+                    doc.put("dairyFree", recipe.get("dairyFree").asBoolean());
+                    doc.put("glutenFree", recipe.get("glutenFree").asBoolean());
+                    doc.put("vegan", recipe.get("vegan").asBoolean());
+                    doc.put("vegetarian", recipe.get("vegetarian").asBoolean());
+                    doc.put("_id", new ObjectId(recipe.get("id").asString()).toString());
+                    doc.put("image", recipe.get("imageUrl").asString());
+                    doc.put("name", recipe.get("name").asString());
+                    doc.put("pricePerServing", recipe.get("pricePerServing").asDouble());
+                    recipes.add(doc);
+                }
+                return null;
+            });
+        }catch(Neo4jException ne){
+            ne.printStackTrace();
+            LogManager.getLogger("RecipeDao.class").info("Neo4j was not able to retrieve the recipe's " +
+                    "global suggestions");
+        }
+        return recipes;
     }
 
 

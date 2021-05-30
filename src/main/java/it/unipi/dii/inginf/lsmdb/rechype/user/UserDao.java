@@ -6,6 +6,7 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
+import com.mongodb.client.result.DeleteResult;
 import com.oath.halodb.HaloDB;
 import com.oath.halodb.HaloDBException;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
@@ -29,6 +30,8 @@ import static com.mongodb.client.model.Sorts.descending;
 
 import static com.mongodb.client.model.Projections.*;
 import static com.mongodb.client.model.Sorts.descending;
+import static com.mongodb.client.model.Filters.or;
+import static com.mongodb.client.model.Updates.*;
 import static org.neo4j.driver.Values.parameters;
 
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
@@ -40,11 +43,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.json.JSONObject;
-import org.neo4j.driver.Result;
-import org.neo4j.driver.Session;
-import org.neo4j.driver.TransactionWork;
-import static com.mongodb.client.model.Updates.push;
-import static com.mongodb.client.model.Updates.addToSet;
+import org.neo4j.driver.*;
 import org.neo4j.driver.exceptions.DiscoveryException;
 import org.neo4j.driver.exceptions.Neo4jException;
 import org.neo4j.driver.exceptions.SessionExpiredException;
@@ -156,7 +155,8 @@ class UserDao {
             //try Neo4j
             try (Session session = Neo4jDriver.getObject().getDriver().session()) { //try to add
                 session.writeTransaction((TransactionWork<Void>) tx -> {
-                    tx.run("CREATE (ee:User { username: $username, country: $country, level: $level })", parameters("username", username, "country", country, "level", 0));
+                    tx.run("CREATE (ee:User { username: $username, country: $country, level: $level , age:$age})",
+                    parameters("username", username, "country", country, "level", 0, "age", age));
                     return null;
                 });
                 Json.put("response", "RegOk");
@@ -166,6 +166,22 @@ class UserDao {
                 already_tried=true;
             }
         }
+    }
+
+    /***
+     * retrieving the user's entity by mongodb using the _id (username)
+     * @param id
+     * @return
+     */
+    public Document getUserById(String id){
+        Document user;
+        MongoCursor<Document> cursor  = MongoDriver.getObject()
+                .getCollection(MongoDriver.Collections.USERS)
+                .find(eq("_id", id)).iterator();
+
+        user = cursor.next();
+
+        return user;
     }
 
     /***
@@ -246,7 +262,7 @@ class UserDao {
     }
 
     /***
-     * deleting a user's entity from both databases (cross-db consistency)
+     * simple delete of a user's entity from both databases (cross-db consistency)
      * @param username
      * @return
      */
@@ -278,6 +294,8 @@ class UserDao {
         return neo4j && mongo;
     }
 
+
+
     /***
      * Adding new nested recipe to user, it can be called during the creation of a new recipe or during the
      * adding to favourites. Type discriminates the case of recipe or drink
@@ -307,19 +325,32 @@ class UserDao {
                 find = eq("_id", user.getUsername());
                 listUpdates.add(Updates.push("drinks", userRecipe));
             }
-            //increasing the level if the recipe is created
-            //a user cannot add his recipes to favourites because they are already there
-            //so the check on the author username is enough
+            //increasing the level if the recipe is created and not added to favourites
             if(user.getUsername().equals(recipe.getString("author")))
                 listUpdates.add(Updates.inc("level", 1));
             collUser.updateOne(find, Updates.combine(listUpdates));
         } catch (MongoException me) {
             me.printStackTrace();
-            if(recipe.getBoolean("NoParse")==null) //if no parse is needed the log does not specify it
+            if(recipe.getBoolean("NoParse")==null) //if no parse is needed the log specify it
                 LogManager.getLogger("UserDao.class").error("MongoDB[PARSE]: insert nested recipe(creation) in user failed" + recipe.toJson());
             else
                 LogManager.getLogger("UserDao.class").error("MongoDB: insert nested recipe(favourite) in user failed");
             return "Abort";
+        }
+
+        //if the recipe is created by the user the level on neo4j entity is updated
+        if(user.getUsername().equals(recipe.getString("author"))){
+            try (Session session = Neo4jDriver.getObject().getDriver().session()) { //try to add
+                session.writeTransaction((TransactionWork<Void>) tx -> {
+                    tx.run(
+                            "MATCH (u:User) WHERE u.username=$username " +
+                                "SET u.level=u.level+1 ",
+                    parameters("username", user.getUsername()));
+                    return null;
+                });
+            }catch(Neo4jException ne){
+                LogManager.getLogger("UserDao.class").error("Neo4j[PARSE]: user level increasement failed"+user.getUsername());
+            }
         }
         return "RecipeOk";
     }
@@ -353,6 +384,83 @@ class UserDao {
             LogManager.getLogger("UserDao.class").error("Neo4j: like check failed");
             return false;
         }
+    }
+
+    /***
+     * The function removes the user from mongodb and neo4j (cross-db consistency),
+     * the user's recipes are removed and all the relations on neo4j are removed (likes to recipes)
+     * If the first query on mongo fails (user entity deletion) all the function failed and the ban itself fails.
+     * If the second or third query fails is not a problem because the functionalities for the ban's user are interrupted.
+     * @param username
+     * @return
+     */
+    public String banUser(String username){
+        MongoCollection<Document> coll=null;
+
+        //deleting the user's entity on mongodb
+        try {
+            coll = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
+            DeleteResult result=coll.deleteOne(eq("_id", username));
+            if(result.getDeletedCount() == 0)
+                return "Abort";
+        }catch(MongoException ex){ //deletion failed
+            LogManager.getLogger("UserDao.class").error("MongoDB: user ban failed");
+            return "Abort";
+        }
+
+        //try Neo4j
+        try (Session session = Neo4jDriver.getObject().getDriver().session()) {
+            List<ObjectId> idRecipesList=new ArrayList<>();
+            List<ObjectId> idDrinksList=new ArrayList<>();
+            session.writeTransaction((TransactionWork<Void>) tx -> {
+                Result res=tx.run(
+                    "MATCH (u:User) WHERE u.username=$username "+
+                    "OPTIONAL MATCH (u)-[rel1:LIKES]->(r:Recipe) "+
+                    "OPTIONAL MATCH (u)-[rel2:LIKES]->(d:Drink) "+
+                    "WITH collect(r.id) AS RecipeIds, collect(d.id) AS DrinkIds, u " +
+                    "DETACH DELETE u " +
+                    "return RecipeIds, DrinkIds",
+                parameters("username", username));
+                while(res.hasNext()){
+                    Record rec=res.next();
+                    for(int i=0; i<rec.get("RecipeIds").size();i++)
+                        idRecipesList.add(new ObjectId(rec.get("RecipeIds").get(i).asString()));
+                    for(int i=0; i<rec.get("DrinkIds").size();i++){
+                        idDrinksList.add(new ObjectId(rec.get("DrinkIds").get(i).asString()));
+                    }
+                }
+                return null;
+            });
+
+            //update recipe's like and drink's like on mongodb
+            try{
+                coll = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
+                List<Bson> filtersList=new ArrayList<>();
+                for(int i=0; i<idRecipesList.size(); i++){
+                    filtersList.add(Filters.eq("_id", idRecipesList.get(i)));
+                }
+                coll.updateMany(Filters.in("_id", idRecipesList), inc("likes", -1));
+            }catch(MongoException me){
+                LogManager.getLogger("UserDao.class").error("MongoDB[PARSE], user ban inconsistency on recipes: "+username);
+            }
+
+            try{
+                coll = MongoDriver.getObject().getCollection(MongoDriver.Collections.DRINKS);
+                List<Bson> filtersList=new ArrayList<>();
+                for(int i=0; i<idDrinksList.size(); i++){
+                    filtersList.add(Filters.eq("_id", idDrinksList.get(i)));
+                }
+                coll.updateMany(Filters.in("_id", idDrinksList), inc("likes", -1));
+            }catch(MongoException me){
+                LogManager.getLogger("UserDao.class").error("MongoDB[PARSE], user ban inconsistency on drinks: "+username);
+            }
+        }catch(Neo4jException ne){
+            ne.printStackTrace();
+            //if neo4j query fails the like redundancy on each recipe is not updated so we need to parse
+            LogManager.getLogger("UserDao.class").error("MongoDB[PARSE], user ban inconsistency on likes: "+username);
+            LogManager.getLogger("UserDao.class").error("Neo4j[PARSE], user ban inconsistency on user deletion: "+username);
+        }
+        return "BanOk";
     }
 
     /***
@@ -447,7 +555,7 @@ class UserDao {
                 session.writeTransaction((TransactionWork<Void>) tx -> {
                     tx.run("MATCH (uu:User) WHERE uu.username = $myName" +
                                     " MATCH (uu2:User) WHERE uu2.username = $userName" +
-                                    " CREATE (uu)-[rel:FOLLOWS {since:$date}]->(uu2)",
+                                    " CREATE (uu)-[rel:FOLLOWS {since:date($date)}]->(uu2)",
                             parameters("myName", myName, "userName", userName, "date", java.time.LocalDate.now().toString()));
                     return null;
                 });
@@ -488,6 +596,173 @@ class UserDao {
             LogManager.getLogger("UserDao.class").error("Neo4j: follow check failed");
             return false;
         }
+    }
+
+    /***
+     * SUGGESTION: finding the recipe's with the highest number of likes in the week in the follower set of the user
+     * NB: the like that are put from the current user are not considered
+     * @param username
+     * @return
+     */
+    public List<Document> getSuggestedRecipes(String username){
+        String todayDate=java.time.LocalDate.now().toString();
+        List<Document> recipes=new ArrayList<>();
+        try (Session session = Neo4jDriver.getObject().getDriver().session()) {
+            session.readTransaction((TransactionWork<Void>) tx -> {
+                Result res = tx.run(
+                        "MATCH (u:User {username: $username })-[rel:FOLLOWS]->(u2:User) " +
+                            "MATCH (u2)-[relLikes:LIKES]->(r:Recipe) " +
+                            "WHERE date($date)-duration({days:7})<relLikes.since<=date($date)+duration({days:7}) " +
+                            "AND r.author<>$username " +
+                            "WITH r AS RecipeNode, count(relLikes) AS likesNumber "+
+                            "RETURN RecipeNode, sum(likesNumber) as totalLikes "+
+                            "ORDER BY totalLikes DESC, RecipeNode.name ASC LIMIT 10",
+                        parameters("username", username, "date", todayDate));
+                while(res.hasNext()){
+                    //building each recipe's document
+                    Record rec=res.next();
+                    Value recipe=rec.get("RecipeNode");
+                    Document doc=new Document();
+                    System.out.println(rec.get("totalLikes"));
+                    doc.put("author", recipe.get("author").asString());
+                    doc.put("dairyFree", recipe.get("dairyFree").asBoolean());
+                    doc.put("glutenFree", recipe.get("glutenFree").asBoolean());
+                    doc.put("vegan", recipe.get("vegan").asBoolean());
+                    doc.put("vegetarian", recipe.get("vegetarian").asBoolean());
+                    doc.put("_id", new ObjectId(recipe.get("id").asString()).toString());
+                    doc.put("image", recipe.get("imageUrl").asString());
+                    doc.put("name", recipe.get("name").asString());
+                    doc.put("pricePerServing", recipe.get("pricePerServing").asDouble());
+                    recipes.add(doc);
+                }
+                return null;
+            });
+        }catch(Neo4jException ne){
+            ne.printStackTrace();
+            LogManager.getLogger("UserDao.class").info("Neo4j was not able to retrieve the recipe's suggestions");
+        }
+        return recipes;
+    }
+
+    /***
+     * SUGGESTION: finding the drink's with the highest number of likes in the week in the follower set of the user
+     * @param username
+     * @return
+     */
+    public List<Document> getSuggestedDrinks(String username){
+        String todayDate=java.time.LocalDate.now().toString();
+        List<Document> drinks=new ArrayList<>();
+        try (Session session = Neo4jDriver.getObject().getDriver().session()) {
+            session.readTransaction((TransactionWork<Void>) tx -> {
+                Result res = tx.run(
+                        "MATCH (u:User {username: $username })-[rel:FOLLOWS]->(u2:User) " +
+                                "MATCH (u2)-[relLikes:LIKES]->(d:Drink) " +
+                                "WHERE date($date)-duration({days:7})<relLikes.since<=date($date)+duration({days:7}) " +
+                                "AND d.author<>$username " +
+                                "WITH d AS DrinkNode, count(relLikes) AS likesNumber "+
+                                "RETURN DrinkNode, sum(likesNumber) as totalLikes "+
+                                "ORDER BY totalLikes DESC, DrinkNode.name ASC LIMIT 10",
+                        parameters("username", username, "date", todayDate));
+                while(res.hasNext()){
+                    //building each recipe's document
+                    Value drink=res.next().get("DrinkNode");
+                    Document doc=new Document();
+                    doc.put("author", drink.get("author").asString());
+                    doc.put("_id", new ObjectId(drink.get("id").asString()).toString());
+                    doc.put("image", drink.get("imageUrl").asString());
+                    doc.put("name", drink.get("name").asString());
+                    doc.put("tag", drink.get("tag").asString());
+                    drinks.add(doc);
+                }
+                return null;
+            });
+        }catch(Neo4jException ne){
+            ne.printStackTrace();
+            LogManager.getLogger("UserDao.class").info("Neo4j was not able to retrieve the drink's suggestions");
+        }
+        return drinks;
+    }
+
+    /***
+     * retrieving the users followed by the user's followed and returning the best ones (users with the highest number
+     * of followers)
+     * @param username
+     * @return
+     */
+    public List<Document> getSuggestedUsers(String username) {
+        List<Document> users = new ArrayList<>();
+        try (Session session = Neo4jDriver.getObject().getDriver().session()) {
+            session.readTransaction((TransactionWork<Void>) tx -> {
+                Result res = tx.run(
+                        "MATCH (u1:User)-[:FOLLOWS]->(:User)-[:FOLLOWS]->(newUser:User) " + //matching all the followed of the followed of the user
+                                "WHERE u1.username=$username AND newUser.username<>$username AND" +
+                                "(NOT ((u1)-[:FOLLOWS]->(newUser))) " + //excluding the already followed
+                                "MATCH (:User)-[rel:FOLLOWS]->(newUser) " + //counting the number of new user's followers*/
+                                "return newUser, count(rel) AS totalFollowers "+ //...
+                                "ORDER BY totalFollowers DESC, newUser.username ASC LIMIT 10",//...
+                        parameters("username", username));
+                while (res.hasNext()) {
+                    Record rec=res.next();
+                    Value user = rec.get("newUser");
+                    Document doc = new Document();
+                    doc.put("country", user.get("country").asString());
+                    doc.put("level", user.get("level").asInt());
+                    doc.put("_id", user.get("username").asString());
+                    doc.put("age", user.get("age").asInt());
+                    users.add(doc);
+                }
+                return null;
+            });
+        }catch(Neo4jException ne){
+            ne.printStackTrace();
+            LogManager.getLogger("UserDao.class").info("Neo4j was not able to retrieve the user's suggestions");
+        }
+        return users;
+    }
+
+    /***
+     * GLOBAL SUGGESTION
+     * retrieving "best users": the user's that have created the highest number of recipes/drink in the week and that have
+     * received the highest number of likes on those recipes in the week. The user MUST create at least one recipe and one
+     * drink (globally, not in the week) to appear in the "best users".
+     * @return
+     */
+    public List<Document> getBestUsers() {
+        String todayDate = java.time.LocalDate.now().toString();
+        List<Document> users = new ArrayList<>();
+        try (Session session = Neo4jDriver.getObject().getDriver().session()) {
+            session.readTransaction((TransactionWork<Void>) tx -> {
+                Result res = tx.run(
+                        "MATCH (u:User)-[:OWNS]->(r:Recipe) " + //user must have at least one recipe
+                                "OPTIONAL MATCH (:User)-[owns1:OWNS]->(r)<-[likes1:LIKES]-(:User) "+ //optional matching on last week's recipes
+                                "WHERE date($date)-duration({days:7})<owns1.since<=date($date)+duration({days:7}) " +
+                                "WITH u, count(likes1) as RecipesLikes " + //counting likes of last week's recipes
+                                "MATCH (u)-[:OWNS]->(d:Drink) " + //same
+                                "OPTIONAL MATCH (:User)-[owns2:OWNS]->(d)<-[likes2:LIKES]-(:User) " +
+                                "WHERE date($date)-duration({days:7})<owns2.since<=date($date)+duration({days:7}) " +
+                                "WITH u, count(likes2)+RecipesLikes as totalLikes " + //counting total likes of recipes and drinks for a user
+                                "return u AS User, totalLikes " +
+                                "ORDER BY totalLikes DESC, User.username ASC LIMIT 10",
+                        parameters("date", todayDate));
+                while (res.hasNext()) {
+                    Record rec = res.next();
+                    Value user = rec.get("User");
+
+                    Document doc = new Document();
+                    doc.put("country", user.get("country").asString());
+                    doc.put("level", user.get("level").asInt());
+                    doc.put("_id", user.get("username").asString());
+                    doc.put("age", user.get("age").asInt());
+                    users.add(doc);
+                }
+                return null;
+            });
+
+        } catch (Neo4jException ne) {
+            ne.printStackTrace();
+            LogManager.getLogger("UserDao.class").info("Neo4j was not able to retrieve user's global suggestion");
+        }
+        return users;
     }
 
     public List<Document> getHealthRankByLevel(String level){

@@ -1,6 +1,8 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileService;
+import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeService;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
@@ -49,12 +51,15 @@ public class AdminPageController extends JSONAdder implements Initializable {
     @FXML private Button goBtnMostSavedRecipes;
     @FXML private Button btnClearUserByLike;
     @FXML private Button btnClearUserHealth;
+    @FXML private Button BanButton;
+    @FXML private TextField textFieldBan;
+    @FXML private Label labelBanned;
 
-    private UserServiceFactory userServiceFactory;
     private UserService userService;
 
-    private RecipeServiceFactory recipeServiceFactory;
     private RecipeService recipeService;
+
+    private ProfileService profileService;
 
     private GuiElementsBuilder builder;
 
@@ -62,11 +67,11 @@ public class AdminPageController extends JSONAdder implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         builder = new GuiElementsBuilder();
 
-        recipeServiceFactory = RecipeServiceFactory.create();
-        recipeService = recipeServiceFactory.getService();
+        recipeService = RecipeServiceFactory.create().getService();
 
-        userServiceFactory = UserServiceFactory.create();
-        userService = userServiceFactory.getService();
+        userService = UserServiceFactory.create().getService();
+
+        profileService = ProfileServiceFactory.create().getService();
 
         logoutBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -324,6 +329,7 @@ public class AdminPageController extends JSONAdder implements Initializable {
         btnClearUserByLike.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                textFieldBan.setText("");
                 comboNation.setValue("");
                 comboAge.setValue("");
                 comboCategory.setValue("");
@@ -363,6 +369,18 @@ public class AdminPageController extends JSONAdder implements Initializable {
             checkCalories.setSelected(true);
         });
 
+        //defining the event for ban button
+        BanButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if(userService.banUser(textFieldBan.getText()).equals("BanOk")){
+                    labelBanned.setText("Successfully Banned");
+                    profileService.deleteProfile(textFieldBan.getText());
+                }else{
+                    labelBanned.setText("Ban has failed");
+                }
+            }
+        });
 
     }
 }

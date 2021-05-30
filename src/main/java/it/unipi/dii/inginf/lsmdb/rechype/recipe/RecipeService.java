@@ -18,5 +18,6 @@ public interface RecipeService {
     List<Document> getUserByLikeAndCategory(String category);
     List<Document> getUserByLikeNumber(int minAge, int maxAge, String country);
     List<Document> getPopularIngredient(String nutrient, int minutes);
+    List<Document> getBestRecipes();
 
 }

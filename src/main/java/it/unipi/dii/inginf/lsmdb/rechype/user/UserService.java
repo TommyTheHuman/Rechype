@@ -17,6 +17,7 @@ public interface UserService {
     boolean login(String user, String pass);
     String register(String username, String password, String confPassword, String country, int age);
     User getLoggedUser();
+    Document getUserById(String id);
     List<User> searchUser(String text, int offset, int quantity, JSONObject filters);
     JSONObject getCachedUser(String key);
     String addNewRecipe(Document doc, String type);
@@ -28,6 +29,11 @@ public interface UserService {
     boolean checkSavedRecipe(String _id, String type);
     String removeRecipe(String _id, String type);
     Document getRecipeAndDrinks(String user);
+    String banUser(String user);
+    List<Document> getSuggestedRecipes();
+    List<Document> getSuggestedDrinks();
+    List<Document> getSuggestedUsers();
+    List<Document> getBestUsers();
     List<Document> getDrinks(String text);
     List<Document> getTophealthyUsers(String level);
     List<Document> getMostSavedRecipes();

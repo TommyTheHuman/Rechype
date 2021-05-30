@@ -47,6 +47,7 @@ class UserServiceImpl implements UserService {
             return "Abort";
     }
 
+    public Document getUserById(String id){ return userDao.getUserById(id); }
     public String addNewRecipe(Document doc, String type){ return userDao.addNestedRecipe(doc, loggedUser, type); }
     public boolean checkRecipeLike(String _id, String type){ return userDao.checkRecipeLike(getLoggedUser().getUsername(), _id, type); }
     public boolean checkSavedRecipe(String _id, String type){ return userDao.checkSavedRecipe(getLoggedUser().getUsername(), _id, type); }
@@ -58,6 +59,9 @@ class UserServiceImpl implements UserService {
     public List<Document> getDrinks(String username) {return userDao.getDrinkRecipe(username);}
     public List<Document> getTophealthyUsers(String level) {return userDao.getHealthRankByLevel(level);}
     public List<Document> getMostSavedRecipes() {return userDao.mostSavedRecipes();}
-
-    ;
+    public String banUser(String user){ return userDao.banUser(user); }
+    public List<Document> getSuggestedRecipes() { return userDao.getSuggestedRecipes(getLoggedUser().getUsername()); }
+    public List<Document> getSuggestedDrinks() { return userDao.getSuggestedDrinks(getLoggedUser().getUsername()); }
+    public List<Document> getSuggestedUsers() { return userDao.getSuggestedUsers(getLoggedUser().getUsername()); }
+    public List<Document> getBestUsers() { return userDao.getBestUsers(); }
 }

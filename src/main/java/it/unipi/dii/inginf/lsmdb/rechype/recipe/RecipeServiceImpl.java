@@ -32,4 +32,5 @@ class RecipeServiceImpl implements RecipeService{
     public List<Document> getUserByLikeAndCategory(String category) { return recipeDao.getRankingUserByLikeAndCategory(category);}
     public List<Document> getUserByLikeNumber(int minAge, int maxAge, String country) {return recipeDao.getUserRankingByLikeNumber(minAge, maxAge, country);}
     public List<Document> getPopularIngredient(String nutrient, int minutes) {return recipeDao.getIngredientRanking(nutrient, minutes);}
+    public List<Document> getBestRecipes(){ return recipeDao.getBestRecipes(); }
 }
