@@ -141,8 +141,8 @@ class DrinkDao {
             byte[] _id = idObj.getBytes(StandardCharsets.UTF_8); //key
             byte[] objToSave = drinksList.get(i).toJson().getBytes(StandardCharsets.UTF_8); //value
             try {
-                HaloDBDriver.getObject().getClient("drinks").put(_id, objToSave);
-            }catch(Exception e){
+                HaloDBDriver.getObject().addData("drink",_id, objToSave);
+            }catch(HaloDBException ex){
                 LogManager.getLogger("DrinkDao.class").fatal("HaloDB: caching failed");
                 HaloDBDriver.getObject().closeConnection();
                 System.exit(-1);
@@ -258,8 +258,8 @@ class DrinkDao {
         byte[] _id = idObj.getBytes(StandardCharsets.UTF_8); //key
         byte[] objToSave = doc.toJson().getBytes(StandardCharsets.UTF_8); //value
         try {
-            HaloDBDriver.getObject().getClient("drinks").put(_id, objToSave);
-        }catch(Exception e){
+            HaloDBDriver.getObject().addData("drink",_id, objToSave);
+        }catch(HaloDBException ex){
             LogManager.getLogger("DrinkDao.class").fatal("HaloDB: caching failed");
             HaloDBDriver.getObject().closeConnection();
             System.exit(-1);
@@ -273,8 +273,7 @@ class DrinkDao {
      */
     public JSONObject getDrinkByKey(String key){
         try{
-            HaloDB db = HaloDBDriver.getObject().getClient("drinks");
-            byte[] byteObj = db.get(key.getBytes(StandardCharsets.UTF_8));
+            byte[] byteObj = HaloDBDriver.getObject().getData("drink", key.getBytes(StandardCharsets.UTF_8));
             return new JSONObject(new String(byteObj));
         }catch(HaloDBException ex){
             LogManager.getLogger("DrinkDao.class").fatal("HaloDB: caching failed");

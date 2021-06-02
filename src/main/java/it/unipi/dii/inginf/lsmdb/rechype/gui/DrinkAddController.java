@@ -126,7 +126,6 @@ public class DrinkAddController extends JSONAdder implements Initializable {
                     textFieldsError.setOpacity(0);
                     if (drinkService.addDrink(doc).equals("DrinkAdded")) {
                         userService.addNewRecipe(doc, "drink");
-                        HaloDBDriver.getObject().flush();
                         drinkService.putDrinkInCache(doc);
                         JSONObject par = new JSONObject().put("_id", doc.getString("_id"));
                         par.put("cached", false);

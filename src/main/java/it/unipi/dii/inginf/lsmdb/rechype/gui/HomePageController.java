@@ -92,8 +92,6 @@ public class HomePageController extends JSONAdder implements Initializable {
         recipeBlock.setOnMouseClicked((MouseEvent e) ->{
             JSONObject par = new JSONObject().put("_id", recipe.getId());
             Main.changeScene("RecipePage", par);
-            //flushing cache
-            HaloDBDriver.getObject().flush();
         });
         return recipeBlock;
     }
@@ -103,8 +101,6 @@ public class HomePageController extends JSONAdder implements Initializable {
         drinkBlock.setOnMouseClicked((MouseEvent e) ->{
             JSONObject par = new JSONObject().put("_id", drink.getId());
             Main.changeScene("DrinkPage", par);
-            //flushing cache
-            HaloDBDriver.getObject().flush();
         });
         return drinkBlock;
     }
@@ -114,8 +110,6 @@ public class HomePageController extends JSONAdder implements Initializable {
         userBlock.setOnMouseClicked((MouseEvent e) ->{
             JSONObject par = new JSONObject().put("_id", user.getUsername());
             Main.changeScene("UserProfile", par);
-            //flushing cache
-            HaloDBDriver.getObject().flush();
         });
         return userBlock;
     }

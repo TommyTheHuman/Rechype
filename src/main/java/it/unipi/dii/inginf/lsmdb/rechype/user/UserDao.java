@@ -232,8 +232,7 @@ class UserDao {
      */
     public JSONObject getUserByKey(String key){
         try{
-            HaloDB db = HaloDBDriver.getObject().getClient("users");
-            byte[] byteObj = db.get(key.getBytes(StandardCharsets.UTF_8));
+            byte[] byteObj = HaloDBDriver.getObject().getData("user", key.getBytes(StandardCharsets.UTF_8));
             return new JSONObject(new String(byteObj));
         }catch(HaloDBException ex){
             LogManager.getLogger("UserDao.class").fatal("HaloDB: caching failed");
@@ -252,7 +251,7 @@ class UserDao {
             byte[] username = userList.get(i).getString("_id").getBytes(StandardCharsets.UTF_8); //key
             byte[] objToSave = userList.get(i).toJson().getBytes(StandardCharsets.UTF_8); //value
             try{
-                HaloDBDriver.getObject().getClient("users").put(username, objToSave);
+                HaloDBDriver.getObject().addData("user", username, objToSave);
             }catch(Exception e){
                 LogManager.getLogger("UserDao.class").fatal("HaloDB: caching failed");
                 HaloDBDriver.getObject().closeConnection();

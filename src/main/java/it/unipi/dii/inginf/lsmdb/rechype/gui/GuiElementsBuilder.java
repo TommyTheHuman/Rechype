@@ -77,8 +77,6 @@ public class GuiElementsBuilder {
         block.setOnMouseClicked((MouseEvent e) ->{
             JSONObject par = new JSONObject().put("_id", user.getUsername()).append("cached", true);
             Main.changeScene("UserProfile", par);
-            //flushing cache
-            HaloDBDriver.getObject().flush();
         });
         return block;
     }
@@ -275,8 +273,6 @@ public class GuiElementsBuilder {
         mainContainer.setOnMouseClicked((MouseEvent e) ->{
             JSONObject par = new JSONObject().put("_id", recipe.getId()).append("cached", true);
             Main.changeScene("RecipePage", par);
-            //flushing cache
-            HaloDBDriver.getObject().flush();
         });
 
         return mainContainer;
@@ -301,8 +297,6 @@ public class GuiElementsBuilder {
         block.setOnMouseClicked((MouseEvent e) ->{
             JSONObject par = new JSONObject().put("_id", drink.getId());
             Main.changeScene("DrinkPage", par);
-            //flushing cache
-            HaloDBDriver.getObject().flush();
         });
         return block;
     }

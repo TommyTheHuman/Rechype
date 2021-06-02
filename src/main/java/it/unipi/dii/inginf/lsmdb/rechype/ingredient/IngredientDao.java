@@ -55,8 +55,7 @@ public class IngredientDao {
 
     public JSONObject getIngredientByKey(String key) {
         try {
-            HaloDB db = HaloDBDriver.getObject().getClient("ingredients");
-            byte[] byteObj = db.get(key.getBytes(StandardCharsets.UTF_8));
+            byte[] byteObj = HaloDBDriver.getObject().getData("ingredient", key.getBytes(StandardCharsets.UTF_8));
             return new JSONObject(new String(byteObj));
         } catch (HaloDBException ex) {
             LogManager.getLogger("ingredientsDao.class").fatal("HaloDB: caching failed");
@@ -72,8 +71,8 @@ public class IngredientDao {
             byte[] _id = idObj.getBytes(StandardCharsets.UTF_8); //key
             byte[] objToSave = ingredientsList.get(i).toJson().getBytes(StandardCharsets.UTF_8); //value
             try {
-                HaloDBDriver.getObject().getClient("ingredients").put(_id, objToSave);
-            } catch (Exception e) {
+                HaloDBDriver.getObject().addData("ingredient", _id, objToSave);
+            } catch (HaloDBException ex) {
                 LogManager.getLogger("IngredientDao.class").fatal("HaloDB: caching failed");
                 HaloDBDriver.getObject().closeConnection();
                 System.exit(-1);
