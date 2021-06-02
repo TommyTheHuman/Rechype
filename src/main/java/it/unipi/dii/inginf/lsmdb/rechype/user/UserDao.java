@@ -833,13 +833,19 @@ class UserDao {
 
     }
 
-    public List<Document> mostSavedRecipes() {
+    public List<Document> mostSavedRecipes(String category) {
         MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
         List<Bson> stages = new ArrayList<>();
         List<Bson> filters = new ArrayList<>();
 
-        stages.add(unwind("$recipes"));
-        stages.add(group("$recipes._id", first("name", "$recipes.name"), sum("count", 1)));
+        if(category.equals("drinks")){
+            stages.add(unwind("$drinks"));
+            stages.add(group("$drinks._id", first("name", "$drinks.name"), sum("count", 1)));
+        }else{
+            stages.add(unwind("$recipes"));
+            stages.add(group("$recipes._id", first("name", "$recipes.name"), sum("count", 1)));
+        }
+
         stages.add(sort(descending("count")));
         stages.add(project(fields(excludeId(), include("name"), include("count"))));
 

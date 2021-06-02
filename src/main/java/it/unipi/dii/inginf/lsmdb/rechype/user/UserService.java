@@ -36,7 +36,7 @@ public interface UserService {
     List<Document> getBestUsers();
     List<Document> getDrinks(String text);
     List<Document> getTophealthyUsers(String level);
-    List<Document> getMostSavedRecipes();
+    List<Document> getMostSavedRecipes(String category);
 }
 
 

@@ -26,10 +26,16 @@ import org.neo4j.driver.exceptions.Neo4jException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Accumulators.sum;
+import static com.mongodb.client.model.Aggregates.*;
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Projections.*;
+import static com.mongodb.client.model.Projections.include;
+import static com.mongodb.client.model.Sorts.descending;
 import static org.neo4j.driver.Values.parameters;
 
 class DrinkDao {
@@ -320,6 +326,76 @@ class DrinkDao {
             "global suggestions");
         }
         return drinks;
+    }
+
+    public List<Document> getRankingUserAndCategory(String category){
+        MongoCollection<Document> collDrinks = MongoDriver.getObject().getCollection(MongoDriver.Collections.DRINKS);
+        List<Bson> filters = new ArrayList<>();
+        filters.add(nin("author", "Spoonacular", "PunkAPI", "CocktailDB"));
+        if(category.equals("cocktail")){
+            filters.add(eq("tag", "cocktail"));
+        }
+        if(category.equals("beer")){
+            filters.add(eq("tag", "beer"));
+        }
+        if(category.equals("other")){
+            filters.add(eq("tag", "other"));
+        }
+
+        Bson match = match(and(filters));
+        Bson group = group("$author", sum("likes", "$likes"));
+        Bson sort = sort(descending("likes"));
+        Bson project = project(fields(excludeId(), computed("author", "$_id"), include("likes")));
+        Bson limit = limit(10);
+
+        List<Document> results = null;
+        try{
+            results = collDrinks.aggregate(Arrays.asList(match, group, sort, limit, project)).into(new ArrayList<>());
+        } catch (MongoException ex){
+            LogManager.getLogger("DrinkDao.class").error("MongoDB: fail analytics: Ranking user by like and category");
+        }
+
+        return results;
+    }
+
+    public List<Document> getRankingUserAndNation(int minAge, int maxAge, String country){
+        MongoCollection<Document> collDrinks = MongoDriver.getObject().getCollection(MongoDriver.Collections.DRINKS);
+        List<Bson> stages = new ArrayList<>();
+        List<Bson> filters = new ArrayList<>();
+
+        //LookUp stage --> attaches a user doc to a recipe doc
+        stages.add(lookup("users", "author", "_id", "user"));
+
+        if(minAge != -1){
+            filters.add(lte("user.age", maxAge));
+            filters.add(gte("user.age", minAge));
+        }
+        if(!country.equals("noCountry")) {
+            filters.add(eq("user.country", country));
+        }
+        if(filters.size() > 0) {
+            // MATCH on Age range and/or Country
+            Bson match = match(and(filters));
+            stages.add(match);
+        }
+
+        //unwind stage
+        stages.add(unwind("$user"));
+
+        //group stage
+        stages.add(group("$user._id", sum("likes", "$likes")));
+
+        stages.add(sort(descending("likes")));
+
+        List<Document> results = null;
+        try{
+            results = collDrinks.aggregate(stages).into(new ArrayList<>());
+        } catch (MongoException ex){
+            ex.printStackTrace();
+            LogManager.getLogger("DrinkDao.class").error("MongoDB: fail analytics: Ranking user by like's number");
+        }
+
+        return results;
     }
 
 }

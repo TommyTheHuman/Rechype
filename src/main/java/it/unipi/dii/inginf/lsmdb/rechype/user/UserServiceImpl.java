@@ -58,10 +58,12 @@ class UserServiceImpl implements UserService {
     public Document getRecipeAndDrinks(String username){ return userDao.getUserRecipeAndDrinks(username); }
     public List<Document> getDrinks(String username) {return userDao.getDrinkRecipe(username);}
     public List<Document> getTophealthyUsers(String level) {return userDao.getHealthRankByLevel(level);}
-    public List<Document> getMostSavedRecipes() {return userDao.mostSavedRecipes();}
     public String banUser(String user){ return userDao.banUser(user); }
     public List<Document> getSuggestedRecipes() { return userDao.getSuggestedRecipes(getLoggedUser().getUsername()); }
     public List<Document> getSuggestedDrinks() { return userDao.getSuggestedDrinks(getLoggedUser().getUsername()); }
     public List<Document> getSuggestedUsers() { return userDao.getSuggestedUsers(getLoggedUser().getUsername()); }
     public List<Document> getBestUsers() { return userDao.getBestUsers(); }
+    public List<Document> getMostSavedRecipes(String category) {return userDao.mostSavedRecipes(category);}
+
+    ;
 }

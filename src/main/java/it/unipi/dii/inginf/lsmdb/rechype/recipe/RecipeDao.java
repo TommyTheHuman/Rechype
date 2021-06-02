@@ -474,7 +474,6 @@ public class RecipeDao {
 
         if(!nutrient.equals("noNutrient")) {
 
-
             stages.add(unwind("$nutrients"));
 
             filters.add(eq("nutrients.name", nutrient));

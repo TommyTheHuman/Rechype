@@ -4,6 +4,7 @@ import org.bson.Document;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.ListResourceBundle;
 
 class DrinkServiceImpl implements DrinkService{
     DrinkDao drinkDao=new DrinkDao();
@@ -20,4 +21,7 @@ class DrinkServiceImpl implements DrinkService{
     }
     public Document searchDrinkById(String _id) { return drinkDao.getDrinkById(_id); }
     public List<Document> getBestDrinks() { return drinkDao.getBestDrinks(); }
+    public List<Document> getUserByLikeAndCategory(String category){ return drinkDao.getRankingUserAndCategory(category); }
+    public List<Document> getUserByLikeAndNationAndAge(int min, int max, String country){ return drinkDao.getRankingUserAndNation(min, max, country); }
+
 }

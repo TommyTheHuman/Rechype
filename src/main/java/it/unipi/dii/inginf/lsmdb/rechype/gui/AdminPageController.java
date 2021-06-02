@@ -3,6 +3,8 @@ package it.unipi.dii.inginf.lsmdb.rechype.gui;
 import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileService;
 import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileServiceFactory;
+import it.unipi.dii.inginf.lsmdb.rechype.drink.DrinkService;
+import it.unipi.dii.inginf.lsmdb.rechype.drink.DrinkServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeService;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
@@ -43,6 +45,11 @@ public class AdminPageController extends JSONAdder implements Initializable {
     @FXML private CheckBox checkFat;
     @FXML private CheckBox checkProtein;
     @FXML private CheckBox checkCalories;
+    @FXML private CheckBox checkRecipes;
+    @FXML private CheckBox checkDrinks;
+    @FXML private CheckBox checkRecipes1;
+    @FXML private CheckBox checkDrinks1;
+
     @FXML private VBox vboxPopularIngredients;
     @FXML private VBox vboxBestUserByLikeCat;
     @FXML private VBox vboxMostSavedRecipes;
@@ -55,11 +62,16 @@ public class AdminPageController extends JSONAdder implements Initializable {
     @FXML private TextField textFieldBan;
     @FXML private Label labelBanned;
 
+    private UserServiceFactory userServiceFactory;
     private UserService userService;
 
+    private RecipeServiceFactory recipeServiceFactory;
     private RecipeService recipeService;
 
     private ProfileService profileService;
+
+    private DrinkServiceFactory drinkServiceFactory;
+    private DrinkService drinkService;
 
     private GuiElementsBuilder builder;
 
@@ -73,6 +85,9 @@ public class AdminPageController extends JSONAdder implements Initializable {
 
         profileService = ProfileServiceFactory.create().getService();
 
+        drinkServiceFactory = DrinkServiceFactory.create();
+        drinkService = drinkServiceFactory.getService();
+
         logoutBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -83,13 +98,20 @@ public class AdminPageController extends JSONAdder implements Initializable {
 
         comboNation.setItems(LandingPageController.getNations());
 
+        List<String> listTag = new ArrayList<>();
+        listTag.add("cocktail");
+        listTag.add("beer");
+        listTag.add("other");
+        ObservableList<String> observableListDrink = FXCollections.observableList(listTag);
+
+
         List<String> listCategory = new ArrayList<>();
         listCategory.add("vegan");
         listCategory.add("vegetarian");
         listCategory.add("glutenFree");
         listCategory.add("dairyFree");
-        ObservableList<String> observableList = FXCollections.observableList(listCategory);
-        comboCategory.setItems(observableList);
+        ObservableList<String> observableListRecipe = FXCollections.observableList(listCategory);
+        comboCategory.setItems(observableListRecipe);
 
         List<String> listAge = new ArrayList<>();
         listAge.add("under-24");
@@ -122,9 +144,14 @@ public class AdminPageController extends JSONAdder implements Initializable {
                 if(!comboCategory.getSelectionModel().isEmpty()){
                     aux = comboCategory.getValue().toString();
                 }
-                List<Document> listRecipes = recipeService.getUserByLikeAndCategory(aux);
+                List<Document> listDoc;
+                if(checkRecipes.isSelected()){
+                    listDoc = recipeService.getUserByLikeAndCategory(aux);
+                }else{
+                    listDoc = drinkService.getUserByLikeAndCategory(aux);
+                }
 
-                if(listRecipes.size() == 0){
+                if(listDoc.size() == 0){
                     HBox hbox = new HBox();
                     Text noResult = new Text();
                     noResult.setText("Not enough data.");
@@ -133,8 +160,7 @@ public class AdminPageController extends JSONAdder implements Initializable {
                     return;
                 }
 
-                for(Integer i=0; i<listRecipes.size(); i++){
-                    System.out.println(listRecipes.get(i).toJson());
+                for(Integer i = 0; i< listDoc.size(); i++){
                     HBox hbox = new HBox(15);
                     Text name = new Text();
                     Text number = new Text();
@@ -142,8 +168,8 @@ public class AdminPageController extends JSONAdder implements Initializable {
                     Integer rank = i;
                     rank = rank +1;
                     number.setText(rank.toString() + ") ");
-                    name.setText(listRecipes.get(i).getString("author"));
-                    like.setText("likes:" + listRecipes.get(i).getInteger("likes").toString());
+                    name.setText(listDoc.get(i).getString("author"));
+                    like.setText("likes:" + listDoc.get(i).getInteger("likes").toString());
                     hbox.getChildren().addAll(number, name, like);
                     vboxBestUserByLikeCat.getChildren().addAll(hbox, new Separator(Orientation.HORIZONTAL));
                 }
@@ -192,7 +218,6 @@ public class AdminPageController extends JSONAdder implements Initializable {
                     return;
                 }
                 for(Integer i=0; i<listDoc.size(); i++){
-                    System.out.println(listDoc.get(i).toJson());
                     HBox hbox = new HBox(15);
                     Text name = new Text();
                     Text number = new Text();
@@ -214,7 +239,13 @@ public class AdminPageController extends JSONAdder implements Initializable {
             public void handle(ActionEvent event) {
                 vboxMostSavedRecipes.getChildren().clear();
                 vboxMostSavedRecipes.setSpacing(15);
-                List<Document> listRecipes = userService.getMostSavedRecipes();
+
+                List<Document> listRecipes;
+                if(checkRecipes1.isSelected()){
+                    listRecipes = userService.getMostSavedRecipes("recipes");
+                }else{
+                    listRecipes = userService.getMostSavedRecipes("drinks");
+                }
                 if(listRecipes.size() == 0){
                     HBox hbox = new HBox();
                     Text noResult = new Text();
@@ -224,7 +255,6 @@ public class AdminPageController extends JSONAdder implements Initializable {
                     return;
                 }
                 for(Integer i=0; i<listRecipes.size(); i++){
-                    System.out.println(listRecipes.get(i).toJson());
                     HBox hbox = new HBox(15);
                     Text name = new Text();
                     Text number = new Text();
@@ -262,7 +292,6 @@ public class AdminPageController extends JSONAdder implements Initializable {
                     return;
                 }
                 for(Integer i=0; i<listDoc.size(); i++){
-                    System.out.println(listDoc.get(i).toJson());
                     HBox hbox = new HBox(15);
                     Text name = new Text();
                     Text number = new Text();
@@ -310,7 +339,6 @@ public class AdminPageController extends JSONAdder implements Initializable {
                     return;
                 }
                 for(Integer i=0; i<listDoc.size(); i++){
-                    System.out.println(listDoc.get(i).toJson());
                     HBox hbox = new HBox(15);
                     Text name = new Text();
                     Text number = new Text();
@@ -347,7 +375,30 @@ public class AdminPageController extends JSONAdder implements Initializable {
             }
         });
 
+        checkRecipes.setSelected(true);
+        checkRecipes1.setSelected(true);
 
+        checkRecipes.setOnAction((event) ->{
+            comboCategory.setItems(observableListRecipe);
+            checkRecipes.setSelected(true);
+            checkDrinks.setSelected(false);
+        });
+
+        checkDrinks.setOnAction((event) ->{
+            comboCategory.setItems(observableListDrink);
+            checkDrinks.setSelected(true);
+            checkRecipes.setSelected(false);
+        });
+
+        checkRecipes1.setOnAction((event) ->{
+            checkRecipes1.setSelected(true);
+            checkDrinks1.setSelected(false);
+        });
+
+        checkDrinks1.setOnAction((event) ->{
+            checkDrinks1.setSelected(true);
+            checkRecipes1.setSelected(false);
+        });
 
         checkFat.setOnAction((event) ->{
             checkFat.setSelected(true);
