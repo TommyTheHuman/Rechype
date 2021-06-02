@@ -385,7 +385,7 @@ public class RecipeDao {
     {$match:{author:{$nin:["Spoonacular", "CocktailsDB", "PunkAPI"]}}},
     {$group:{_id:"$author", count:{$sum:"$likes"}}},
     {$sort:{count:-1}}
-])
+    ])
 
     */
     public List<Document> getRankingUserByLikeAndCategory(String category){

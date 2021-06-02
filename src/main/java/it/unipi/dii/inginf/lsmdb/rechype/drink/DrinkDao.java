@@ -296,6 +296,10 @@ class DrinkDao {
             return drink;
     }
 
+    /***
+     * GLOBAL SUGGESTION: best drinks, the drinks with the highest number of likes obtained in the week
+     * @return
+     */
     public List<Document> getBestDrinks(){
         List<Document> drinks = new ArrayList<>();
         String todayDate = java.time.LocalDate.now().toString();
