@@ -1,6 +1,5 @@
 package it.unipi.dii.inginf.lsmdb.rechype.drink;
 
-import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import org.bson.Document;
 import org.json.JSONObject;
 

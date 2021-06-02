@@ -58,7 +58,11 @@
                                     <font>
                                        <Font size="14.0" />
                                     </font></Text>
-                                 <Text fx:id="DescriptionText" layoutX="14.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="The recipe Everything Seasoning could satisfy your Southern craving in roughly &lt;b&gt;5 minutes&lt;/b&gt;. This marinade has &lt;b&gt;257 calories&lt;/b&gt;, &lt;b&gt;9g of protein&lt;/b&gt;, and &lt;b&gt;16g of fat&lt;/b&gt; per serving. This caveman, gluten free, primal, and whole 30 recipe serves 1 and costs &lt;b&gt;$4.69 per serving&lt;/b&gt;. 47 people have made this recipe and would make it again. Head to the store and pick up sesame seeds, poppy seeds, sesame seeds, and a few other things to make it today. All things considered, we decided this recipe &lt;b&gt;deserves a spoonacular score of 99%&lt;/b&gt;. This score is excellent. Try &lt;a href=&quot;https://spoonacular.com/recipes/all-around-seasoning-mix-395391&quot;&gt;All-Around Seasoning Mix&lt;/a&gt;, &lt;a href=&quot;https://spoonacular.com/recipes/tex-mex-seasoning-mix-385091&quot;&gt;Tex-Mex Seasoning Mix&lt;/a&gt;, and &lt;a href=&quot;https://spoonacular.com/recipes/taco-seasoning-mix-406398&quot;&gt;Taco Seasoning Mix&lt;/a&gt; for similar recipes." wrappingWidth="506.3999786376953" />
+                                 <ScrollPane layoutY="22.0" prefHeight="178.0" prefWidth="555.0">
+                                    <content>
+                                       <Text fx:id="DescriptionText" strokeType="OUTSIDE" strokeWidth="0.0" text="The recipe Everything Seasoning could satisfy your Southern craving in roughly &lt;b&gt;5 minutes&lt;/b&gt;. This marinade has &lt;b&gt;257 calories&lt;/b&gt;, &lt;b&gt;9g of protein&lt;/b&gt;, and &lt;b&gt;16g of fat&lt;/b&gt; per serving. This caveman, gluten free, primal, and whole 30 recipe serves 1 and costs &lt;b&gt;$4.69 per serving&lt;/b&gt;. 47 people have made this recipe and would make it again. Head to the store and pick up sesame seeds, poppy seeds, sesame seeds, and a few other things to make it today. All things considered, we decided this recipe &lt;b&gt;deserves a spoonacular score of 99%&lt;/b&gt;. This score is excellent. Try &lt;a href=&quot;https://spoonacular.com/recipes/all-around-seasoning-mix-395391&quot;&gt;All-Around Seasoning Mix&lt;/a&gt;, &lt;a href=&quot;https://spoonacular.com/recipes/tex-mex-seasoning-mix-385091&quot;&gt;Tex-Mex Seasoning Mix&lt;/a&gt;, and &lt;a href=&quot;https://spoonacular.com/recipes/taco-seasoning-mix-406398&quot;&gt;Taco Seasoning Mix&lt;/a&gt; for similar recipes." wrappingWidth="506.3999786376953" />
+                                    </content>
+                                 </ScrollPane>
                               </children>
                            </Pane>
                            <VBox prefHeight="402.0" prefWidth="181.0">
@@ -90,7 +94,7 @@
                                  </AnchorPane>
                               </children>
                            </VBox>
-                           <Text layoutX="459.0" layoutY="241.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ingredients" wrappingWidth="67.6953125">
+                           <Text layoutX="459.0" layoutY="226.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ingredients" wrappingWidth="78.36199951171875">
                               <font>
                                  <Font size="14.0" />
                               </font></Text>
@@ -103,11 +107,15 @@
                      </AnchorPane>
                      <AnchorPane layoutY="541.0" prefHeight="428.0" prefWidth="775.0">
                         <children>
+                           <ScrollPane hbarPolicy="NEVER" layoutX="13.0" layoutY="61.0" prefHeight="172.0" prefWidth="727.0">
+                              <content>
+                                 <Text fx:id="MethodText" strokeType="OUTSIDE" strokeWidth="0.0" text="" wrappingWidth="684.1426086425781" />
+                              </content>
+                           </ScrollPane>
                            <Text layoutX="14.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Method">
                               <font>
                                  <Font size="14.0" />
                               </font></Text>
-                           <Text fx:id="MethodText" layoutX="15.0" layoutY="52.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" wrappingWidth="684.1426086425781" />
                            <PieChart fx:id="NutritionsPie" layoutX="190.0" layoutY="248.0" prefHeight="334.0" prefWidth="418.0" />
                         </children>
                      </AnchorPane>

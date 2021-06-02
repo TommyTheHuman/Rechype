@@ -1,23 +1,19 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
-import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.util.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.drink.DrinkService;
 import it.unipi.dii.inginf.lsmdb.rechype.drink.DrinkServiceFactory;
-import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
-import javafx.scene.chart.PieChart;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import org.apache.logging.log4j.LogManager;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,14 +35,11 @@ public class DrinkPageController extends JSONAdder implements Initializable {
     @FXML private ImageView DrinkImage;
     @FXML private ImageView LikeButton;
     @FXML private ImageView SaveButton;
-    @FXML private ScrollPane ScrollIngredients;
     @FXML private VBox ingredientsBox;
     @FXML private ImageView beerIcon;
     @FXML private ImageView cocktailIcon;
     @FXML private ImageView otherIcon;
-    private DrinkServiceFactory drinkServiceFactory;
     private DrinkService drinkService;
-    private UserServiceFactory userServiceFactory;
     private UserService userService;
     private GuiElementsBuilder builder;
     private String imgLikePath;
@@ -55,10 +48,8 @@ public class DrinkPageController extends JSONAdder implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        drinkServiceFactory = DrinkServiceFactory.create();
-        drinkService = drinkServiceFactory.getService();
-        userServiceFactory = UserServiceFactory.create();
-        userService = userServiceFactory.getService();
+        drinkService = DrinkServiceFactory.create().getService();
+        userService = UserServiceFactory.create().getService();
         builder = new GuiElementsBuilder();
     }
 
@@ -117,38 +108,43 @@ public class DrinkPageController extends JSONAdder implements Initializable {
         }
 
         //setting the icons
-        if(jsonDrink.getString("tag").equals("other")){
-            InputStream inputStream =
-            DrinkPageController.class.getResourceAsStream("/images/icons/milkshakeIcon_on.png");
-            otherIcon.setImage(new Image(inputStream));
-            inputStream=
-            DrinkPageController.class.getResourceAsStream("/images/icons/beerIcon.png");
-            beerIcon.setImage(new Image(inputStream));
-            inputStream=
-            DrinkPageController.class.getResourceAsStream("/images/icons/cocktailIcon.png");
-            cocktailIcon.setImage(new Image(inputStream));
-        }
-        else if(jsonDrink.getString("tag").equals("beer")){
-            InputStream inputStream =
-            DrinkPageController.class.getResourceAsStream("/images/icons/milkshakeIcon.png");
-            otherIcon.setImage(new Image(inputStream));
-            inputStream=
-            DrinkPageController.class.getResourceAsStream("/images/icons/beerIcon_on.png");
-            beerIcon.setImage(new Image(inputStream));
-            inputStream=
-            DrinkPageController.class.getResourceAsStream("/images/icons/cocktailIcon.png");
-            cocktailIcon.setImage(new Image(inputStream));
-        }
-        else if(jsonDrink.getString("tag").equals("cocktail")){
-            InputStream inputStream =
-            DrinkPageController.class.getResourceAsStream("/images/icons/milkshakeIcon.png");
-            otherIcon.setImage(new Image(inputStream));
-            inputStream=
-            DrinkPageController.class.getResourceAsStream("/images/icons/beerIcon.png");
-            beerIcon.setImage(new Image(inputStream));
-            inputStream=
-            DrinkPageController.class.getResourceAsStream("/images/icons/cocktailIcon_on.png");
-            cocktailIcon.setImage(new Image(inputStream));
+        switch (jsonDrink.getString("tag")) {
+            case "other": {
+                InputStream inputStream =
+                        DrinkPageController.class.getResourceAsStream("/images/icons/milkshakeIcon_on.png");
+                otherIcon.setImage(new Image(inputStream));
+                inputStream =
+                        DrinkPageController.class.getResourceAsStream("/images/icons/beerIcon.png");
+                beerIcon.setImage(new Image(inputStream));
+                inputStream =
+                        DrinkPageController.class.getResourceAsStream("/images/icons/cocktailIcon.png");
+                cocktailIcon.setImage(new Image(inputStream));
+                break;
+            }
+            case "beer": {
+                InputStream inputStream =
+                        DrinkPageController.class.getResourceAsStream("/images/icons/milkshakeIcon.png");
+                otherIcon.setImage(new Image(inputStream));
+                inputStream =
+                        DrinkPageController.class.getResourceAsStream("/images/icons/beerIcon_on.png");
+                beerIcon.setImage(new Image(inputStream));
+                inputStream =
+                        DrinkPageController.class.getResourceAsStream("/images/icons/cocktailIcon.png");
+                cocktailIcon.setImage(new Image(inputStream));
+                break;
+            }
+            case "cocktail": {
+                InputStream inputStream =
+                        DrinkPageController.class.getResourceAsStream("/images/icons/milkshakeIcon.png");
+                otherIcon.setImage(new Image(inputStream));
+                inputStream =
+                        DrinkPageController.class.getResourceAsStream("/images/icons/beerIcon.png");
+                beerIcon.setImage(new Image(inputStream));
+                inputStream =
+                        DrinkPageController.class.getResourceAsStream("/images/icons/cocktailIcon_on.png");
+                cocktailIcon.setImage(new Image(inputStream));
+                break;
+            }
         }
 
         //setting likes

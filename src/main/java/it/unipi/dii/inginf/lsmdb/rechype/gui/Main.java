@@ -3,43 +3,33 @@ package it.unipi.dii.inginf.lsmdb.rechype.gui;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import com.oath.halodb.HaloDB;
-import com.oath.halodb.HaloDBOptions;
-import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.util.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
-import it.unipi.dii.inginf.lsmdb.rechype.user.*;
 import javafx.application.Application;
-import javafx.application.HostServices;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.TransactionWork;
 import org.neo4j.driver.exceptions.Neo4jException;
 
 import java.io.IOException;
-import java.util.HashMap;
 
 import static org.neo4j.driver.Values.parameters;
 
 public class Main extends Application {
-    private static Main istance;
     private static Scene mainScene;
-    private static final UserServiceFactory factory=UserServiceFactory.create();
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) {
         //populateNeo4j();
         mainScene = new Scene(loadFXML("Landing", new JSONObject()), 1000, 700);
-        istance=this;
         primaryStage.setTitle("Rechype");
         primaryStage.setScene(mainScene);
         primaryStage.show();

@@ -58,7 +58,7 @@
                                  </Pane>
                               </children>
                            </VBox>
-                           <Text layoutX="459.0" layoutY="241.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ingredients" wrappingWidth="67.6953125">
+                           <Text layoutX="459.0" layoutY="226.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ingredients" wrappingWidth="78.6953125">
                               <font>
                                  <Font size="14.0" />
                               </font></Text>
@@ -71,11 +71,15 @@
                      </AnchorPane>
                      <AnchorPane layoutY="541.0" prefHeight="428.0" prefWidth="775.0">
                         <children>
+                           <ScrollPane hbarPolicy="NEVER" layoutY="39.0" prefHeight="200.0" prefWidth="750.0">
+                              <content>
+                                 <Text fx:id="MethodText" strokeType="OUTSIDE" strokeWidth="0.0" text="" wrappingWidth="684.1426086425781" />
+                              </content>
+                           </ScrollPane>
                            <Text layoutX="14.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Method">
                               <font>
                                  <Font size="14.0" />
                               </font></Text>
-                           <Text fx:id="MethodText" layoutX="15.0" layoutY="52.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" wrappingWidth="684.1426086425781" />
                         </children>
                      </AnchorPane>
                   </children>

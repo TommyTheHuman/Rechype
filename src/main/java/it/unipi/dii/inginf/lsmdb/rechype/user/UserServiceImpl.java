@@ -3,7 +3,6 @@ package it.unipi.dii.inginf.lsmdb.rechype.user;
 import org.bson.Document;
 import org.json.JSONObject;
 
-import javax.print.Doc;
 import java.util.List;
 
 class UserServiceImpl implements UserService {
@@ -65,5 +64,4 @@ class UserServiceImpl implements UserService {
     public List<Document> getBestUsers() { return userDao.getBestUsers(); }
     public List<Document> getMostSavedRecipes(String category) {return userDao.mostSavedRecipes(category);}
 
-    ;
 }

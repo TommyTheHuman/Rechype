@@ -1,10 +1,9 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
-import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.util.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.drink.Drink;
 import it.unipi.dii.inginf.lsmdb.rechype.drink.DrinkService;
 import it.unipi.dii.inginf.lsmdb.rechype.drink.DrinkServiceFactory;
-import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeService;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeServiceFactory;
@@ -15,8 +14,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
@@ -68,14 +65,10 @@ public class SearchBarController extends JSONAdder implements Initializable {
     private String lastSearchedText;
     private GuiElementsBuilder builder;
 
-    private UserServiceFactory userServiceFactory;
     private UserService userService;
-    private User loggedUser;
 
-    private RecipeServiceFactory recipeServiceFactory;
     private RecipeService recipeService;
 
-    private DrinkServiceFactory drinkServiceFactory;
     private DrinkService drinkService;
 
     private JSONObject filters = new JSONObject();
@@ -86,23 +79,16 @@ public class SearchBarController extends JSONAdder implements Initializable {
 
         builder = new GuiElementsBuilder();
 
-        userServiceFactory = UserServiceFactory.create();
-        userService = userServiceFactory.getService();
-        loggedUser = userService.getLoggedUser();
+        userService = UserServiceFactory.create().getService();
 
-        recipeServiceFactory = RecipeServiceFactory.create();
-        recipeService = recipeServiceFactory.getService();
+        recipeService = RecipeServiceFactory.create().getService();
 
-        drinkServiceFactory = DrinkServiceFactory.create();
-        drinkService = drinkServiceFactory.getService();
+        drinkService = DrinkServiceFactory.create().getService();
 
         //Only numbers into the text field
-        userAgeFilter.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if (!newValue.matches("\\d*")) {
-                    userAgeFilter.setText(newValue.replaceAll("[^\\d]", ""));
-                }
+        userAgeFilter.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                userAgeFilter.setText(newValue.replaceAll("[^\\d]", ""));
             }
         });
 
@@ -140,81 +126,75 @@ public class SearchBarController extends JSONAdder implements Initializable {
         checkBoxDrinks.setSelected(false);
         checkBoxRecipes.setSelected(false);
 
-        searchBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if(checkField()){
-                    errorMsg.setOpacity(0);
-                    resultBox.getChildren().clear();
-                    lastSearchedText = searchText.getText();
+        searchBtn.setOnAction(event -> {
+            if(checkField()){
+                errorMsg.setOpacity(0);
+                resultBox.getChildren().clear();
+                lastSearchedText = searchText.getText();
 
-                    if(checkBoxUsers.isSelected()) {
+                if(checkBoxUsers.isSelected()) {
 
-                        filters = new JSONObject();
-                        if(userAgeFilter.getText().length() > 0) {
-                            filters.put("Age", userAgeFilter.getText());
-                        }
-
-                        if(!userLevelFilter.getSelectionModel().isEmpty()){
-                            filters.put("Level", userLevelFilter.getValue().toString());
-                        }
-
-                        List<User> listOfUsers = userService.searchUser(lastSearchedText, 0, 10, filters);
-
-                        for (User user : listOfUsers) {
-                            resultBox.getChildren().addAll(builder.createUserBlock(user), new Separator(Orientation.HORIZONTAL));
-                        }
+                    filters = new JSONObject();
+                    if(userAgeFilter.getText().length() > 0) {
+                        filters.put("Age", userAgeFilter.getText());
                     }
 
-                    if(checkBoxRecipes.isSelected()){
-
-                        filters = new JSONObject();
-                        filters.put("DairyFree", checkDairy.isSelected()).put("GlutenFree", checkGluten.isSelected()).put("Vegan", checkVegan.isSelected())
-                                .put("Vegetarian", checkVegetarian.isSelected()).put("RecipeSort", recipeLikeSort.isSelected());
-
-                        if(!selectPrice.getSelectionModel().isEmpty()){
-                            filters.put("Price", selectPrice.getValue().toString());
-                        }
-
-                        List<Recipe> listOfRecipes = recipeService.searchRecipe(lastSearchedText, 0, 10, filters);
-
-                        for (Recipe recipe : listOfRecipes) {
-                            resultBox.getChildren().addAll(builder.createRecipeBlock(recipe), new Separator(Orientation.HORIZONTAL));
-                        }
+                    if(!userLevelFilter.getSelectionModel().isEmpty()){
+                        filters.put("Level", userLevelFilter.getValue().toString());
                     }
 
-                    if(checkBoxDrinks.isSelected()){
+                    List<User> listOfUsers = userService.searchUser(lastSearchedText, 0, 10, filters);
 
-                        filters = new JSONObject();
-                        filters.put("DrinkSort", drinkLikeSort.isSelected());
-                        if(!drinkType.getSelectionModel().isEmpty()){
-                            filters.put("tag", drinkType.getValue().toString());
-                        }
-
-                        List<Drink> listOfDrinks = drinkService.searchDrink(lastSearchedText, 0, 10, filters);
-
-                        for (Drink drink : listOfDrinks) {
-                            resultBox.getChildren().addAll(builder.createDrinkBlock(drink), new Separator(Orientation.HORIZONTAL));
-                        }
+                    for (User user : listOfUsers) {
+                        resultBox.getChildren().addAll(builder.createUserBlock(user), new Separator(Orientation.HORIZONTAL));
                     }
-
-                    resultBox.setStyle("-fx-background-color: white !important");
-                    searchAnchor.setVisible(true);
-                }else{
-                    errorMsg.setText("Choose category.");
-                    errorMsg.setOpacity(100);
                 }
 
+                if(checkBoxRecipes.isSelected()){
 
+                    filters = new JSONObject();
+                    filters.put("DairyFree", checkDairy.isSelected()).put("GlutenFree", checkGluten.isSelected()).put("Vegan", checkVegan.isSelected())
+                            .put("Vegetarian", checkVegetarian.isSelected()).put("RecipeSort", recipeLikeSort.isSelected());
+
+                    if(!selectPrice.getSelectionModel().isEmpty()){
+                        filters.put("Price", selectPrice.getValue().toString());
+                    }
+
+                    List<Recipe> listOfRecipes = recipeService.searchRecipe(lastSearchedText, 0, 10, filters);
+
+                    for (Recipe recipe : listOfRecipes) {
+                        resultBox.getChildren().addAll(builder.createRecipeBlock(recipe), new Separator(Orientation.HORIZONTAL));
+                    }
+                }
+
+                if(checkBoxDrinks.isSelected()){
+
+                    filters = new JSONObject();
+                    filters.put("DrinkSort", drinkLikeSort.isSelected());
+                    if(!drinkType.getSelectionModel().isEmpty()){
+                        filters.put("tag", drinkType.getValue().toString());
+                    }
+
+                    List<Drink> listOfDrinks = drinkService.searchDrink(lastSearchedText, 0, 10, filters);
+
+                    for (Drink drink : listOfDrinks) {
+                        resultBox.getChildren().addAll(builder.createDrinkBlock(drink), new Separator(Orientation.HORIZONTAL));
+                    }
+                }
+
+                resultBox.setStyle("-fx-background-color: white !important");
+                searchAnchor.setVisible(true);
+            }else{
+                errorMsg.setText("Choose category.");
+                errorMsg.setOpacity(100);
             }
+
+
         });
 
-        closeSearch.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                resultBox.getChildren().clear();
-                searchAnchor.setVisible(false);
-            }
+        closeSearch.setOnAction(event -> {
+            resultBox.getChildren().clear();
+            searchAnchor.setVisible(false);
         });
 
         checkBoxUsers.setOnAction((event) ->{
@@ -254,38 +234,34 @@ public class SearchBarController extends JSONAdder implements Initializable {
         });
 
 
-        closeFilters.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                userDisable();
-                drinkDisable();
-                recipeDisable();
-                filterAnchor.setVisible(false);
-            }
+        closeFilters.setOnAction(event -> {
+            userDisable();
+            drinkDisable();
+            recipeDisable();
+            filterAnchor.setVisible(false);
         });
 
 
-        scrollSearch.vvalueProperty().addListener(new ChangeListener<Number>() {
-            int offset=0;
+        scrollSearch.vvalueProperty().addListener(new ChangeListener<>() {
+            int offset = 0;
+
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                if(scrollSearch.getVvalue()==scrollSearch.getVmax()){
-                    offset=resultBox.getChildren().size()/2;
-                    if(checkBoxUsers.isSelected()){
+                if (scrollSearch.getVvalue() == scrollSearch.getVmax()) {
+                    offset = resultBox.getChildren().size() / 2;
+                    if (checkBoxUsers.isSelected()) {
                         List<User> listOfUsers = userService.searchUser(lastSearchedText, offset, 10, filters);
                         for (User user : listOfUsers) {
-                                resultBox.getChildren().addAll(builder.createUserBlock(user), new Separator(Orientation.HORIZONTAL));
-                        };
-                    }
-                    else if(checkBoxRecipes.isSelected()){
+                            resultBox.getChildren().addAll(builder.createUserBlock(user), new Separator(Orientation.HORIZONTAL));
+                        }
+                    } else if (checkBoxRecipes.isSelected()) {
                         List<Recipe> listOfRecipes = recipeService.searchRecipe(lastSearchedText, offset, 10, filters);
                         for (Recipe recipe : listOfRecipes) {
                             resultBox.getChildren().addAll(builder.createRecipeBlock(recipe), new Separator(Orientation.HORIZONTAL));
-                        };
-                    }
-                    else if(checkBoxDrinks.isSelected()){
+                        }
+                    } else if (checkBoxDrinks.isSelected()) {
                         List<Drink> listOfDrinks = drinkService.searchDrink(lastSearchedText, offset, 10, filters);
-                        for(Drink drink: listOfDrinks){
+                        for (Drink drink : listOfDrinks) {
                             resultBox.getChildren().addAll(builder.createDrinkBlock(drink), new Separator(Orientation.HORIZONTAL));
                         }
                     }

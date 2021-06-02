@@ -1,11 +1,8 @@
 package it.unipi.dii.inginf.lsmdb.rechype.profile;
 
-import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import org.bson.Document;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.List;
 
 public class Profile {
     private String username;

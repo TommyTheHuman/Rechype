@@ -3,7 +3,6 @@ package it.unipi.dii.inginf.lsmdb.rechype.user;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
-import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
@@ -11,52 +10,29 @@ import com.oath.halodb.HaloDB;
 import com.oath.halodb.HaloDBException;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
-
-import static com.mongodb.client.model.Aggregates.*;
-import static com.mongodb.client.model.Accumulators.*;
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Filters.nin;
-import static com.mongodb.client.model.Filters.lte;
-import static com.mongodb.client.model.Filters.gte;
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.*;
-import static com.mongodb.client.model.Updates.*;
-import static com.mongodb.client.model.Aggregates.*;
-import static com.mongodb.client.model.Projections.*;
-import static com.mongodb.client.model.Accumulators.*;
-import static com.mongodb.client.model.Accumulators.addToSet;
-import static com.mongodb.client.model.Accumulators.sum;
-import static com.mongodb.client.model.Sorts.descending;
-
-import static com.mongodb.client.model.Projections.*;
-import static com.mongodb.client.model.Sorts.descending;
-import static com.mongodb.client.model.Filters.or;
-import static com.mongodb.client.model.Updates.*;
-import static org.neo4j.driver.Values.parameters;
-
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
-import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import org.apache.logging.log4j.LogManager;
 import org.bson.BsonArray;
-import org.bson.BsonBinary;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.json.JSONObject;
 import org.neo4j.driver.*;
-import org.neo4j.driver.exceptions.DiscoveryException;
 import org.neo4j.driver.exceptions.Neo4jException;
-import org.neo4j.driver.exceptions.SessionExpiredException;
-import org.neo4j.driver.exceptions.TransientException;
 
-import javax.print.Doc;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import static com.mongodb.client.model.Accumulators.first;
+import static com.mongodb.client.model.Accumulators.sum;
+import static com.mongodb.client.model.Aggregates.*;
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Projections.*;
+import static com.mongodb.client.model.Sorts.descending;
+import static com.mongodb.client.model.Updates.inc;
+import static org.neo4j.driver.Values.parameters;
 
 class UserDao {
 
@@ -275,7 +251,7 @@ class UserDao {
             coll = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
             coll.deleteOne(eq("_id", username));
             mongo=true;
-        }catch(MongoException ex){ //somethind goes wrong, a software will parse and solve
+        }catch(MongoException ex){ //something goes wrong, a software will parse and solve
             LogManager.getLogger("UserDao.class").error("MongoDB[PARSE], user deletion inconsistency: "+username);
             mongo=false;
         }
@@ -287,7 +263,7 @@ class UserDao {
                 return null;
             });
             neo4j=true;
-        }catch(Neo4jException ne){ //somethind goes wrong, a software will parse and solve
+        }catch(Neo4jException ne){ //something goes wrong, a software will parse and solve
             LogManager.getLogger("UserDao.class").error("Neo4j[PARSE], user deletion inconsistency: "+username);
             neo4j=false;
         }
@@ -349,7 +325,7 @@ class UserDao {
                     return null;
                 });
             }catch(Neo4jException ne){
-                LogManager.getLogger("UserDao.class").error("Neo4j[PARSE]: user level increasement failed"+user.getUsername());
+                LogManager.getLogger("UserDao.class").error("Neo4j[PARSE]: user level increment failed"+user.getUsername());
             }
         }
         return "RecipeOk";
@@ -380,7 +356,7 @@ class UserDao {
                     return false;
             });
         }
-        catch(Neo4jException ne){ //somethind goes wrong, a software will parse and solve
+        catch(Neo4jException ne){ //something goes wrong, a software will parse and solve
             LogManager.getLogger("UserDao.class").error("Neo4j: like check failed");
             return false;
         }
@@ -526,7 +502,7 @@ class UserDao {
             MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(filter).iterator();
             doc = cursor.next();
         }catch(MongoException ex){
-            LogManager.getLogger("UserDao.class").error("MongoDB: an error occured in getting nested recipe.");
+            LogManager.getLogger("UserDao.class").error("MongoDB: an error occurred in getting nested recipe.");
             return null;
         }
         returnRecipeList = (List<Document>) doc.get("recipes");
@@ -540,7 +516,7 @@ class UserDao {
             MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(filter).iterator();
             doc = cursor.next();
         }catch(MongoException ex){
-            LogManager.getLogger("UserDao.class").error("MongoDB: an error occured in getting nested recipe.");
+            LogManager.getLogger("UserDao.class").error("MongoDB: an error occurred in getting nested recipe.");
             return null;
         }
         return doc;
@@ -561,7 +537,7 @@ class UserDao {
                 });
             } catch (Neo4jException ne) {
                 ne.printStackTrace();
-                LogManager.getLogger("RecipeDao.class").error("Neo4j: follow's relation insert failed");
+                LogManager.getLogger("RecipeDao.class").error("Neo4j: follows relation insert failed");
                 return "Abort";
             }
             return "followOk";
@@ -823,7 +799,7 @@ class UserDao {
             MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(filter).iterator();
             doc = cursor.next();
         }catch(MongoException ex){
-            LogManager.getLogger("UserDao.class").error("MongoDB: an error occured in getting nested recipe.");
+            LogManager.getLogger("UserDao.class").error("MongoDB: an error occurred in getting nested recipe.");
             return null;
         }
         returnDrinkList = (List<Document>) doc.get("drinks");

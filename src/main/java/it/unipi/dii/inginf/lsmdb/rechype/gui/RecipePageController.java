@@ -1,7 +1,7 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
+import it.unipi.dii.inginf.lsmdb.rechype.util.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
-import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeService;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
@@ -11,8 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
-import javafx.scene.chart.*;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -45,7 +44,6 @@ public class RecipePageController extends JSONAdder implements Initializable {
     @FXML private Text Likes;
     @FXML private Text MethodText;
     @FXML private VBox ingredientsBox;
-    @FXML private ScrollPane ScrollIngredients;
     @FXML private PieChart NutritionsPie;
     @FXML private ImageView RecipeImage;
     @FXML private ImageView VeganIcon;
@@ -56,9 +54,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
     @FXML private ImageView LikeButton;
     @FXML private ImageView SaveButton;
     private ObservableList<PieChart.Data> pieData;
-    private RecipeServiceFactory recipeServiceFactory;
     private RecipeService recipeService;
-    private UserServiceFactory userServiceFactory;
     private UserService userService;
     private JSONObject jsonRecipe;
     private String imgLikePath;
@@ -68,10 +64,8 @@ public class RecipePageController extends JSONAdder implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        recipeServiceFactory = RecipeServiceFactory.create();
-        recipeService = recipeServiceFactory.getService();
-        userServiceFactory = UserServiceFactory.create();
-        userService = userServiceFactory.getService();
+        recipeService = RecipeServiceFactory.create().getService();
+        userService = UserServiceFactory.create().getService();
         builder = new GuiElementsBuilder();
     }
 
@@ -107,23 +101,23 @@ public class RecipePageController extends JSONAdder implements Initializable {
             MethodText.setText("unknown");
         }
         try {
-            Servings.setText("Servings: " + String.valueOf(jsonRecipe.getInt("servings")));
+            Servings.setText("Servings: " + jsonRecipe.getInt("servings"));
         } catch (JSONException ex) {
             Servings.setText("Servings: unknown");
         }
         try {
-            WeightPerServing.setText("Weight Per Serving: " + String.valueOf(jsonRecipe.getInt("weightPerServing")) + " g");
+            WeightPerServing.setText("Weight Per Serving: " + jsonRecipe.getInt("weightPerServing") + " g");
         } catch (JSONException ex) {
             WeightPerServing.setText("Weight Per Serving: undefined");
         }
         try {
-            ReadyInMinutes.setText("Ready in Minutes: " + String.valueOf(jsonRecipe.getInt("readyInMinutes")));
+            ReadyInMinutes.setText("Ready in Minutes: " + jsonRecipe.getInt("readyInMinutes"));
         } catch (JSONException ex) {
             ReadyInMinutes.setText("Ready in Minutes: undefined");
         }
 
         //setting recipe's image
-        InputStream inputStream = null;
+        InputStream inputStream;
         try {
             inputStream = new URL(jsonRecipe.getString("image")).openStream();
             RecipeImage.setImage(new Image(inputStream));
@@ -214,10 +208,10 @@ public class RecipePageController extends JSONAdder implements Initializable {
                 if (name.equals("Calories")) {
                     if (nutrients.getJSONObject(i).get("amount") instanceof Integer) {
                         int kcalAmount = nutrients.getJSONObject(i).getInt("amount");
-                        Kcal.setText("Kcal: " + String.valueOf(kcalAmount));
+                        Kcal.setText("Kcal: " + kcalAmount);
                     } else {
                         double kcalAmount = nutrients.getJSONObject(i).getDouble("amount");
-                        Kcal.setText("Kcal: " + String.valueOf(kcalAmount));
+                        Kcal.setText("Kcal: " + kcalAmount);
                     }
                     continue;
                 }
