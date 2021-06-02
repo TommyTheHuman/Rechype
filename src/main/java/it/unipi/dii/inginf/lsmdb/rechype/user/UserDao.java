@@ -623,7 +623,6 @@ class UserDao {
                     Record rec=res.next();
                     Value recipe=rec.get("RecipeNode");
                     Document doc=new Document();
-                    System.out.println(rec.get("totalLikes"));
                     doc.put("author", recipe.get("author").asString());
                     doc.put("dairyFree", recipe.get("dairyFree").asBoolean());
                     doc.put("glutenFree", recipe.get("glutenFree").asBoolean());
@@ -675,6 +674,7 @@ class UserDao {
                     drinks.add(doc);
                 }
                 return null;
+
             });
         }catch(Neo4jException ne){
             ne.printStackTrace();
@@ -747,7 +747,6 @@ class UserDao {
                 while (res.hasNext()) {
                     Record rec = res.next();
                     Value user = rec.get("User");
-
                     Document doc = new Document();
                     doc.put("country", user.get("country").asString());
                     doc.put("level", user.get("level").asInt());

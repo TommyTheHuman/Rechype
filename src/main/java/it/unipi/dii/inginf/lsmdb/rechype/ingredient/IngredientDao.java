@@ -92,9 +92,14 @@ public class IngredientDao {
         try (Session session = Neo4jDriver.getObject().getDriver().session()) {
             session.readTransaction((TransactionWork<Void>) tx -> {
                 Result res = tx.run(
-                        "MATCH (:User)-[owns:OWNS]->(r:Recipe)-[con:CONTAINS]->(i:Ingredient) " +
+                        "MATCH (i:Ingredient) " +
+                                "OPTIONAL MATCH (:User)-[owns:OWNS]->(r:Recipe)-[con:CONTAINS]->(i) " +
                                 "WHERE date($date)-duration({days:7})<owns.since<=date($date)+duration({days:7}) " +
-                                "return i AS Ingredient, count(con) AS totalAdding " +
+                                "WITH i, count(con) as RecipesAdding " +
+                                "OPTIONAL MATCH (:User)-[owns2:OWNS]->(d:Drink)-[con2:CONTAINS]->(i) " +
+                                "WHERE date($date)-duration({days:7})<owns2.since<=date($date)+duration({days:7}) " +
+                                "WITH i, count(con2)+RecipesAdding as totalAdding " +
+                                "return i AS Ingredient, totalAdding " +
                                 "ORDER BY totalAdding DESC, i.id ASC LIMIT 10",
                         parameters("date", todayDate));
                 while (res.hasNext()) {
