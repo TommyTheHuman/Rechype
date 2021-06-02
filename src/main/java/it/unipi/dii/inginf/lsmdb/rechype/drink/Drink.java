@@ -7,14 +7,14 @@ import org.json.JSONObject;
 import java.util.List;
 
 public class Drink {
-    private String _id;
-    private String name;
-    private String author;
+    private final String _id;
+    private final String name;
+    private final String author;
     private String description;
-    private String image;
+    private final String image;
     private String method;
     private List<Ingredient> ingredients;
-    private String tag;
+    private final String tag;
     private JSONObject jsonRepresentation;
 
     public Drink(Document doc){
