@@ -115,7 +115,7 @@ public class IngredientDao {
 
         }catch(Neo4jException ne){
             ne.printStackTrace();
-            LogManager.getLogger("IngredientDao.class").info("Neo4j was not able to retrieve the ingredient's " +
+            System.out.println("Neo4j was not able to retrieve the ingredient's " +
                     "global suggestions");
         }
         return ingredients;

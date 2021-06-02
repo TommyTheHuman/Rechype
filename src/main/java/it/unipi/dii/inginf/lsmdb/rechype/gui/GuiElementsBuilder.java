@@ -110,7 +110,7 @@ public class GuiElementsBuilder {
             InputStream imageStream = new URL(imageUrl).openStream();
             imageNode = new ImageView(new Image(imageStream, 50,50,false,false));
         }catch(IOException e){
-            LogManager.getLogger("AddIngredientController.class").info("Ingredient's image not found");
+            System.out.println("Ingredient's image not found");
         }
 
         if(amount.getText().equals("")) {
@@ -188,7 +188,7 @@ public class GuiElementsBuilder {
         }catch(IOException e){
             imageStream = GuiElementsBuilder.class.getResourceAsStream("/images/icons/no.png");
             imageNode = new ImageView(new Image(imageStream, 50,50,false,false));
-            LogManager.getLogger("AddIngredientController.class").info("Ingredient's image not found");
+            System.out.println("Ingredient's image not found");
         }
         if(amount!=null)
             block.getChildren().addAll(imageNode, new VBox(nameNode, amount));
@@ -247,7 +247,7 @@ public class GuiElementsBuilder {
                 InputStream imageStream = new URL(recipe.getImage()).openStream();
                 imageRecipe=new ImageView(new Image(imageStream, 50, 50, false, true));
             }catch(IOException ie){
-                LogManager.getLogger("GuiElementsBuilder.class").info("Recipe's image not found");
+                System.out.println("Recipe's image not found");
             }
         }
 
@@ -292,7 +292,7 @@ public class GuiElementsBuilder {
         try {
             imageStream = new URL(drink.getImage()).openStream();
         }catch (IOException ie) {
-            LogManager.getLogger("GuiElementsBuilder.class").info("Recipe's image not found");
+            System.out.println("Recipe's image not found");
             imageStream = GuiElementsBuilder.class.getResourceAsStream("/images/icons/cloche.png");
         }
         ImageView drinkImage = new ImageView(new Image(imageStream, 50, 50, false, false));

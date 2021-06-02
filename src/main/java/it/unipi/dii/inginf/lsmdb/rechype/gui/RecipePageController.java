@@ -129,7 +129,7 @@ public class RecipePageController extends JSONAdder implements Initializable {
             RecipeImage.setImage(new Image(inputStream));
         }catch(IOException ie){
             inputStream = null;
-            LogManager.getLogger("RecipePageController.class").info("Recipe's image not found");
+            System.out.println("Recipe's image not found");
         }
 
         //setting default image if no image are found

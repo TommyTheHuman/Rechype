@@ -371,7 +371,7 @@ public class RecipeDao {
             });
         }catch(Neo4jException ne){
             ne.printStackTrace();
-            LogManager.getLogger("RecipeDao.class").info("Neo4j was not able to retrieve the recipe's " +
+            System.out.println("Neo4j was not able to retrieve the recipe's " +
                     "global suggestions");
         }
         return recipes;

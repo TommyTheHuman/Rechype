@@ -100,7 +100,7 @@ public class DrinkPageController extends JSONAdder implements Initializable {
             inputStreamImg = new URL(jsonDrink.getString("image")).openStream();
             DrinkImage.setImage(new Image(inputStreamImg));
         }catch (IOException ie) {
-            LogManager.getLogger("RecipePageController.class").info("Recipe's image not found");
+            System.out.println("Recipe's image not found");
         }
 
         //setting default image if no image are found

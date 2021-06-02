@@ -24,8 +24,6 @@
       <Hyperlink fx:id="addRecipe" layoutX="79.0" layoutY="271.0" text="Recipe" />
       <Hyperlink fx:id="addDrink" layoutX="123.0" layoutY="271.0" text="Drink" />
       <Hyperlink fx:id="homePageBtn" layoutX="25.0" layoutY="308.0" text="Home" />
-      <Separator layoutY="632.0" prefHeight="8.0" prefWidth="227.0" />
-      <Hyperlink layoutX="88.0" layoutY="652.0" text="Settings" />
       <Separator layoutX="224.0" orientation="VERTICAL" prefHeight="700.0" prefWidth="6.0" />
       <Button fx:id="logOut" layoutX="160.0" layoutY="108.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="42.0">
          <graphic>

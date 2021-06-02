@@ -139,9 +139,9 @@ public class LandingPageController extends JSONAdder implements Initializable {
                         //if the profile is not created the user must be deleted
                         result=userService.deleteUser(username);
                         if(result.equals("Abort")){
-                            LogManager.getLogger("LandingPageController.class").info("inconsistency will be solved during parsing");
+                            System.out.println("inconsistency between user and profile will be solved during parsing");
                         }else{
-                            LogManager.getLogger("LandingPageController.class").info("consistency between user and profile solved");
+                            System.out.println("consistency between user and profile solved");
                         }
                         regMsg.setText("Error occurred during the registration");
                         regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");

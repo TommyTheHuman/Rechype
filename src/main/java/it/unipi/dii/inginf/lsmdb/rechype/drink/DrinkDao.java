@@ -326,7 +326,7 @@ class DrinkDao {
             });
         }catch(Neo4jException ne){
             ne.printStackTrace();
-            LogManager.getLogger("DrinkDao.class").info("Neo4j was not able to retrieve the drink's " +
+            System.out.println("Neo4j was not able to retrieve the drink's " +
             "global suggestions");
         }
         return drinks;

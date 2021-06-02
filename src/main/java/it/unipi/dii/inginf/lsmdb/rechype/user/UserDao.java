@@ -638,7 +638,7 @@ class UserDao {
             });
         }catch(Neo4jException ne){
             ne.printStackTrace();
-            LogManager.getLogger("UserDao.class").info("Neo4j was not able to retrieve the recipe's suggestions");
+            System.out.println("Neo4j was not able to retrieve the recipe's suggestions");
         }
         return recipes;
     }
@@ -678,7 +678,7 @@ class UserDao {
             });
         }catch(Neo4jException ne){
             ne.printStackTrace();
-            LogManager.getLogger("UserDao.class").info("Neo4j was not able to retrieve the drink's suggestions");
+            System.out.println("Neo4j was not able to retrieve the drink's suggestions");
         }
         return drinks;
     }
@@ -715,7 +715,7 @@ class UserDao {
             });
         }catch(Neo4jException ne){
             ne.printStackTrace();
-            LogManager.getLogger("UserDao.class").info("Neo4j was not able to retrieve the user's suggestions");
+            System.out.println("Neo4j was not able to retrieve the user's suggestions");
         }
         return users;
     }
@@ -759,7 +759,7 @@ class UserDao {
 
         } catch (Neo4jException ne) {
             ne.printStackTrace();
-            LogManager.getLogger("UserDao.class").info("Neo4j was not able to retrieve user's global suggestion");
+            System.out.println("Neo4j was not able to retrieve user's global suggestion");
         }
         return users;
     }
