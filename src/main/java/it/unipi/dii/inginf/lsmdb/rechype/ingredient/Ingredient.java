@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Ingredient {
-    private String name;
+    private final String name;
     private String imageUrl;
     private double amount;
     private List<Nutrients> nutrition;

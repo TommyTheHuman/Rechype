@@ -22,11 +22,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.logging.LogManager;
 
 public class AddIngredientController extends JSONAdder implements Initializable {
 
@@ -55,7 +53,7 @@ public class AddIngredientController extends JSONAdder implements Initializable 
             public void handle(ActionEvent event) {
                 JSONObject par = jsonParameters;
                 String finalIngredients = "";
-                Integer counter = 0;
+                int counter = 0;
 
                 for(Node node: selectedIngredientVBox.getChildren()){
                     if(node instanceof VBox){

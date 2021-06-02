@@ -208,7 +208,12 @@ public class AdminPageController extends JSONAdder implements Initializable {
                 }
 
                 vboxBestUserByLike.setSpacing(15);
-                List<Document> listDoc = recipeService.getUserByLikeNumber(min, max, nation);
+                List<Document> listDoc;
+                if(checkRecipes.isSelected()){
+                    listDoc = recipeService.getUserByLikeNumber(min, max, nation);
+                }else{
+                    listDoc = drinkService.getUserByLikeAndNationAndAge(min,max, nation);
+                }
                 if(listDoc.size() == 0){
                     HBox hbox = new HBox();
                     Text noResult = new Text();
