@@ -3,7 +3,9 @@ package it.unipi.dii.inginf.lsmdb.rechype.persistence;
 import com.oath.halodb.*;
 import org.apache.logging.log4j.LogManager;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 
 public class HaloDBDriver {
@@ -47,7 +49,6 @@ public class HaloDBDriver {
                     client.delete(record.getKey());
                 }
                 HaloDBStats stats = client.stats();
-                System.out.println(stats.toString());
                 client.close();
             }catch(HaloDBException ex){
                 LogManager.getLogger("HaloDBDriver.class").fatal("key value database not closed");

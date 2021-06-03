@@ -119,7 +119,6 @@ public class DrinkAddController extends JSONAdder implements Initializable {
                     } else {
                         LogManager.getLogger("DrinkAddController.class").error("MongoDB: failed to insert drink");
                     }
-                }
             }
         });
 
