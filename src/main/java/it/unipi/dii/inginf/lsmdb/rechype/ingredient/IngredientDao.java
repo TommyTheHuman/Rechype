@@ -40,19 +40,6 @@ public class IngredientDao {
         return returnList;
     }
 
-    // Return a list of Ingredients given a list of full names of Ingredients.
-    public List<Ingredient> getIngredientFromString(List<String> ingredientName) {
-        List<Ingredient> returnList = new ArrayList<>();
-
-        Bson filter = Filters.in("id", ingredientName);
-        MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.INGREDIENTS).find(filter).iterator();
-        while (cursor.hasNext()) {
-            Document doc = cursor.next();
-            returnList.add(new Ingredient(doc));
-        }
-        return returnList;
-    }
-
     public JSONObject getIngredientByKey(String key) {
         try {
             byte[] byteObj = HaloDBDriver.getObject().getData("ingredient", key.getBytes(StandardCharsets.UTF_8));

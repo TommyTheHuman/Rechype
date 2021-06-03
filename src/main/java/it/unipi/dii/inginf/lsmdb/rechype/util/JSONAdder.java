@@ -1,4 +1,4 @@
-package it.unipi.dii.inginf.lsmdb.rechype;
+package it.unipi.dii.inginf.lsmdb.rechype.util;
 
 import org.json.JSONObject;
 

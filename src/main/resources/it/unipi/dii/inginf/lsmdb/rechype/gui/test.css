@@ -3,5 +3,7 @@
 }
 
 #pane{
-    -fx-background-color: rgb(244,244,244);
+    -fx-background-color: white;
+    -fx-border-color: gray;
 }
+

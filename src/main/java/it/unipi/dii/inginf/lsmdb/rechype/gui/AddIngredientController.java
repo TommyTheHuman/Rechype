@@ -1,13 +1,11 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
-import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.util.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.Ingredient;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientService;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientServiceFactory;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
@@ -16,7 +14,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -36,7 +33,6 @@ public class AddIngredientController extends JSONAdder implements Initializable 
 
     @FXML private Text inputGramsError;
 
-    private IngredientServiceFactory ingredientServiceFactory;
     private IngredientService ingredientService;
 
     private GuiElementsBuilder builder;
@@ -44,80 +40,72 @@ public class AddIngredientController extends JSONAdder implements Initializable 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         inputGramsError.setOpacity(0);
-        ingredientServiceFactory = IngredientServiceFactory.create();
-        ingredientService = ingredientServiceFactory.getService();
+        ingredientService = IngredientServiceFactory.create().getService();
 
         builder = new GuiElementsBuilder();
-        backToRecipeBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                JSONObject par = jsonParameters;
-                String finalIngredients = "";
-                int counter = 0;
+        backToRecipeBtn.setOnAction(event -> {
+            JSONObject par = jsonParameters;
+            StringBuilder finalIngredients = new StringBuilder();
+            int counter = 0;
 
-                for(Node node: selectedIngredientVBox.getChildren()){
-                    if(node instanceof VBox){
-                        HBox hbox = (HBox) ((VBox)node).getChildren().get(1);
-                        TextField quantityFields = (TextField) hbox.getChildren().get(1);
-                        String quantityString = quantityFields.getText();
-                        if(quantityString.length() == 0){
-                            inputGramsError.setOpacity(100);
-                            return;
-                        }
-                        if(counter == builder.idSelectedIngredient.size()-1){
-                            if(!par.has("Drink")) {
-                                finalIngredients = finalIngredients + builder.idSelectedIngredient.get(counter) + ": " + quantityString + "g ";
-                            }else{
-                                finalIngredients = finalIngredients + builder.idSelectedIngredient.get(counter)+": "+quantityString;
-                            }
-                        }else {
-                            if(!par.has("Drink")){
-                                finalIngredients = finalIngredients + builder.idSelectedIngredient.get(counter) + ": " + quantityString + "g, ";
-                            }else{
-                                finalIngredients = finalIngredients + builder.idSelectedIngredient.get(counter)+": "+quantityString+", ";
-                            }
-                        }
-                        counter++;
+            for(Node node: selectedIngredientVBox.getChildren()){
+                if(node instanceof VBox){
+                    HBox hbox = (HBox) ((VBox)node).getChildren().get(1);
+                    TextField quantityFields = (TextField) hbox.getChildren().get(1);
+                    String quantityString = quantityFields.getText();
+                    if(quantityString.length() == 0){
+                        inputGramsError.setOpacity(100);
+                        return;
                     }
+                    if(counter == builder.idSelectedIngredient.size()-1){
+                        if(!par.has("Drink")) {
+                            finalIngredients.append(builder.idSelectedIngredient.get(counter)).append(": ").append(quantityString).append("g ");
+                        }else{
+                            finalIngredients.append(builder.idSelectedIngredient.get(counter)).append(": ").append(quantityString);
+                        }
+                    }else {
+                        if(!par.has("Drink")){
+                            finalIngredients.append(builder.idSelectedIngredient.get(counter)).append(": ").append(quantityString).append("g, ");
+                        }else{
+                            finalIngredients.append(builder.idSelectedIngredient.get(counter)).append(": ").append(quantityString).append(", ");
+                        }
+                    }
+                    counter++;
                 }
-                inputGramsError.setOpacity(0);
-                par.remove("ingredients");
-                par.put("ingredients", finalIngredients);
-                if(par.has("Drink")) {
-                    Main.changeScene("DrinkAdd", par);
-                }
-                else
-                    Main.changeScene("RecipeAdd", par);
             }
-
-
+            inputGramsError.setOpacity(0);
+            par.remove("ingredients");
+            par.put("ingredients", finalIngredients.toString());
+            if(par.has("Drink")) {
+                Main.changeScene("DrinkAdd", par);
+            }
+            else
+                Main.changeScene("RecipeAdd", par);
         });
 
-        // When the user type a more than 3 letters create the boxes contaning the ingredient and display those in searchedIngredientVBox
-        ingredientText.setOnKeyTyped(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                String text = ingredientText.getText();
-                searchedIngredientVBox.getChildren().clear();
-                if(text.length() > 2){
-                    for(Ingredient ingr: ingredientService.searchIngredients(text, 0, 10)){
-                        searchedIngredientVBox.getChildren().addAll(builder.createIngredientBlock(ingr, selectedIngredientVBox), new Separator(Orientation.HORIZONTAL));
-                    }
+        // When the user type a more than 3 letters create the boxes containing the ingredient and display those in searchedIngredientVBox
+        ingredientText.setOnKeyTyped(event -> {
+            String text = ingredientText.getText();
+            searchedIngredientVBox.getChildren().clear();
+            if(text.length() > 2){
+                for(Ingredient ingr: ingredientService.searchIngredients(text, 0, 10)){
+                    searchedIngredientVBox.getChildren().addAll(builder.createIngredientBlock(ingr, selectedIngredientVBox), new Separator(Orientation.HORIZONTAL));
                 }
             }
         });
 
-        scrollBoxIngredients.vvalueProperty().addListener(new ChangeListener<Number>() {
-            int offset=0;
+        scrollBoxIngredients.vvalueProperty().addListener(new ChangeListener<>() {
+            int offset = 0;
+
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                if(scrollBoxIngredients.getVvalue()==scrollBoxIngredients.getVmax()){
-                    offset=searchedIngredientVBox.getChildren().size()/2;
+                if (scrollBoxIngredients.getVvalue() == scrollBoxIngredients.getVmax()) {
+                    offset = searchedIngredientVBox.getChildren().size() / 2;
 
                     List<Ingredient> listOfIngredients = ingredientService.searchIngredients(ingredientText.getText(), offset, 10);
-                    for (Ingredient ingr: listOfIngredients) {
+                    for (Ingredient ingr : listOfIngredients) {
                         searchedIngredientVBox.getChildren().addAll(builder.createIngredientBlock(ingr, selectedIngredientVBox), new Separator(Orientation.HORIZONTAL));
-                    };
+                    }
                 }
             }
         });
@@ -157,12 +145,9 @@ public class AddIngredientController extends JSONAdder implements Initializable 
                 vbox.setSpacing(10.0);
                 selectedIngredientVBox.getChildren().addAll(vbox);
 
-                deleteIngredient.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        selectedIngredientVBox.getChildren().remove(vbox);
-                        builder.idSelectedIngredient.remove(details[0]);
-                    }
+                deleteIngredient.setOnAction(event -> {
+                    selectedIngredientVBox.getChildren().remove(vbox);
+                    builder.idSelectedIngredient.remove(details[0]);
                 });
 
             }

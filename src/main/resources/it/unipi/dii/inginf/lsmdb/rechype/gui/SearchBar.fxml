@@ -24,7 +24,7 @@
                   <VBox fx:id="resultBox" prefWidth="332.0" />
                </content>
             </ScrollPane>
-            <Button fx:id="closeSearch" layoutX="240.0" layoutY="244.0" mnemonicParsing="false" text="Close" />
+            <Button fx:id="closeSearch" layoutX="432.0" layoutY="-8.0" mnemonicParsing="false" text="Close" />
          </children>
       </AnchorPane>
       <AnchorPane prefHeight="41.0" prefWidth="668.0" AnchorPane.leftAnchor="0.0">
@@ -51,7 +51,7 @@
       </AnchorPane>
       <AnchorPane fx:id="filterAnchor" layoutY="42.0" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="0.0" prefWidth="0.0">
          <children>
-            <Pane id="pane" layoutY="-39.0" prefHeight="360.0" prefWidth="168.0" stylesheets="@test.css">
+            <Pane id="pane" layoutY="-39.0" prefHeight="395.0" prefWidth="168.0" stylesheets="@test.css">
                <children>
                   <CheckBox fx:id="checkGluten" layoutX="7.0" layoutY="140.0" mnemonicParsing="false" prefHeight="17.0" prefWidth="85.0" text="GlutenFree" />
                   <CheckBox fx:id="checkDairy" layoutX="7.0" layoutY="163.0" mnemonicParsing="false" text="DairyFree" />
@@ -81,9 +81,9 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Text>
+                  <Button fx:id="closeFilters" layoutX="62.0" layoutY="356.0" mnemonicParsing="false" text="Close" />
                </children>
             </Pane>
-            <Button fx:id="closeFilters" layoutX="62.0" layoutY="329.0" mnemonicParsing="false" text="Close" />
          </children>
       </AnchorPane>
    </children>

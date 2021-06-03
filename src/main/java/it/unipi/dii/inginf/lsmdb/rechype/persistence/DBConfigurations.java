@@ -8,12 +8,11 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Load the configuration of the databases from resuorces/configDB.properties
+ * Load the configuration of the databases from resources/configDB.properties
  */
 
 class DBConfigurations {
     public long timerNeo4j;
-    public long timerMongo;
     public String defaultDBNeo4j;
     public String defaultDBMongo;
     public String Neo4jUri;
@@ -34,7 +33,7 @@ class DBConfigurations {
             }
         }catch(IOException io){
             LogManager.getLogger(DBConfigurations.class.getName()).fatal("Database: configuration not loaded");
-            //throw qualcosa per chiudere l'applicazione?
+            System.exit(-1);
         }
         timerNeo4j=Long.parseLong(prop.getProperty("timerNeo4j"));
         defaultDBNeo4j=prop.getProperty("defaultDBNeo4j");

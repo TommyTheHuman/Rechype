@@ -1,6 +1,5 @@
 package it.unipi.dii.inginf.lsmdb.rechype.profile;
 
-import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileDAO;
 import org.bson.Document;
 
 import java.util.List;

@@ -9,8 +9,6 @@ public interface IngredientService {
 
     List<Ingredient> searchIngredients(String text, int offset, int quantity);
 
-    List<Ingredient> getIngredientFromString(List<String> ingrName);
-
     JSONObject getCachedIngredient(String key);
 
     List<Document> getBestIngredients();

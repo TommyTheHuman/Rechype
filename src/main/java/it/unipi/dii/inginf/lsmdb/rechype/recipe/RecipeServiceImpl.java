@@ -1,10 +1,8 @@
 package it.unipi.dii.inginf.lsmdb.rechype.recipe;
 
-import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import org.bson.Document;
 import org.json.JSONObject;
 
-import javax.print.Doc;
 import java.util.List;
 
 class RecipeServiceImpl implements RecipeService{

@@ -1,6 +1,6 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
-import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.util.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.drink.Drink;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.Ingredient;
 import it.unipi.dii.inginf.lsmdb.rechype.profile.Profile;
@@ -9,13 +9,10 @@ import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;
@@ -38,22 +35,16 @@ public class MyProfileController extends JSONAdder implements Initializable {
     @FXML private VBox vboxFridge;
     @FXML private TabPane tabPane;
 
-    private GuiElementsBuilder builder;
-
-    private ProfileServiceFactory profileServiceFactory;
     private ProfileService profileService;
 
-    private UserServiceFactory userServiceFactory;
     private UserService userService;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        builder = new GuiElementsBuilder();
-        profileServiceFactory = ProfileServiceFactory.create();
-        profileService = profileServiceFactory.getService();
-        userServiceFactory = UserServiceFactory.create();
-        userService = userServiceFactory.getService();
+        GuiElementsBuilder builder = new GuiElementsBuilder();
+        profileService = ProfileServiceFactory.create().getService();
+        userService = UserServiceFactory.create().getService();
         vboxMeals.setSpacing(30);
         vboxFridge.setSpacing(20);
         Profile profile = profileService.getProfile(userService.getLoggedUser().getUsername());
@@ -93,12 +84,9 @@ public class MyProfileController extends JSONAdder implements Initializable {
 
             Button deleteBtn = new Button("Delete");
 
-            deleteBtn.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    profileService.deleteMeal(title.getText(), profile.getUsername());
-                    vboxMeals.getChildren().remove(vboxMeal);
-                }
+            deleteBtn.setOnAction(event -> {
+                profileService.deleteMeal(title.getText(), profile.getUsername());
+                vboxMeals.getChildren().remove(vboxMeal);
             });
             vboxMeal.getChildren().addAll(deleteBtn, new Separator(Orientation.HORIZONTAL));
             vboxMeals.getChildren().addAll(vboxMeal);
@@ -114,30 +102,17 @@ public class MyProfileController extends JSONAdder implements Initializable {
 
             Button deleteBtn = new Button("Delete");
             VBox container = new VBox(ingrBox, deleteBtn, new Separator(Orientation.HORIZONTAL));
-            deleteBtn.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    profileService.deleteIngredient(profile.getUsername(), ingredients.getString("name"));
-                    vboxFridge.getChildren().removeAll(container);
-                }
+            deleteBtn.setOnAction(event -> {
+                profileService.deleteIngredient(profile.getUsername(), ingredients.getString("name"));
+                vboxFridge.getChildren().removeAll(container);
             });
 
             vboxFridge.getChildren().addAll(container);
         }
 
-        addIngredientBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Main.changeScene("IngredientSearchFridge", new JSONObject());
-            }
-        });
+        addIngredientBtn.setOnAction(event -> Main.changeScene("IngredientSearchFridge", new JSONObject()));
 
-        createMealBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Main.changeScene("MealAdd", new JSONObject());
-            }
-        });
+        createMealBtn.setOnAction(event -> Main.changeScene("MealAdd", new JSONObject()));
     }
 
     @Override

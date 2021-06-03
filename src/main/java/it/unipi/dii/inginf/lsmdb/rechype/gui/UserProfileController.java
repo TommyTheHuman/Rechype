@@ -1,18 +1,19 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
-import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.drink.Drink;
-import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
+import it.unipi.dii.inginf.lsmdb.rechype.util.JSONAdder;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -67,8 +68,9 @@ public class UserProfileController extends JSONAdder implements Initializable {
                     JSONObject par = new JSONObject().put("_id", recipe.getId());
                     Main.changeScene("RecipePage", par);
                 });
-
-                recipeVBox.getChildren().add(recipeBlock);
+                recipeBlock.setSpacing(30);
+                recipeBlock.setStyle("-fx-background-color: white");
+                recipeVBox.getChildren().addAll(recipeBlock, new Separator(Orientation.HORIZONTAL));
              }
 
             for(Document docDrink :drinkList){
@@ -78,8 +80,9 @@ public class UserProfileController extends JSONAdder implements Initializable {
                     JSONObject par = new JSONObject().put("_id", drink.getId());
                     Main.changeScene("DrinkPage", par);
                 });
-
-                recipeVBox.getChildren().add(drinkBlock);
+                drinkBlock.setSpacing(30);
+                drinkBlock.setStyle("-fx-background-color: white");
+                recipeVBox.getChildren().addAll(drinkBlock, new Separator(Orientation.HORIZONTAL));
             }
 
         }

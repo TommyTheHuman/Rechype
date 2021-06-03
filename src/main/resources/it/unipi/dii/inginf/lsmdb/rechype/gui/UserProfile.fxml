@@ -20,7 +20,7 @@
    </children>
    <AnchorPane layoutX="226.0" layoutY="52.0" prefHeight="648.0" prefWidth="775.0">
       <children>
-         <ScrollPane hbarPolicy="NEVER" layoutX="39.0" layoutY="124.0" prefHeight="514.0" prefWidth="498.0">
+         <ScrollPane hbarPolicy="NEVER" layoutX="243.0" layoutY="124.0" prefHeight="514.0" prefWidth="289.0">
             <content>
                <VBox fx:id="recipeVBox" prefWidth="773.0" />
             </content></ScrollPane>

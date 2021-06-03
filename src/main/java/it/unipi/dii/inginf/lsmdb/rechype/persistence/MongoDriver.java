@@ -7,9 +7,6 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.apache.logging.log4j.LogManager;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * Class that defines and configures the connection to the MongoDb cluster
  */

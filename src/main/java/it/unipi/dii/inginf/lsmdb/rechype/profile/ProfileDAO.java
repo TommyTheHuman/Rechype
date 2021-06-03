@@ -4,21 +4,14 @@ import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
-import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.bson.conversions.Bson;
-import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mongodb.client.model.Updates.push;
-import static com.mongodb.client.model.Updates.pull;
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.pushEach;
+import static com.mongodb.client.model.Updates.*;
 
 class ProfileDAO {
 

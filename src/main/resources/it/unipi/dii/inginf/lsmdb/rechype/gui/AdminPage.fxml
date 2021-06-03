@@ -55,7 +55,7 @@
                                  <VBox fx:id="vboxBestUserByHealth" prefWidth="385.0" />
                               </content>
                            </ScrollPane>
-                           <Text layoutX="61.0" layoutY="664.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Best User by health">
+                           <Text layoutX="61.0" layoutY="664.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Best User by healthy recipes">
                               <font>
                                  <Font size="33.0" />
                               </font>
@@ -76,7 +76,7 @@
                            <Text layoutX="555.0" layoutY="690.0" strokeType="OUTSIDE" strokeWidth="0.0" text="In recipe ready in minutes:" />
                            <ComboBox fx:id="comboMinutes" layoutX="555.0" layoutY="698.0" prefWidth="150.0" />
                            <Button fx:id="goBtnPopularIngredient" layoutX="925.0" layoutY="699.0" mnemonicParsing="false" text="Go" />
-                           <CheckBox fx:id="checkCalories" layoutX="714.0" layoutY="677.0" mnemonicParsing="false" text="Low Carb (&lt;250 kcal per 100g)" />
+                           <CheckBox fx:id="checkCalories" layoutX="714.0" layoutY="677.0" mnemonicParsing="false" text="Low Calories (&lt;250 kcal per 100g)" />
                            <CheckBox fx:id="checkProtein" layoutX="714.0" layoutY="703.0" mnemonicParsing="false" text="High Protein (&gt;15 g per 100g)" />
                            <CheckBox fx:id="checkFat" layoutX="714.0" layoutY="731.0" mnemonicParsing="false" text="Low Fat (&lt;15 g per 100g)" />
                            <ScrollPane layoutX="61.0" layoutY="1439.0" prefHeight="476.0" prefWidth="387.0">

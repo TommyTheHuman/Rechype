@@ -1,13 +1,9 @@
 package it.unipi.dii.inginf.lsmdb.rechype.recipe;
 
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.Ingredient;
-import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.List;
 
 public class Recipe {
@@ -96,39 +92,6 @@ public class Recipe {
         } else {
             this._id = json.getJSONObject("_id").getString("$oid");
         }
-
-        //if the json doesn't have some fields is a problem so we must access from t
-    /*public Recipe(Document doc){
-        String[] keys=doc.keySet().toArray(new String[doc.keySet().size()]);
-        String name="";
-
-                if(name.equals("_id")) {
-                    JSONObject json = new JSONObject(doc.toJson());
-                    field.set(this, json.getJSONObject("_id").getString("$oid"));
-                    continue;
-                }
-
-                if(doc.get(name) instanceof Integer){
-                    if(name.equals("originalId") || name.equals("likes")){
-                        field.set(this, doc.getInteger(name));
-                    }else {
-                        field.set(this, Double.valueOf(doc.getInteger(name)));
-                    }
-                }
-                else if(doc.get(name) instanceof Double){
-                    field.set(this, doc.getDouble(name));
-                }
-                else if (doc.get(name) instanceof Boolean){
-                    field.set(this, doc.getBoolean(name));
-                }
-                else {
-                    field.set(this, doc.getString(name));
-                }
-            }catch(NoSuchFieldException | SecurityException | IllegalAccessException ex){
-                LogManager.getLogger("Recipe.class").fatal("field "+name+" is missing");
-                System.exit(-1);
-            }
-        }*/
     }
 
     //neo4j constructor with less fields but all the private fields must be set anyway

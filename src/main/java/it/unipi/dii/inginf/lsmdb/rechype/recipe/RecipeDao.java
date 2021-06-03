@@ -7,13 +7,10 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.InsertOneResult;
-import com.mongodb.internal.operation.OrderBy;
 import com.oath.halodb.HaloDB;
 import com.oath.halodb.HaloDBException;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
-import static com.mongodb.client.model.Filters.*;
-import static org.neo4j.driver.Values.parameters;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
 import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
@@ -21,35 +18,24 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.neo4j.driver.*;
+import org.neo4j.driver.Result;
+import org.neo4j.driver.Session;
+import org.neo4j.driver.TransactionWork;
+import org.neo4j.driver.Value;
 import org.neo4j.driver.exceptions.Neo4jException;
-import com.mongodb.ConnectionString;
-import com.mongodb.client.*;
-import com.mongodb.client.model.Accumulators;
-import com.mongodb.client.result.DeleteResult;
-import com.mongodb.client.result.UpdateResult;
-import org.bson.Document;
-import org.bson.json.JsonWriterSettings;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.function.Consumer;
-
-import static com.mongodb.client.model.Filters.*;
-import static com.mongodb.client.model.Updates.*;
-import static com.mongodb.client.model.Aggregates.*;
-import static com.mongodb.client.model.Projections.*;
-import static com.mongodb.client.model.Accumulators.*;
-import static com.mongodb.client.model.Accumulators.addToSet;
-import static com.mongodb.client.model.Accumulators.sum;
-import static com.mongodb.client.model.Sorts.descending;
-
-import javax.print.Doc;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import static com.mongodb.client.model.Accumulators.sum;
+import static com.mongodb.client.model.Aggregates.*;
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Projections.*;
+import static com.mongodb.client.model.Sorts.descending;
+import static org.neo4j.driver.Values.parameters;
 
 public class RecipeDao {
 
@@ -100,9 +86,9 @@ public class RecipeDao {
                     String totalQueryCreate="";
                     JSONArray ingredientsJson=new JSONObject(doc.toJson()).getJSONArray("ingredients");
                     for(int i=0; i<ingredientsJson.length(); i++){
-                        totalQueryMatch=totalQueryMatch+"MATCH(i"+i+":Ingredient) WHERE i"+i+".id=\""
+                        totalQueryMatch=totalQueryMatch + "MATCH(i"+i+":Ingredient) WHERE i"+i+".id=\""
                         +ingredientsJson.getJSONObject(i).getString("ingredient")+"\" ";
-                        totalQueryCreate=totalQueryCreate+"CREATE (ee)-[:CONTAINS]->(i"+i+") ";
+                        totalQueryCreate=totalQueryCreate + "CREATE (ee)-[:CONTAINS]->(i"+i+") ";
                     }
                     tx.run(
                             "MATCH (u:User) WHERE u.username=$owner " +
@@ -380,13 +366,7 @@ public class RecipeDao {
     // ANALYTICS
 
     // Get user with the higher number of likes by category if specified
-   /* db.recipes.aggregate( [
-    {$match:{author:{$nin:["Spoonacular", "CocktailsDB", "PunkAPI"]}}},
-    {$group:{_id:"$author", count:{$sum:"$likes"}}},
-    {$sort:{count:-1}}
-    ])
 
-    */
     public List<Document> getRankingUserByLikeAndCategory(String category){
         MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
         List<Bson> filters = new ArrayList<>();

@@ -1,7 +1,5 @@
 package it.unipi.dii.inginf.lsmdb.rechype.recipe;
 
-import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
-
 public class RecipeServiceFactory {
 
     private RecipeServiceFactory(){}

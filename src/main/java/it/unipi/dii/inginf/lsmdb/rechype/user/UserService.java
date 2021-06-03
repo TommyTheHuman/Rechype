@@ -1,8 +1,6 @@
 package it.unipi.dii.inginf.lsmdb.rechype.user;
 
 import org.bson.Document;
-import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
-import org.bson.Document;
 import org.json.JSONObject;
 
 import java.util.List;

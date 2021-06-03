@@ -1,30 +1,23 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
-import it.unipi.dii.inginf.lsmdb.rechype.JSONAdder;
+import it.unipi.dii.inginf.lsmdb.rechype.util.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.drink.Drink;
 import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileService;
 import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
-import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.bson.Document;
-import org.json.JSONObject;
 
-import javax.print.Doc;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,28 +33,20 @@ public class AddMealController extends JSONAdder implements Initializable {
     @FXML private Button saveMealButton;
     @FXML private Text errorMsg;
 
-    private UserServiceFactory userServiceFactory;
     private UserService userService;
-    private ProfileServiceFactory profileServiceFactory;
     private ProfileService profileService;
 
-    private GuiElementsBuilder builder;
-
-    private List<Document> recipeDocs;
-    private List<Document> drinkDocs;
     private List<Document> recipesSelected;
     private List<Document> drinksSelected;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        userServiceFactory = UserServiceFactory.create();
-        userService = userServiceFactory.getService();
+        userService = UserServiceFactory.create().getService();
 
-        profileServiceFactory = ProfileServiceFactory.create();
-        profileService = profileServiceFactory.getService();
+        profileService = ProfileServiceFactory.create().getService();
 
-        builder = new GuiElementsBuilder();
+        GuiElementsBuilder builder = new GuiElementsBuilder();
         recipesSelected = new ArrayList<>();
         drinksSelected = new ArrayList<>();
 
@@ -71,34 +56,28 @@ public class AddMealController extends JSONAdder implements Initializable {
         // Display user's recipes.
         recipesBox.getChildren().clear();
         Document docUser = userService.getRecipeAndDrinks(userService.getLoggedUser().getUsername());
-        recipeDocs = (List<Document>) docUser.get("recipes");
+        List<Document> recipeDocs = (List<Document>) docUser.get("recipes");
         for(Document doc: recipeDocs){
             Recipe recipe = new Recipe(doc);
             HBox hbox = builder.createRecipeBlock(recipe);
-            hbox.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    recipesSelected.add(doc);
-                    selectedRecipesVBox.getChildren().add(hbox);
-                    hbox.setOnMouseClicked(null);
-                }
+            hbox.setOnMouseClicked(event -> {
+                recipesSelected.add(doc);
+                selectedRecipesVBox.getChildren().add(hbox);
+                hbox.setOnMouseClicked(null);
             });
             recipesBox.getChildren().add(hbox);
         }
 
-        List<Document> drinksDoc = (List<Document>) docUser.get("drinks");
+        List<Document> drinkDocs = (List<Document>) docUser.get("drinks");
 
-        for(Document doc: drinksDoc){
+        for(Document doc: drinkDocs){
             Drink drink = new Drink(doc);
 
             HBox hbox = builder.createDrinkBlock(drink);
-            hbox.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    drinksSelected.add(doc);
-                    selectedRecipesVBox.getChildren().add(hbox);
-                    hbox.setOnMouseClicked(null);
-                }
+            hbox.setOnMouseClicked(event -> {
+                drinksSelected.add(doc);
+                selectedRecipesVBox.getChildren().add(hbox);
+                hbox.setOnMouseClicked(null);
             });
             drinksBox.getChildren().add(hbox);
 
@@ -106,25 +85,22 @@ public class AddMealController extends JSONAdder implements Initializable {
 
 
         // Create meal and back to My Profile
-        saveMealButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if(checkField()){
-                    String mealTypeText = mealType.getValue().toString();
-                    String title = mealTitle.getText();
-                    String returnValue = profileService.addMeal(title, mealTypeText, recipesSelected, drinksSelected, userService.getLoggedUser().getUsername());
-                    if(returnValue.equals("DuplicateTitle")){
-                        errorMsg.setText("Duplicate Meal Title.");
-                        errorMsg.setOpacity(100);
-                        return;
-                    }
-                    if(returnValue.equals("AddOK")) {
-                        errorMsg.setOpacity(0);
-                        Main.changeScene("MyProfile", null);
-                    }else{
-                        errorMsg.setText("An error occured");
-                        errorMsg.setOpacity(100);
-                    }
+        saveMealButton.setOnAction(event -> {
+            if(checkField()){
+                String mealTypeText = mealType.getValue().toString();
+                String title = mealTitle.getText();
+                String returnValue = profileService.addMeal(title, mealTypeText, recipesSelected, drinksSelected, userService.getLoggedUser().getUsername());
+                if(returnValue.equals("DuplicateTitle")){
+                    errorMsg.setText("Duplicate Meal Title.");
+                    errorMsg.setOpacity(100);
+                    return;
+                }
+                if(returnValue.equals("AddOK")) {
+                    errorMsg.setOpacity(0);
+                    Main.changeScene("MyProfile", null);
+                }else{
+                    errorMsg.setText("An error occurred");
+                    errorMsg.setOpacity(100);
                 }
             }
         });

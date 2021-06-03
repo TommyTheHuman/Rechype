@@ -5,8 +5,6 @@ import it.unipi.dii.inginf.lsmdb.rechype.ingredient.Ingredient;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -19,15 +17,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import org.apache.logging.log4j.LogManager;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
-import java.util.Map;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,8 +37,8 @@ public class GuiElementsBuilder {
         HBox block = new HBox();
         Text userNode = new Text(user.getUsername());
         Text ageNode = new Text(String.valueOf(user.getAge()));
-        ImageView countryNode = null;
-        ImageView levelNode = null;
+        ImageView countryNode;
+        ImageView levelNode;
         InputStream inputFlag;
         inputFlag = GuiElementsBuilder.class.getResourceAsStream("/images/flags/" + user.getCountry() + ".png");
 
@@ -143,15 +136,13 @@ public class GuiElementsBuilder {
                 blockSelected.setSpacing(10.0);
                 selectedIngredientVBox.getChildren().addAll(vbox);
 
-                deleteIngredient.setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        selectedIngredientVBox.getChildren().remove(vbox);
-                        idSelectedIngredient.remove(ingredient.getName());
-                    }
+                deleteIngredient.setOnAction(event -> {
+                    selectedIngredientVBox.getChildren().remove(vbox);
+                    idSelectedIngredient.remove(ingredient.getName());
                 });
             }
         });
+        block.setStyle("-fx-background-color: white");
         return block;
 
     }
@@ -178,7 +169,7 @@ public class GuiElementsBuilder {
                 amount = new Text("Amount: " + ingredient.get("amount"));
         }
 
-        ImageView imageNode = null;
+        ImageView imageNode;
         InputStream imageStream;
         try{
             imageStream = new URL(imageUrl).openStream();
@@ -194,6 +185,7 @@ public class GuiElementsBuilder {
             block.getChildren().addAll(imageNode, new VBox(nameNode));
         block.setAlignment(Pos.CENTER_LEFT);
         block.setSpacing(10.0);
+        block.setStyle("-fx-background-color: white");
         return block;
     }
 
@@ -274,7 +266,7 @@ public class GuiElementsBuilder {
             JSONObject par = new JSONObject().put("_id", recipe.getId()).append("cached", true);
             Main.changeScene("RecipePage", par);
         });
-
+        mainContainer.setStyle("-fx-background-color: white");
         return mainContainer;
     }
 
@@ -284,7 +276,7 @@ public class GuiElementsBuilder {
         block.setAlignment(Pos.CENTER_LEFT);
         block.setSpacing(10.0);
         textBlock.getChildren().addAll(new Text("name: "+drink.getName()),new Text("author: "+drink.getAuthor()), new Text("tag: "+drink.getTag()));
-        InputStream imageStream=null;
+        InputStream imageStream;
         try {
             imageStream = new URL(drink.getImage()).openStream();
         }catch (IOException ie) {
@@ -298,6 +290,7 @@ public class GuiElementsBuilder {
             JSONObject par = new JSONObject().put("_id", drink.getId());
             Main.changeScene("DrinkPage", par);
         });
+        block.setStyle("-fx-background-color: white");
         return block;
     }
 }
