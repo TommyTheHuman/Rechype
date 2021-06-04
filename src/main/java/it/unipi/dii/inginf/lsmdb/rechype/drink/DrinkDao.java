@@ -349,7 +349,7 @@ class DrinkDao {
         Bson group = group("$author", sum("likes", "$likes"));
         Bson sort = sort(descending("likes"));
         Bson project = project(fields(excludeId(), computed("author", "$_id"), include("likes")));
-        Bson limit = limit(10);
+        Bson limit = limit(20);
 
         List<Document> results = null;
         try{

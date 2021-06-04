@@ -44,13 +44,13 @@ public class GuiElementsBuilder {
 
         //setting the icon based on level
         InputStream inputAvatar = GuiElementsBuilder.class.getResourceAsStream("/images/levels/0.png");
-        if(user.getLevel()<5){
+        if(user.getLevel()<=5){
             inputAvatar = GuiElementsBuilder.class.getResourceAsStream("/images/levels/0.png");
         }
-        else if(user.getLevel()<10){
+        else if(user.getLevel()<=10 && user.getLevel()>5){
             inputAvatar = GuiElementsBuilder.class.getResourceAsStream("/images/levels/1.png");
         }
-        else if(user.getLevel()<15){
+        else if(user.getLevel()>10){
             inputAvatar = GuiElementsBuilder.class.getResourceAsStream("/images/levels/2.png");
         }
 
@@ -177,7 +177,6 @@ public class GuiElementsBuilder {
         }catch(IOException e){
             imageStream = GuiElementsBuilder.class.getResourceAsStream("/images/icons/no.png");
             imageNode = new ImageView(new Image(imageStream, 50,50,false,false));
-            System.out.println("Ingredient's image not found");
         }
         if(amount!=null)
             block.getChildren().addAll(imageNode, new VBox(nameNode, amount));
@@ -237,13 +236,8 @@ public class GuiElementsBuilder {
                 InputStream imageStream = new URL(recipe.getImage()).openStream();
                 imageRecipe=new ImageView(new Image(imageStream, 50, 50, false, true));
             }catch(IOException ie){
-                System.out.println("Recipe's image not found");
+                imageRecipe = standardIconRecipe;
             }
-        }
-
-        //if the image is not loaded from the network a standard image is used
-        if(imageRecipe==null){
-            imageRecipe = standardIconRecipe;
         }
 
         //setting the price icon
@@ -280,7 +274,6 @@ public class GuiElementsBuilder {
         try {
             imageStream = new URL(drink.getImage()).openStream();
         }catch (IOException ie) {
-            System.out.println("Recipe's image not found");
             imageStream = GuiElementsBuilder.class.getResourceAsStream("/images/icons/cloche.png");
         }
         ImageView drinkImage = new ImageView(new Image(imageStream, 50, 50, false, false));

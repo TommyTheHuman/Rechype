@@ -29,7 +29,8 @@ public class IngredientDao {
         List<Document> returnDocList = new ArrayList<>();
         Pattern pattern = Pattern.compile(".*" + ingredientName + ".*", Pattern.CASE_INSENSITIVE);
         Bson filter = Filters.regex("_id", pattern);
-        MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.INGREDIENTS).find(filter).skip(offset).limit(quantity).iterator();
+        MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.INGREDIENTS)
+        .find(filter).skip(offset).limit(quantity).iterator();
 
         while (cursor.hasNext()) {
             Document doc = cursor.next();

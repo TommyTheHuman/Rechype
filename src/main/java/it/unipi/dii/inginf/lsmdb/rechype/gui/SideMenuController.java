@@ -18,9 +18,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 
-/**
- * Initializable è necessario?
- */
 public class SideMenuController extends JSONAdder implements Initializable {
 
 
@@ -37,9 +34,6 @@ public class SideMenuController extends JSONAdder implements Initializable {
     private User loggedUser;
     private UserService userService;
 
-
-
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
@@ -49,13 +43,13 @@ public class SideMenuController extends JSONAdder implements Initializable {
         userName.setText(loggedUser.getUsername());
 
         InputStream inputImage = GuiElementsBuilder.class.getResourceAsStream("/images/levels/0.png");
-        if(loggedUser.getLevel()<5){
+        if(loggedUser.getLevel()<=5){
             inputImage = GuiElementsBuilder.class.getResourceAsStream("/images/levels/0.png");
         }
-        else if(loggedUser.getLevel()<10){
+        else if(loggedUser.getLevel()<=10 && loggedUser.getLevel()>5){
             inputImage = GuiElementsBuilder.class.getResourceAsStream("/images/levels/1.png");
         }
-        else if(loggedUser.getLevel()<15){
+        else if(loggedUser.getLevel()>10){
             inputImage = GuiElementsBuilder.class.getResourceAsStream("/images/levels/2.png");
         }
 

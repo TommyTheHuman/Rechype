@@ -283,6 +283,7 @@ public class RecipeDao {
                                 parameters("username", username, "_id", _id));
                         return null;
                     });
+                    return "Abort";
                 }catch(Neo4jException ne){
                     LogManager.getLogger("RecipeDao.class").error("Neo4j[PARSE], like delete inconsistency: _id: "+
                             _id+" username: "+username);
@@ -388,7 +389,7 @@ public class RecipeDao {
         Bson group = group("$author", sum("likes", "$likes"));
         Bson sort = sort(descending("likes"));
         Bson project = project(fields(excludeId(), computed("author", "$_id"), include("likes")));
-        Bson limit = limit(10);
+        Bson limit = limit(20);
 
         List<Document> results = null;
         try{
@@ -429,6 +430,8 @@ public class RecipeDao {
         stages.add(group("$user._id", sum("likes", "$likes")));
 
         stages.add(sort(descending("likes")));
+
+        stages.add(limit(20));
 
         List<Document> results = null;
         try{

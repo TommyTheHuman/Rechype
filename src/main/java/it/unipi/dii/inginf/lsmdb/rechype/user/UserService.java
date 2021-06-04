@@ -13,8 +13,10 @@ import java.util.List;
 public interface UserService {
 
     boolean login(String user, String pass);
-    String register(String username, String password, String confPassword, String country, int age);
+    String register(String username, String password, String country, int age);
     User getLoggedUser();
+    void setLockSuggestions(boolean val);
+    boolean getLockSuggestions();
     Document getUserById(String id);
     List<User> searchUser(String text, int offset, int quantity, JSONObject filters);
     JSONObject getCachedUser(String key);
@@ -22,6 +24,7 @@ public interface UserService {
     String deleteUser(String username);
     List<Document> getRecipes(String username);
     String addFollow(String myName, String userName, String btnStatus);
+    void setLoggedUser(User user); //delete
     Boolean checkForFollow(String myName, String userName);
     boolean checkRecipeLike(String _id, String type);
     boolean checkSavedRecipe(String _id, String type);

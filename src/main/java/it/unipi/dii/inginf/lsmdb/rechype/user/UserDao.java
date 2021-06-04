@@ -53,7 +53,7 @@ class UserDao {
                     String user = doc.get("_id").toString();
                     String country = doc.get("country").toString();
                     int age = Integer.parseInt(doc.get("age").toString());
-                    int level = Integer.parseInt(doc.get("age").toString());
+                    int level = Integer.parseInt(doc.get("level").toString());
 
                     User userLogged = new User(user, country, age, level);
 
@@ -76,12 +76,11 @@ class UserDao {
      * try on mongo->success->try on neo4j->fails->try delete on mongo->fails->parsing
      * @param username
      * @param password
-     * @param confPassword
      * @param country
      * @param age
      * @return
      */
-    public JSONObject checkRegistration(String username, String password, String confPassword, String country, int age) {
+    public JSONObject checkRegistration(String username, String password, String country, int age) {
 
         Document doc = new Document("_id", username).append("password", password).append("country", country)
         .append("age", age).append("level", 0).append("recipes", new BsonArray()).append("drinks", new BsonArray());
@@ -182,8 +181,18 @@ class UserDao {
             listFilters.add(ageFilter);
         }
         if(filters.has("Level")){
-            Bson lvlFilter = Filters.gte("level", User.levelToInt(filters.getString("Level")));
-            listFilters.add(lvlFilter);
+            Bson lvlFilter1;
+            Bson lvlFilter2;
+            if(User.levelToInt(filters.getString("Level"))==0)
+                lvlFilter1=Filters.gte("level", User.levelToInt(filters.getString("Level")));
+            else {
+                lvlFilter1=Filters.gt("level", User.levelToInt(filters.getString("Level")));
+            }
+            listFilters.add(lvlFilter1);
+            if((User.levelToInt(filters.getString("Level"))!=10)) {
+                lvlFilter2 = Filters.lte("level", User.levelToInt(filters.getString("Level")) + 5);
+                listFilters.add(lvlFilter2);
+            }
         }
 
 
@@ -268,6 +277,7 @@ class UserDao {
         }
         return neo4j && mongo;
     }
+
 
 
 
@@ -359,6 +369,18 @@ class UserDao {
             LogManager.getLogger("UserDao.class").error("Neo4j: like check failed");
             return false;
         }
+    }
+
+    /***
+     *
+     * @param objectToCache
+     */
+    public void cacheSuggestion (byte[] objectToCache){
+        return;
+    }
+
+    public void getCachedSuggestion (){
+        return;
     }
 
     /***
@@ -521,12 +543,17 @@ class UserDao {
         return doc;
     }
 
-
+    /***
+     * This function add/remove a follow depending on the current status of the user
+     * @param myName
+     * @param userName
+     * @param btnStatus
+     * @return
+     */
     public String followUser(String myName, String userName, String btnStatus) {
 
         if(btnStatus.equals("Follow")) {
             try (Session session = Neo4jDriver.getObject().getDriver().session()) {
-                System.out.println();
                 session.writeTransaction((TransactionWork<Void>) tx -> {
                     tx.run("MATCH (uu:User) WHERE uu.username = $myName" +
                                     " MATCH (uu2:User) WHERE uu2.username = $userName" +
@@ -744,8 +771,18 @@ class UserDao {
         List<Bson> stages = new ArrayList<>();
         List<Bson> filters = new ArrayList<>();
         if(!level.equals("noLevel")) {
-            int lvl = User.levelToInt(level);
-            filters.add(gte("level", lvl));
+            Bson lvlFilter1;
+            Bson lvlFilter2;
+            if(User.levelToInt(level)==0)
+                lvlFilter1=Filters.gte("level", User.levelToInt(level));
+            else {
+                lvlFilter1=Filters.gt("level", User.levelToInt(level));
+            }
+            if((User.levelToInt(level)!=10)) {
+                lvlFilter2 = Filters.lte("level", User.levelToInt(level) + 5);
+                filters.add(lvlFilter2);
+            }
+            filters.add(lvlFilter1);
         }
         if(filters.size() > 0){
             stages.add(match(and(filters)));
@@ -775,6 +812,8 @@ class UserDao {
         stages.add(group("$_id", sum("count", 1)));
 
         stages.add(sort(descending("count")));
+
+        stages.add(limit(20));
 
         List<Document> results = null;
         try{
@@ -822,6 +861,7 @@ class UserDao {
 
         stages.add(sort(descending("count")));
         stages.add(project(fields(excludeId(), include("name"), include("count"))));
+        stages.add(limit(20));
 
         List<Document> results = null;
         try{

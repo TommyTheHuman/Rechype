@@ -92,7 +92,7 @@ public class LandingPageController extends JSONAdder implements Initializable {
                     regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");
                     return;
                 } else {
-                    result = userService.register(username, password, confPassword, country, ageNum);
+                    result = userService.register(username, password, country, ageNum);
                 }
             }
 

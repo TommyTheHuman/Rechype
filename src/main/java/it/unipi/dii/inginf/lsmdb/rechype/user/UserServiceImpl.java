@@ -8,6 +8,7 @@ import java.util.List;
 class UserServiceImpl implements UserService {
     private static UserDao userDao=new UserDao();
     private static User loggedUser;
+    private static boolean lockSuggestions;
 
     public boolean login(String user, String pass){
         loggedUser = userDao.checkLogin(user, pass);
@@ -17,8 +18,17 @@ class UserServiceImpl implements UserService {
         return true;
     }
 
-    public String register(String username, String password, String confPassword, String country, int age){
-        JSONObject Json =  userDao.checkRegistration(username, password, confPassword, country, age);
+    //it is used to set the reload or not of the suggestions
+    public void setLockSuggestions(boolean val){
+        lockSuggestions=val;
+    }
+
+    public boolean getLockSuggestions(){
+        return lockSuggestions;
+    }
+
+    public String register(String username, String password, String country, int age){
+        JSONObject Json =  userDao.checkRegistration(username, password, country, age);
         String response = Json.get("response").toString();
         if(response.equals("RegOk")) {
             loggedUser = new User(Json.get("_id").toString(), Json.get("country").toString(),
@@ -29,6 +39,11 @@ class UserServiceImpl implements UserService {
 
     public User getLoggedUser(){
         return loggedUser;
+    }
+
+    //delete
+    public void setLoggedUser(User user){
+        loggedUser=user;
     }
 
     public List<User> searchUser(String text, int offset, int quantity, JSONObject filters) {

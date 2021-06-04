@@ -3,6 +3,7 @@ package it.unipi.dii.inginf.lsmdb.rechype.gui;
 import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
+import it.unipi.dii.inginf.lsmdb.rechype.population.Populate;
 import it.unipi.dii.inginf.lsmdb.rechype.util.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
@@ -19,7 +20,13 @@ import org.neo4j.driver.Session;
 import org.neo4j.driver.TransactionWork;
 import org.neo4j.driver.exceptions.Neo4jException;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.neo4j.driver.Values.parameters;
 
@@ -29,6 +36,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         //populateNeo4j();
+        //Populate pop=new Populate();
         mainScene = new Scene(loadFXML("Landing", new JSONObject()), 1000, 700);
         primaryStage.setTitle("Rechype");
         primaryStage.setScene(mainScene);

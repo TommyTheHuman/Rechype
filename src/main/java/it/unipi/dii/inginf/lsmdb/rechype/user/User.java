@@ -35,9 +35,9 @@ public class User implements Serializable {
         if(lvl.equals("bronze")){
             return 0;
         }else if(lvl.equals("silver")){
-            return 10;
+            return 5;
         }else{
-            return 15;
+            return 10;
         }
     }
 }

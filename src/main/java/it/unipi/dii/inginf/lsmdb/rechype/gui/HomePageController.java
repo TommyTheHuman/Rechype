@@ -17,6 +17,7 @@ import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
+import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -42,6 +43,14 @@ public class HomePageController extends JSONAdder implements Initializable {
     @FXML private VBox boxBestDrinks;
     @FXML private VBox boxBestUsers;
     @FXML private VBox boxBestIngredients;
+    @FXML private Button reloadButton;
+    private static List<Document> recipes;
+    private static List<Document> drinks;
+    private static List<Document> users;
+    private static List<Document> bestRecipes;
+    private static List<Document> bestDrinks;
+    private static List<Document> bestUsers;
+    private static List<Document> bestIngredients;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -49,13 +58,23 @@ public class HomePageController extends JSONAdder implements Initializable {
 
     @Override
     public void setGui() {
-        List<Document> recipes=userService.getSuggestedRecipes();
-        List<Document> drinks=userService.getSuggestedDrinks();
-        List<Document> users=userService.getSuggestedUsers();
-        List<Document> bestRecipes=recipeService.getBestRecipes();
-        List<Document> bestDrinks=drinkService.getBestDrinks();
-        List<Document> bestUsers=userService.getBestUsers();
-        List<Document> bestIngredients=ingredientService.getBestIngredients();
+
+        if(!userService.getLockSuggestions()){
+            recipes=userService.getSuggestedRecipes();
+            drinks=userService.getSuggestedDrinks();
+            users=userService.getSuggestedUsers();
+            bestRecipes=recipeService.getBestRecipes();
+            bestDrinks=drinkService.getBestDrinks();
+            bestUsers=userService.getBestUsers();
+            bestIngredients=ingredientService.getBestIngredients();
+            userService.setLockSuggestions(true);
+        }
+
+        //defining the reload button
+        reloadButton.setOnAction(event -> {
+            userService.setLockSuggestions(false);
+            Main.changeScene("HomePage", new JSONObject());
+        });
 
         for (Document recipe : recipes) {
             boxSuggestedRecipes.getChildren().addAll(setRecipe(new Recipe(recipe)),
