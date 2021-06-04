@@ -42,9 +42,9 @@ class UserServiceImpl implements UserService {
     }
 
     //delete
-    public void setLoggedUser(User user){
+    /*public void setLoggedUser(User user){
         loggedUser=user;
-    }
+    }*/
 
     public List<User> searchUser(String text, int offset, int quantity, JSONObject filters) {
         return userDao.getUsersByText(text, offset, quantity, filters);

@@ -372,18 +372,6 @@ class UserDao {
     }
 
     /***
-     *
-     * @param objectToCache
-     */
-    public void cacheSuggestion (byte[] objectToCache){
-        return;
-    }
-
-    public void getCachedSuggestion (){
-        return;
-    }
-
-    /***
      * The function removes the user from mongodb and neo4j (cross-db consistency),
      * the user's recipes are removed and all the relations on neo4j are removed (likes to recipes)
      * If the first query on mongo fails (user entity deletion) all the function failed and the ban itself fails.

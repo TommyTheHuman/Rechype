@@ -14,9 +14,11 @@ import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
 import javafx.scene.input.MouseEvent;
@@ -51,6 +53,14 @@ public class HomePageController extends JSONAdder implements Initializable {
     private static List<Document> bestDrinks;
     private static List<Document> bestUsers;
     private static List<Document> bestIngredients;
+    private static ObservableList<Node> recipesNodes;
+    private static ObservableList<Node> drinksNodes;
+    private static ObservableList<Node> usersNodes;
+    private static ObservableList<Node> bestRecipesNodes;
+    private static ObservableList<Node> bestDrinksNodes;
+    private static ObservableList<Node> bestUsersNodes;
+    private static ObservableList<Node>  bestIngredientsNodes;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -58,51 +68,75 @@ public class HomePageController extends JSONAdder implements Initializable {
 
     @Override
     public void setGui() {
-
-        if(!userService.getLockSuggestions()){
-            recipes=userService.getSuggestedRecipes();
-            drinks=userService.getSuggestedDrinks();
-            users=userService.getSuggestedUsers();
-            bestRecipes=recipeService.getBestRecipes();
-            bestDrinks=drinkService.getBestDrinks();
-            bestUsers=userService.getBestUsers();
-            bestIngredients=ingredientService.getBestIngredients();
-            userService.setLockSuggestions(true);
-        }
-
         //defining the reload button
         reloadButton.setOnAction(event -> {
             userService.setLockSuggestions(false);
             Main.changeScene("HomePage", new JSONObject());
         });
 
-        for (Document recipe : recipes) {
-            boxSuggestedRecipes.getChildren().addAll(setRecipe(new Recipe(recipe)),
-                    new Separator(Orientation.HORIZONTAL));
+        //saving the suggestions in static memory if is not reloaded
+        if (userService.getLockSuggestions()) {
+            boxSuggestedRecipes.getChildren().addAll(recipesNodes);
+            boxSuggestedDrinks.getChildren().addAll(drinksNodes);
+            boxSuggestedUsers.getChildren().addAll(usersNodes);
+            boxBestRecipes.getChildren().addAll(bestRecipesNodes);
+            boxBestDrinks.getChildren().addAll(bestDrinksNodes);
+            boxBestUsers.getChildren().addAll(bestUsersNodes);
+            boxBestIngredients.getChildren().addAll(bestIngredientsNodes);
+            recipesNodes = boxSuggestedRecipes.getChildren();
+            drinksNodes = boxSuggestedDrinks.getChildren();
+            usersNodes = boxSuggestedUsers.getChildren();
+            bestRecipesNodes = boxBestRecipes.getChildren();
+            bestDrinksNodes = boxBestDrinks.getChildren();
+            bestUsersNodes = boxBestUsers.getChildren();
+            bestIngredientsNodes = boxBestIngredients.getChildren();
         }
-        for (Document drink : drinks) {
-            boxSuggestedDrinks.getChildren().addAll(setDrink(new Drink(drink)),
-                    new Separator(Orientation.HORIZONTAL));
-        }
-        for (Document user : users) {
-            boxSuggestedUsers.getChildren().addAll(setUser(new User(user)),
-                    new Separator(Orientation.HORIZONTAL));
-        }
-        for (Document bestRecipe : bestRecipes) {
-            boxBestRecipes.getChildren().addAll(setRecipe(new Recipe(bestRecipe)),
-                    new Separator(Orientation.HORIZONTAL));
-        }
-        for (Document bestDrink : bestDrinks) {
-            boxBestDrinks.getChildren().addAll(setDrink(new Drink(bestDrink)),
-                    new Separator(Orientation.HORIZONTAL));
-        }
-        for (Document bestUser : bestUsers) {
-            boxBestUsers.getChildren().addAll(setUser(new User(bestUser)),
-                    new Separator(Orientation.HORIZONTAL));
-        }
-        for (Document bestIngredient : bestIngredients) {
-            boxBestIngredients.getChildren().addAll(setIngredient(new Ingredient(bestIngredient)),
-                    new Separator(Orientation.HORIZONTAL));
+        //load for the first time the suggestion or reloading it
+        else {
+            recipes = userService.getSuggestedRecipes();
+            drinks = userService.getSuggestedDrinks();
+            users = userService.getSuggestedUsers();
+            bestRecipes = recipeService.getBestRecipes();
+            bestDrinks = drinkService.getBestDrinks();
+            bestUsers = userService.getBestUsers();
+            bestIngredients = ingredientService.getBestIngredients();
+
+            for (Document recipe : recipes) {
+                boxSuggestedRecipes.getChildren().addAll(setRecipe(new Recipe(recipe)),
+                        new Separator(Orientation.HORIZONTAL));
+                recipesNodes = boxSuggestedRecipes.getChildren();
+            }
+            for (Document drink : drinks) {
+                boxSuggestedDrinks.getChildren().addAll(setDrink(new Drink(drink)),
+                        new Separator(Orientation.HORIZONTAL));
+                drinksNodes = boxSuggestedDrinks.getChildren();
+            }
+            for (Document user : users) {
+                boxSuggestedUsers.getChildren().addAll(setUser(new User(user)),
+                        new Separator(Orientation.HORIZONTAL));
+                usersNodes=boxSuggestedUsers.getChildren();
+            }
+            for (Document bestRecipe : bestRecipes) {
+                boxBestRecipes.getChildren().addAll(setRecipe(new Recipe(bestRecipe)),
+                        new Separator(Orientation.HORIZONTAL));
+                bestRecipesNodes=boxBestRecipes.getChildren();
+            }
+            for (Document bestDrink : bestDrinks) {
+                boxBestDrinks.getChildren().addAll(setDrink(new Drink(bestDrink)),
+                        new Separator(Orientation.HORIZONTAL));
+                bestDrinksNodes=boxBestDrinks.getChildren();
+            }
+            for (Document bestUser : bestUsers) {
+                boxBestUsers.getChildren().addAll(setUser(new User(bestUser)),
+                        new Separator(Orientation.HORIZONTAL));
+                bestUsersNodes=boxBestUsers.getChildren();
+            }
+            for (Document bestIngredient : bestIngredients) {
+                boxBestIngredients.getChildren().addAll(setIngredient(new Ingredient(bestIngredient)),
+                        new Separator(Orientation.HORIZONTAL));
+                bestIngredientsNodes=boxBestIngredients.getChildren();
+            }
+            userService.setLockSuggestions(true);
         }
     }
 
