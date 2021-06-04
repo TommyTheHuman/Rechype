@@ -37,7 +37,7 @@ public class MyRecipeController extends JSONAdder implements Initializable {
         vboxDrinks.setSpacing(20);
 
         Document docUser = userService.getRecipeAndDrinks(userService.getLoggedUser().getUsername());
-
+        //get all the recipe
         List<Document> recipesDoc = (List<Document>) docUser.get("recipes");
         for(Document doc: recipesDoc){
             Recipe rec = new Recipe(doc);
@@ -48,7 +48,7 @@ public class MyRecipeController extends JSONAdder implements Initializable {
             });
             vboxFood.getChildren().addAll(boxRecipe, new Separator(Orientation.HORIZONTAL));
         }
-
+        //get all the drinks
         List<Document> drinksDoc = (List<Document>) docUser.get("drinks");
         for(Document doc: drinksDoc){
             Drink drink = new Drink(doc);

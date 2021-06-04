@@ -63,6 +63,7 @@ public class DrinkPageController extends JSONAdder implements Initializable {
             jsonDrink = new JSONObject(drinkService.searchDrinkById(jsonParameters.getString("_id")).toJson());
         }
 
+        //set all the drink fields
         try {
             authorLabel.setText("Author: " + jsonDrink.getString("author"));
         }catch(JSONException jex){

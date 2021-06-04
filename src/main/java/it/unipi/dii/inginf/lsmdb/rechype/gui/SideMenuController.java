@@ -42,6 +42,7 @@ public class SideMenuController extends JSONAdder implements Initializable {
         loggedUser = userService.getLoggedUser();
         userName.setText(loggedUser.getUsername());
 
+        //set profile image based on level
         InputStream inputImage = GuiElementsBuilder.class.getResourceAsStream("/images/levels/0.png");
         if(loggedUser.getLevel()<=5){
             inputImage = GuiElementsBuilder.class.getResourceAsStream("/images/levels/0.png");

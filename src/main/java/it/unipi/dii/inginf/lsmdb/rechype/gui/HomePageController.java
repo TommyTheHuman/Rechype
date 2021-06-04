@@ -101,6 +101,8 @@ public class HomePageController extends JSONAdder implements Initializable {
             bestUsers = userService.getBestUsers();
             bestIngredients = ingredientService.getBestIngredients();
 
+
+            //calling all the suggested functions
             for (Document recipe : recipes) {
                 boxSuggestedRecipes.getChildren().addAll(setRecipe(new Recipe(recipe)),
                         new Separator(Orientation.HORIZONTAL));
@@ -140,6 +142,7 @@ public class HomePageController extends JSONAdder implements Initializable {
         }
     }
 
+    //add the eventListener on the boxes
     private HBox setRecipe(Recipe recipe){
         HBox recipeBlock=builder.createRecipeBlock(recipe);
         recipeBlock.setOnMouseClicked((MouseEvent e) ->{

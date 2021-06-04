@@ -132,6 +132,7 @@ public class SearchBarController extends JSONAdder implements Initializable {
                 resultBox.getChildren().clear();
                 lastSearchedText = searchText.getText();
 
+                //get all the necessary filters
                 if(checkBoxUsers.isSelected()) {
 
                     filters = new JSONObject();
@@ -149,7 +150,7 @@ public class SearchBarController extends JSONAdder implements Initializable {
                         resultBox.getChildren().addAll(builder.createUserBlock(user), new Separator(Orientation.HORIZONTAL));
                     }
                 }
-
+                //get all the necessary filters
                 if(checkBoxRecipes.isSelected()){
 
                     filters = new JSONObject();
@@ -166,7 +167,7 @@ public class SearchBarController extends JSONAdder implements Initializable {
                         resultBox.getChildren().addAll(builder.createRecipeBlock(recipe), new Separator(Orientation.HORIZONTAL));
                     }
                 }
-
+                //get all the necessary filters
                 if(checkBoxDrinks.isSelected()){
 
                     filters = new JSONObject();
@@ -197,6 +198,7 @@ public class SearchBarController extends JSONAdder implements Initializable {
             searchAnchor.setVisible(false);
         });
 
+        //disable the filters that you can't use
         checkBoxUsers.setOnAction((event) ->{
             filterAnchor.setVisible(true);
 
@@ -241,7 +243,7 @@ public class SearchBarController extends JSONAdder implements Initializable {
             filterAnchor.setVisible(false);
         });
 
-
+        //infinite scroll
         scrollSearch.vvalueProperty().addListener(new ChangeListener<>() {
             int offset = 0;
 
@@ -277,7 +279,7 @@ public class SearchBarController extends JSONAdder implements Initializable {
         else
             return false;
     }
-
+    //utility functions to disable or enable parts of filtyers
     private void recipeDisable(){
         checkDairy.setSelected(false);
         checkVegan.setSelected(false);

@@ -80,6 +80,7 @@ public class LandingPageController extends JSONAdder implements Initializable {
 
             clearFields();
 
+            //All the fields must be filled
             if (username.equals("") || password.equals("") || confPassword.equals("") || age.equals("") || regCountry.getSelectionModel().isEmpty()) {
                 regMsg.setText("All fields must be filled");
                 regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");
@@ -92,6 +93,7 @@ public class LandingPageController extends JSONAdder implements Initializable {
                     regMsg.setStyle("-fx-text-fill: red; -fx-background-color: transparent");
                     return;
                 } else {
+                    //here all the fileds are full and the 2 password fields matches
                     result = userService.register(username, password, country, ageNum);
                 }
             }
@@ -110,6 +112,7 @@ public class LandingPageController extends JSONAdder implements Initializable {
                 //create profile and checking if the creation goes well
                 resultProfile = profileService.createProfile(username);
                 if(resultProfile.equals("ProfileOk")){
+                    // here I have created all the necessary entities correctly
                     Main.changeScene("HomePage", new JSONObject());
                     return;
                 }
@@ -127,12 +130,12 @@ public class LandingPageController extends JSONAdder implements Initializable {
             }
         });
 
-        //popolazione del ComboBox
+        //combobox population
         ObservableList<String> nations = getNations();
         regCountry.setItems(nations);
 
     }
-
+    //function to get all the nation
     public static ObservableList<String> getNations(){
         String[] countries = Locale.getISOCountries();
         int maxSize = countries.length;

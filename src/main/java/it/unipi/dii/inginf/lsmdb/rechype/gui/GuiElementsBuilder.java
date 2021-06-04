@@ -195,6 +195,7 @@ public class GuiElementsBuilder {
         ImageView imageRecipe=null;
         InputStream inputStream;
 
+        //setting all the icons
         if(recipe.isVegan()){
             inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/vegan_on_e.png");
         }else{

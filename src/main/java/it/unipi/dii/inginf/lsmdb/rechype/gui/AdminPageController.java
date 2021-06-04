@@ -80,6 +80,8 @@ public class AdminPageController extends JSONAdder implements Initializable {
 
         logoutBtn.setOnAction(event -> Main.changeScene("Landing", new JSONObject()));
 
+
+        //initialize all the comboboxes
         comboNation.setItems(LandingPageController.getNations());
 
         List<String> listTag = new ArrayList<>();
@@ -328,6 +330,8 @@ public class AdminPageController extends JSONAdder implements Initializable {
             }
         });
 
+
+        //handle the clear buttons and all the checkboxes
         btnClearUserByLike.setOnAction(event -> {
             textFieldBan.setText("");
             comboNation.setValue("");

@@ -754,6 +754,12 @@ class UserDao {
         return users;
     }
 
+    /***
+     * Analytic. Rank the users by the number of healthy recipes. A recipe is "Healthy" if its healthIndex <= 0.8. The healthIndex
+     * is calculated in this way: weightPerServing/Calories.amount.
+     * @param level
+     * @return
+     */
     public List<Document> getHealthRankByLevel(String level){
         MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
         List<Bson> stages = new ArrayList<>();
@@ -833,6 +839,12 @@ class UserDao {
 
 
     }
+
+    /***
+     * Analytic. This function ranks the recipes by the number of times a recipe is added to favourites by the users.
+     * @param category
+     * @return
+     */
 
     public List<Document> mostSavedRecipes(String category) {
         MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);

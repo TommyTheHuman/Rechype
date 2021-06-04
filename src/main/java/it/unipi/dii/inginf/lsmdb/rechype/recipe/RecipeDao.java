@@ -12,6 +12,7 @@ import com.oath.halodb.HaloDBException;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
+import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -112,6 +113,14 @@ public class RecipeDao {
         }
     }
 
+    /***
+     * retrieve a list of recipes with different filters
+     * @param recipeName
+     * @param offset
+     * @param quantity
+     * @param filters
+     * @return
+     */
     public List<Recipe> getRecipesByText(String recipeName, int offset, int quantity, JSONObject filters){
 
         //create the case Insensitive pattern and perform the mongo query
@@ -139,6 +148,22 @@ public class RecipeDao {
         }
 
         if(filters.has(("Price"))) {
+
+            Bson lvlFilter1;
+            Bson lvlFilter2;
+            if(Recipe.symbolToPrice(filters.getString("Price"))==0) {
+                lvlFilter1 = Filters.gte("pricePerServing", Recipe.symbolToPrice(filters.getString("Price")));
+            }else {
+                lvlFilter1=Filters.gt("pricePerServing", Recipe.symbolToPrice(filters.getString("Price")));
+            }
+            filtersList.add(lvlFilter1);
+            if(Recipe.symbolToPrice(filters.getString("Price"))!=1500) {
+                lvlFilter2 = Filters.lte("pricePerServing", Recipe.symbolToPrice(filters.getString("Price")) + 500);
+                filtersList.add(lvlFilter2);
+            }
+
+
+
             Bson priceFilter = Filters.lte("pricePerServing", Recipe.symbolToPrice(filters.getString("Price")));
             filtersList.add(priceFilter);
         }
@@ -368,6 +393,11 @@ public class RecipeDao {
 
     // Get user with the higher number of likes by category if specified
 
+    /***
+     * Analytic. Get a rank of user based on the likes on their recipes. We can filter for category
+     * @param category
+     * @return
+     */
     public List<Document> getRankingUserByLikeAndCategory(String category){
         MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
         List<Bson> filters = new ArrayList<>();
@@ -401,7 +431,13 @@ public class RecipeDao {
         return results;
     }
 
-
+    /***
+     * Analytic. Get a rank of user based on the likes on their recipes. We can filter for Age range and/or country
+     * @param minAge
+     * @param maxAge
+     * @param country
+     * @return
+     */
     public List<Document> getUserRankingByLikeNumber(int minAge, int maxAge, String country) {
         MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
         List<Bson> stages = new ArrayList<>();
@@ -444,6 +480,13 @@ public class RecipeDao {
         return results;
     }
 
+    /***
+     * Analytic. Get a rank of ingredients based on the number of times they are used in recipes. We can set a max preparation time
+     * or we can set a nutrient with a determined characteristic to rank ingredients only on the matched recipes.
+     * @param nutrient
+     * @param minutes
+     * @return
+     */
     public List<Document> getIngredientRanking(String nutrient, int minutes) {
         MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
         List<Bson> stages = new ArrayList<>();

@@ -88,6 +88,7 @@ public class AddIngredientFridgeController extends JSONAdder implements Initiali
             loggedUser = userService.getLoggedUser();
             inputQuantityError.setOpacity(0);
             profileService.addFridge(listOfIngredients, loggedUser.getUsername());
+            //reload the profile page on the correct tab
             par.append("changeTab", true);
             Main.changeScene("MyProfile", par);
         });

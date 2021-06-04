@@ -48,6 +48,7 @@ public class MyProfileController extends JSONAdder implements Initializable {
         vboxMeals.setSpacing(30);
         vboxFridge.setSpacing(20);
         Profile profile = profileService.getProfile(userService.getLoggedUser().getUsername());
+        //populate the meals section
         for(int i = 0; i < profile.getMeals().length(); i++){
             VBox vboxMeal = new VBox(5);
             Text title = new Text(profile.getMeals().getJSONObject(i).getString("title"));
@@ -91,7 +92,7 @@ public class MyProfileController extends JSONAdder implements Initializable {
             vboxMeal.getChildren().addAll(deleteBtn, new Separator(Orientation.HORIZONTAL));
             vboxMeals.getChildren().addAll(vboxMeal);
         }
-
+        //populate the fridge tab
         for(int i = 0; i < profile.getFridge().length(); i++){
             JSONObject ingredients = profile.getFridge().getJSONObject(i);
 

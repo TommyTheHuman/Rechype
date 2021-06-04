@@ -331,6 +331,12 @@ class DrinkDao {
         return drinks;
     }
 
+    /***
+     * This function returns a list of user ranked by like number received in their drink. We can filter by drink category.
+     * @param category represent the category by which we want to filter.
+     * @return list of document
+     */
+
     public List<Document> getRankingUserAndCategory(String category){
         MongoCollection<Document> collDrinks = MongoDriver.getObject().getCollection(MongoDriver.Collections.DRINKS);
         List<Bson> filters = new ArrayList<>();
@@ -361,6 +367,13 @@ class DrinkDao {
         return results;
     }
 
+    /***
+     * This function returns a list of user ranked by like number received in their drink. We can filter by age range and/or country
+     * @param minAge
+     * @param maxAge
+     * @param country
+     * @return
+     */
     public List<Document> getRankingUserAndNation(int minAge, int maxAge, String country){
         MongoCollection<Document> collDrinks = MongoDriver.getObject().getCollection(MongoDriver.Collections.DRINKS);
         List<Bson> stages = new ArrayList<>();

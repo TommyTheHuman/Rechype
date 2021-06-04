@@ -47,7 +47,7 @@ public class AddIngredientController extends JSONAdder implements Initializable 
             JSONObject par = jsonParameters;
             StringBuilder finalIngredients = new StringBuilder();
             int counter = 0;
-
+            // retrieve the list of all the selected ingredients
             for(Node node: selectedIngredientVBox.getChildren()){
                 if(node instanceof VBox){
                     HBox hbox = (HBox) ((VBox)node).getChildren().get(1);
@@ -83,7 +83,7 @@ public class AddIngredientController extends JSONAdder implements Initializable 
                 Main.changeScene("RecipeAdd", par);
         });
 
-        // When the user type a more than 3 letters create the boxes containing the ingredient and display those in searchedIngredientVBox
+        // When the user types a more than 3 letters create the boxes containing the ingredient and display those in searchedIngredientVBox
         ingredientText.setOnKeyTyped(event -> {
             String text = ingredientText.getText();
             searchedIngredientVBox.getChildren().clear();
@@ -94,6 +94,8 @@ public class AddIngredientController extends JSONAdder implements Initializable 
             }
         });
 
+
+        //infinite scroll
         scrollBoxIngredients.vvalueProperty().addListener(new ChangeListener<>() {
             int offset = 0;
 
@@ -116,6 +118,7 @@ public class AddIngredientController extends JSONAdder implements Initializable 
         JSONObject par = jsonParameters;
         if(jsonParameters.has("Drink"))
             selectedIngredientVBox.setId("NoGrams");
+        //if I enter this page and I already selected some ingredients
         if(!(par.get("ingredients").equals(""))){
             String ingredientsString = par.get("ingredients").toString();
             String[] singleIngredient = ingredientsString.trim().split(", ");

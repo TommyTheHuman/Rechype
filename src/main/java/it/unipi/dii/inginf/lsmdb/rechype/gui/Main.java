@@ -137,7 +137,9 @@ public class Main extends Application {
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/" + fxml + ".fxml"));
             Parent returnValue =  fxmlLoader.load();
             JSONAdder controller = fxmlLoader.getController();
+            //assign the JSON object to a variable in the controller
             controller.setParameters(par);
+            //this function can load the GUI with parameters from the JSON object
             controller.setGui();
             return returnValue;
         }catch (IOException ie){

@@ -60,6 +60,7 @@ public class UserProfileController extends JSONAdder implements Initializable {
         List<Document> recipeList = userService.getRecipes(userText.getText());
         List<Document> drinkList = userService.getDrinks(userText.getText());
 
+        //display all the user recipes
         if(recipeList != null){
             for(Document doc :recipeList){
                 Recipe recipe = new Recipe(doc);
@@ -87,8 +88,10 @@ public class UserProfileController extends JSONAdder implements Initializable {
 
         }
 
+        //you can't follow yourself
         if(!user.getUsername().equals(fields.getString("_id"))) {
 
+            //follow feature with dynamic button
             Boolean testFollow = userService.checkForFollow(user.getUsername(), userText.getText());
             if(!testFollow){
                 followBtn.setText("Follow");
