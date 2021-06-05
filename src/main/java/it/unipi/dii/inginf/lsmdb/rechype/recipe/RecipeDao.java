@@ -520,10 +520,7 @@ public class RecipeDao {
 
         stages.add(group("$ingredients.ingredient", sum("count", 1)));
         stages.add(sort(descending("count")));
-        if(nutrient.equals("noNutrient")) {
-           stages.add(skip(50));
-        }
-        stages.add(limit(20));
+        stages.add(limit(60));
         List<Document> results = null;
         try{
             results = collRecipe.aggregate(stages).into(new ArrayList<>());
