@@ -69,7 +69,8 @@ public class RecipeAddController extends JSONAdder implements Initializable {
         textFieldsError.setOpacity(0);
 
         addIngredientButton.setOnAction(event -> {
-
+            // When the user click on add ingredient button all fields are saved in a json object to restore them
+            // when the user come back on the add recipe page.
             JSONObject par = new JSONObject().put("title", title.getText()).put("imageUrl", imageUrl.getText())
                     .put("servings", servings.getText()).put("readyInMinutes", readyInMinutes.getText()).put("weightPerServing", weightPerServing.getText())
                     .put("pricePerServing", pricePerServing.getText()).put("description", description.getText())
@@ -107,7 +108,7 @@ public class RecipeAddController extends JSONAdder implements Initializable {
                 Ingredient auxIngr;
 
                 Integer counter = 0;
-                // Insert ingredients composed by (name, amount) in a Document
+                // Get cached ingredient using the ingredient's name and then save complete ingredient and amount chose by the user.
                 for(String ingr: ingredientNames){
                     jsonIngredient = ingredientService.getCachedIngredient(ingr);
                     auxIngr = new Ingredient(jsonIngredient);
@@ -159,8 +160,9 @@ public class RecipeAddController extends JSONAdder implements Initializable {
                     counter++;
                 }
 
-                String[] nutrNames = {"Fiber","Carbohydrates","Calories","Sugar","Fat","Calcium","Protein"};
 
+                String[] nutrNames = {"Fiber","Carbohydrates","Calories","Sugar","Fat","Calcium","Protein"};
+                // If the nutrient is Calories append unit with kcal instead grams.
                 for(Integer i = 0; i<7; i++) {
                     if(nutrNames[i].equals("Calories")){
                         docNutrients.add(new Document().append("name", nutrNames[i]).append("amount", DoubleRounder.round(nutrientsTotAmount[i],2)).append("unit", "kcal"));
@@ -169,6 +171,7 @@ public class RecipeAddController extends JSONAdder implements Initializable {
                     }
                 }
 
+                // Create recipe document
                 Document doc = new Document().append("name", title.getText()).append("author", loggedUser.getUsername())
                         .append("vegetarian", vegetarian.isSelected()).append("vegan", vegan.isSelected()).append("glutenFree", glutenFree.isSelected())
                         .append("dairyFree", dairyFree.isSelected()).append("pricePerServing", DoubleRounder.round(Double.parseDouble(pricePerServing.getText()),1))

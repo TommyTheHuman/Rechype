@@ -43,20 +43,24 @@ public class AddIngredientController extends JSONAdder implements Initializable 
         ingredientService = IngredientServiceFactory.create().getService();
 
         builder = new GuiElementsBuilder();
+
         backToRecipeBtn.setOnAction(event -> {
             JSONObject par = jsonParameters;
             StringBuilder finalIngredients = new StringBuilder();
             int counter = 0;
-            // retrieve the list of all the selected ingredients
+
+            // Retrieve the list of all the selected ingredients
             for(Node node: selectedIngredientVBox.getChildren()){
                 if(node instanceof VBox){
                     HBox hbox = (HBox) ((VBox)node).getChildren().get(1);
                     TextField quantityFields = (TextField) hbox.getChildren().get(1);
                     String quantityString = quantityFields.getText();
+
                     if(quantityString.length() == 0){
                         inputGramsError.setOpacity(100);
                         return;
                     }
+                    // Check if this node is the last, in this case don't append the comma.
                     if(counter == builder.idSelectedIngredient.size()-1){
                         if(!par.has("Drink")) {
                             finalIngredients.append(builder.idSelectedIngredient.get(counter)).append(": ").append(quantityString).append("g ");
@@ -73,9 +77,12 @@ public class AddIngredientController extends JSONAdder implements Initializable 
                     counter++;
                 }
             }
+
             inputGramsError.setOpacity(0);
+            // Update the json to pass to add recipe page with ingredients' string.
             par.remove("ingredients");
             par.put("ingredients", finalIngredients.toString());
+
             if(par.has("Drink")) {
                 Main.changeScene("DrinkAdd", par);
             }
@@ -95,7 +102,7 @@ public class AddIngredientController extends JSONAdder implements Initializable 
         });
 
 
-        //infinite scroll
+        // Infinite scroll
         scrollBoxIngredients.vvalueProperty().addListener(new ChangeListener<>() {
             int offset = 0;
 
