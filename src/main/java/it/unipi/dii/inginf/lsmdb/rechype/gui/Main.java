@@ -41,6 +41,7 @@ public class Main extends Application {
         primaryStage.setTitle("Rechype");
         primaryStage.setScene(mainScene);
         primaryStage.show();
+        primaryStage.setResizable(false);
         primaryStage.setOnHiding( event -> {
             HaloDBDriver.getObject().closeConnection();
             MongoDriver.getObject().closeConnection();

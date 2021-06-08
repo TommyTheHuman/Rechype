@@ -55,7 +55,10 @@ public class SideMenuController extends JSONAdder implements Initializable {
         }
 
         userImage.setImage(new Image(inputImage));
-        logOut.setOnAction(event -> Main.changeScene("Landing", new JSONObject()));
+        logOut.setOnAction(event -> {
+            userService.setLockSuggestions(false);
+            Main.changeScene("Landing", new JSONObject());
+        });
 
         personalProfile.setOnAction(event -> Main.changeScene("MyProfile", new JSONObject()));
 
