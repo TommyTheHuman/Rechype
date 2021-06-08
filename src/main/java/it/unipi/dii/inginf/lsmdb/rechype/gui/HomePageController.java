@@ -14,6 +14,7 @@ import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -56,13 +57,13 @@ public class HomePageController extends JSONAdder implements Initializable {
     private static List<Document> bestDrinks;
     private static List<Document> bestUsers;
     private static List<Document> bestIngredients;
-    private static ObservableList<Node> recipesNodes;
-    private static ObservableList<Node> drinksNodes;
-    private static ObservableList<Node> usersNodes;
-    private static ObservableList<Node> bestRecipesNodes;
-    private static ObservableList<Node> bestDrinksNodes;
-    private static ObservableList<Node> bestUsersNodes;
-    private static ObservableList<Node>  bestIngredientsNodes;
+    private static ObservableList<Node> recipesNodes = FXCollections.observableArrayList();
+    private static ObservableList<Node> drinksNodes = FXCollections.observableArrayList();
+    private static ObservableList<Node> usersNodes = FXCollections.observableArrayList();
+    private static ObservableList<Node> bestRecipesNodes = FXCollections.observableArrayList();
+    private static ObservableList<Node> bestDrinksNodes = FXCollections.observableArrayList();
+    private static ObservableList<Node> bestUsersNodes = FXCollections.observableArrayList();
+    private static ObservableList<Node>  bestIngredientsNodes = FXCollections.observableArrayList();
     private Timer timer = new Timer();
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -187,6 +188,16 @@ public class HomePageController extends JSONAdder implements Initializable {
         HBox ingredientBlock=builder.createSimpleIngredientBlock(
         new JSONObject().put("ingredient", ingredient.getName()).put("image", ingredient.getImageUrl()));
         return ingredientBlock;
+    }
+
+    public static void flushSuggestion(){
+        recipesNodes.clear();
+        drinksNodes.clear();
+        usersNodes.clear();
+        bestRecipesNodes.clear();
+        bestDrinksNodes.clear();
+        bestUsersNodes.clear();
+        bestIngredientsNodes.clear();
     }
 
 }
