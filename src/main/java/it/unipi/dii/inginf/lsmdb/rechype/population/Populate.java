@@ -25,6 +25,8 @@ import org.json.JSONObject;
 import java.io.*;
 import java.util.*;
 
+import static java.util.Arrays.asList;
+
 
 public class Populate {
     private List<String> list;
@@ -46,15 +48,32 @@ public class Populate {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        //createUser();*/
-        //addFollows();
-        //addLikesRecipe();
-        //addLikesDrink();
+        createUser();*/
+        //flushUser();
+        //flushRecipe();
+        addFollows();
         //createRecipe(new User("Michael", "United States", 41, 0));
         //populateRecipesDrinks();
         //createDrink(new User("Michael", "United States", 41, 0));
-        addLikesRecipe();
+        //addLikesRecipe();
         //addLikesDrink();
+    }
+
+    private void flushUser(){
+       MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).drop();
+       MongoDriver.getObject().getCollection(MongoDriver.Collections.PROFILES).drop();
+       System.out.println("ok");
+    }
+
+    private void flushRecipe(){
+        try {
+            String[] values = {"Spoonacular", "PunkAPI", "CocktailsDB"};
+            MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES) //recipe
+                    .deleteMany(Filters.nin("author", asList(values)));
+            System.out.println("ok");
+        }catch(MongoException me){
+            me.printStackTrace();
+        }
     }
 
     private void createUser(){
@@ -91,12 +110,13 @@ public class Populate {
     }
 
     private void addFollows(){
+        System.out.println("parto");
         try(MongoCursor<Document> cursor =
                     MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find().iterator()){
             while(cursor.hasNext()){
                 //prendo uno user
                 Document me = cursor.next();
-                //gli aggiungo 30 follow casuali facendo prima check se ce l'ha già
+                //gli aggiungo 5 follow casuali facendo prima check se ce l'ha già
                 Document user;
                 for(int i=0; i<5; i++) {
                     int skip=(int)Math.floor(Math.random() * (2000));
@@ -124,7 +144,7 @@ public class Populate {
     //CANCELLA SETLOGGEDUSER
     private void addLikesRecipe(){
         //prendo un sottoinsieme di ricette e di drink casuali e gli aggiungo un numero variabile di like
-        int howmany=5000;
+        int howmany=1000;
         System.out.println("Parto recipe");
         int skip1=(int)Math.floor(Math.random() * (18000));
         try(MongoCursor<Document> cursor =
@@ -136,6 +156,7 @@ public class Populate {
                 String id=new JSONObject(recipe.toJson()).getJSONObject("_id").getString("$oid");
                 //prendo uno user
                 Document userDoc;
+                System.out.println(recipe);
                 int max=5;
                 int min=1;
                 //gli aggiungo un numero di likes da utenti casuali compreso tra min e max
@@ -163,13 +184,13 @@ public class Populate {
     private void addLikesDrink(){
         System.out.println("parto drink");
         //prendo un sottoinsieme di ricette e di drink casuali e gli aggiungo un numero variabile di like
-        int howmany=1000;
-        int skip1=(int)Math.floor(Math.random() * (4200));
+        int howmany=500;
+        int skip1=(int)Math.floor(Math.random() * (1500));
         try(MongoCursor<Document> cursor =
                     MongoDriver.getObject().getCollection(MongoDriver.Collections.DRINKS).find().skip(skip1).limit(howmany)
                             .iterator()){
             int counter=0;
-            while(cursor.hasNext()) {
+            while(cursor.hasNext()){
                 Document recipe=cursor.next();
                 String id=new JSONObject(recipe.toJson()).getJSONObject("_id").getString("$oid");
                 //prendo uno user
@@ -181,7 +202,7 @@ public class Populate {
                 for(int i=0; i<index; i++){
                     int skip2=(int)Math.floor(Math.random() * (2000));
                     try(MongoCursor<Document> cursorUsers =
-                                MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find().skip(skip2).limit(1).iterator()){
+                        MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find().skip(skip2).limit(1).iterator()){
                         userDoc=cursorUsers.next();
 
                         User userEntity=new User(userDoc);
@@ -199,21 +220,19 @@ public class Populate {
     }
 
     private void populateRecipesDrinks(){
-        int howmany=500;
-        int skip1=(int)Math.floor(Math.random() * (1500));
+        int howmany=100;
+        int skip1=(int)Math.floor(Math.random() * (1900));
         try(MongoCursor<Document> cursor =
                     MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find().skip(skip1).limit(howmany)
                             .iterator()){
-            int counter=0;
             while(cursor.hasNext()) {
                 Document doc=cursor.next();
+                System.out.println(doc);
                 User user=new User(doc);
                 int max=10;
                 int min=3;
                 //gli aggiungo un numero di likes da utenti casuali compreso tra min e max
                 int index=(int)Math.floor(Math.random() * (max - min + 1) + min);
-                counter++;
-                System.out.println(counter);
                 for(int i=0; i<index; i++){
                     createRecipe(user);
                     createDrink(user);

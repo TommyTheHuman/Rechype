@@ -24,7 +24,7 @@ public interface UserService {
     String deleteUser(String username);
     List<Document> getRecipes(String username);
     String addFollow(String myName, String userName, String btnStatus);
-    //void setLoggedUser(User user); //delete
+    void setLoggedUser(User user); //delete
     Boolean checkForFollow(String myName, String userName);
     boolean checkRecipeLike(String _id, String type);
     boolean checkSavedRecipe(String _id, String type);
