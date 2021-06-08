@@ -96,6 +96,8 @@ class UserDao {
         } catch (MongoException me) {
             me.printStackTrace();
             LogManager.getLogger("UserDao.class").error("MongoDB: an error occurred");
+            Json.put("response", "Abort");
+            return Json;
         }
 
 

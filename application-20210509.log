@@ -1,9 +1,0 @@
-2021-05-09 12:54:29.621 [JavaFX Application Thread] INFO  guiElementsBuilder.class - File I/O: file not found
-2021-05-09 13:01:01.594 [JavaFX Application Thread] INFO  guiElementsBuilder.class - File I/O: file not found
-2021-05-09 13:02:39.334 [JavaFX Application Thread] INFO  guiElementsBuilder.class - File I/O: file not found
-2021-05-09 19:09:15.138 [JavaFX Application Thread] ERROR it.unipi.dii.inginf.lsmdb.rechype.gui.Main - IO: Failed to load resources
-2021-05-09 19:11:36.004 [JavaFX Application Thread] ERROR it.unipi.dii.inginf.lsmdb.rechype.gui.Main - IO: Failed to load resources
-2021-05-09 19:15:38.970 [JavaFX Application Thread] ERROR it.unipi.dii.inginf.lsmdb.rechype.gui.Main - IO: Failed to load resources
-2021-05-09 19:17:55.381 [JavaFX Application Thread] ERROR it.unipi.dii.inginf.lsmdb.rechype.gui.Main - IO: Failed to load resources
-2021-05-09 19:23:15.142 [JavaFX Application Thread] ERROR it.unipi.dii.inginf.lsmdb.rechype.gui.Main - IO: Failed to load resources
-2021-05-09 19:23:38.930 [JavaFX Application Thread] ERROR it.unipi.dii.inginf.lsmdb.rechype.gui.Main - IO: Failed to load resources

@@ -7,13 +7,13 @@ import it.unipi.dii.inginf.lsmdb.rechype.drink.DrinkServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.Ingredient;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientService;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientServiceFactory;
-import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeService;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -30,6 +30,9 @@ import org.json.JSONObject;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 public class HomePageController extends JSONAdder implements Initializable {
 
@@ -60,14 +63,48 @@ public class HomePageController extends JSONAdder implements Initializable {
     private static ObservableList<Node> bestDrinksNodes;
     private static ObservableList<Node> bestUsersNodes;
     private static ObservableList<Node>  bestIngredientsNodes;
-
-
+    private Timer timer = new Timer();
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
     }
 
     @Override
     public void setGui() {
+        // These analytics will loaded after 7 sec
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    bestRecipes = recipeService.getBestRecipes();
+                    bestDrinks = drinkService.getBestDrinks();
+                    bestUsers = userService.getBestUsers();
+                    bestIngredients = ingredientService.getBestIngredients();
+                    for (Document bestRecipe : bestRecipes) {
+                        boxBestRecipes.getChildren().addAll(setRecipe(new Recipe(bestRecipe)),
+                                new Separator(Orientation.HORIZONTAL));
+                        bestRecipesNodes=boxBestRecipes.getChildren();
+                    }
+                    for (Document bestDrink : bestDrinks) {
+                        boxBestDrinks.getChildren().addAll(setDrink(new Drink(bestDrink)),
+                                new Separator(Orientation.HORIZONTAL));
+                        bestDrinksNodes=boxBestDrinks.getChildren();
+                    }
+                    for (Document bestUser : bestUsers) {
+                        boxBestUsers.getChildren().addAll(setUser(new User(bestUser)),
+                                new Separator(Orientation.HORIZONTAL));
+                        bestUsersNodes=boxBestUsers.getChildren();
+                    }
+                    for (Document bestIngredient : bestIngredients) {
+                        boxBestIngredients.getChildren().addAll(setIngredient(new Ingredient(bestIngredient)),
+                                new Separator(Orientation.HORIZONTAL));
+                        bestIngredientsNodes=boxBestIngredients.getChildren();
+                    }
+                });
+            }
+        };
+        timer.schedule(task, 7000);
+
+
         //defining the reload button
         reloadButton.setOnAction(event -> {
             userService.setLockSuggestions(false);
@@ -96,10 +133,6 @@ public class HomePageController extends JSONAdder implements Initializable {
             recipes = userService.getSuggestedRecipes();
             drinks = userService.getSuggestedDrinks();
             users = userService.getSuggestedUsers();
-            bestRecipes = recipeService.getBestRecipes();
-            bestDrinks = drinkService.getBestDrinks();
-            bestUsers = userService.getBestUsers();
-            bestIngredients = ingredientService.getBestIngredients();
 
 
             //calling all the suggested functions
@@ -117,26 +150,6 @@ public class HomePageController extends JSONAdder implements Initializable {
                 boxSuggestedUsers.getChildren().addAll(setUser(new User(user)),
                         new Separator(Orientation.HORIZONTAL));
                 usersNodes=boxSuggestedUsers.getChildren();
-            }
-            for (Document bestRecipe : bestRecipes) {
-                boxBestRecipes.getChildren().addAll(setRecipe(new Recipe(bestRecipe)),
-                        new Separator(Orientation.HORIZONTAL));
-                bestRecipesNodes=boxBestRecipes.getChildren();
-            }
-            for (Document bestDrink : bestDrinks) {
-                boxBestDrinks.getChildren().addAll(setDrink(new Drink(bestDrink)),
-                        new Separator(Orientation.HORIZONTAL));
-                bestDrinksNodes=boxBestDrinks.getChildren();
-            }
-            for (Document bestUser : bestUsers) {
-                boxBestUsers.getChildren().addAll(setUser(new User(bestUser)),
-                        new Separator(Orientation.HORIZONTAL));
-                bestUsersNodes=boxBestUsers.getChildren();
-            }
-            for (Document bestIngredient : bestIngredients) {
-                boxBestIngredients.getChildren().addAll(setIngredient(new Ingredient(bestIngredient)),
-                        new Separator(Orientation.HORIZONTAL));
-                bestIngredientsNodes=boxBestIngredients.getChildren();
             }
             userService.setLockSuggestions(true);
         }

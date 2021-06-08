@@ -146,7 +146,7 @@ public class Populate {
                     MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find().skip(skip2).limit(1).iterator()){
                         userDoc=cursorUsers.next();
                         User userEntity=new User(userDoc);
-                        userService.setLoggedUser(userEntity);
+//                        userService.setLoggedUser(userEntity);
                         if(!userService.checkRecipeLike(id, "recipe")){
                             recipeService.addLike(id, userDoc.getString("_id"));
                         }
@@ -185,7 +185,7 @@ public class Populate {
                         userDoc=cursorUsers.next();
 
                         User userEntity=new User(userDoc);
-                        userService.setLoggedUser(userEntity);
+//                        userService.setLoggedUser(userEntity);
                         if(!userService.checkRecipeLike(id, "drink")){
                             drinkService.addLike(id, userDoc.getString("_id"));
                         }
@@ -321,7 +321,7 @@ public class Populate {
                 .append("likes", 0).append("ingredients", docIngredients)
                 .append("nutrients", docNutrients);
         if(recipeService.addRecipe(docRecipe).equals("RecipeAdded")) {
-            userService.setLoggedUser(user);
+//            userService.setLoggedUser(user);
             userService.addNewRecipe(docRecipe, "recipe");
         }
         return;
@@ -343,7 +343,7 @@ public class Populate {
                 .append("likes", 0).append("tag", tag.get(randomIndex));
 
         if(drinkService.addDrink(docDrink).equals("DrinkAdded")) {
-            userService.setLoggedUser(user);
+//            userService.setLoggedUser(user);
             userService.addNewRecipe(docDrink, "drink");
         }
         return;

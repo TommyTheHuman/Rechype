@@ -443,6 +443,7 @@ public class RecipeDao {
         List<Bson> stages = new ArrayList<>();
         List<Bson> filters = new ArrayList<>();
 
+        stages.add(match(nin("author", "Spoonacular", "PunkAPI", "CocktailDB")));
         //LookUp stage --> attaches a user doc to a recipe doc
         stages.add(lookup("users", "author", "_id", "user"));
 
