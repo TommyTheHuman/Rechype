@@ -757,6 +757,27 @@ class UserDao {
     }
 
     /***
+     * Get all drinks given an username
+     * @param username
+     * @return List of drink document
+     */
+    public List<Document> getDrinkRecipe(String username) {
+
+        List<Document> returnDrinkList = new ArrayList<>();
+        Bson filter = Filters.in("_id", username);
+        Document doc;
+        try {
+            MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(filter).iterator();
+            doc = cursor.next();
+        }catch(MongoException ex){
+            LogManager.getLogger("UserDao.class").error("MongoDB: an error occurred in getting nested recipe.");
+            return null;
+        }
+        returnDrinkList = (List<Document>) doc.get("drinks");
+        return returnDrinkList;
+    }
+
+    /***
      * Analytic. Rank the users by the number of healthy recipes. A recipe is "Healthy" if its healthIndex <= 0.8. The healthIndex
      * is calculated in this way: weightPerServing/Calories.amount.
      * @param level
@@ -820,26 +841,6 @@ class UserDao {
         }
 
         return results;
-    }
-
-
-
-    public List<Document> getDrinkRecipe(String username) {
-
-        List<Document> returnDrinkList = new ArrayList<>();
-        Bson filter = Filters.in("_id", username);
-        Document doc;
-        try {
-            MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(filter).iterator();
-            doc = cursor.next();
-        }catch(MongoException ex){
-            LogManager.getLogger("UserDao.class").error("MongoDB: an error occurred in getting nested recipe.");
-            return null;
-        }
-        returnDrinkList = (List<Document>) doc.get("drinks");
-        return returnDrinkList;
-
-
     }
 
     /***

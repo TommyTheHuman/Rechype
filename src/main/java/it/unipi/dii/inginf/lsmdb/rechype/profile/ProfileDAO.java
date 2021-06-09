@@ -14,8 +14,11 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.*;
 
 class ProfileDAO {
-
-    //retrieving a profile's entity specifying the username
+    /***
+     * retrieving a profile's entity specifying the username
+     * @param username
+     * @return
+     */
     public Profile getProfileByUsername(String username){
         try(MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.PROFILES).find(eq("_id", username)).iterator()){
             Document doc = cursor.next();
@@ -28,7 +31,11 @@ class ProfileDAO {
         return null;
     }
 
-    //it inserts the profile's entity along with its vectors of objects "meals" and "fridge"
+    /***
+     * it inserts the profile's entity along with its vectors of objects "meals" and "fridge"
+     * @param username
+     * @return
+     */
     public Boolean insertProfile(String username){
 
         List<Document> meals = new ArrayList<>();
@@ -46,7 +53,11 @@ class ProfileDAO {
         return false;
     }
 
-    //delete a profile's entity
+    /***
+     * delete a profile's entity
+     * @param username
+     * @return
+     */
     public Boolean deleteProfile(String username){
         MongoCollection<Document> coll=null;
         try{
@@ -59,7 +70,15 @@ class ProfileDAO {
         }
     }
 
-    // add meal in user profile
+    /***
+     * add meal in user profile
+     * @param title
+     * @param type
+     * @param recipes
+     * @param drinks
+     * @param username
+     * @return
+     */
     public String addMealToProfile(String title, String type, List<Document> recipes, List<Document> drinks, String username){
 
         List<String> existingTitle = new ArrayList<>();
@@ -90,6 +109,12 @@ class ProfileDAO {
         return "AddOK";
     }
 
+    /***
+     * Delete a meal from the array inside user's profile document.
+     * @param title
+     * @param username
+     * @return
+     */
     public Boolean deleteMealFromProfile(String title, String username){
         MongoCollection<Document> coll = null;
         try{
@@ -102,6 +127,12 @@ class ProfileDAO {
         return true;
     }
 
+    /***
+     * Add one or more ingredient/s to the user's fridge.
+     * @param ingredients
+     * @param username
+     * @return
+     */
     public Boolean addIngredientToFridge(List<Document> ingredients, String username){
         MongoCollection<Document> coll = null;
         try{
@@ -114,6 +145,12 @@ class ProfileDAO {
         return true;
     }
 
+    /***
+     * Delete an ingredient from user's fridge
+     * @param username
+     * @param ingredient
+     * @return
+     */
     public boolean deleteIngredientFromProfile(String username, String ingredient) {
 
         MongoCollection<Document> coll = null;

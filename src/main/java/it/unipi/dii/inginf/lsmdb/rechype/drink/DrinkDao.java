@@ -40,6 +40,11 @@ import static org.neo4j.driver.Values.parameters;
 
 class DrinkDao {
 
+    /***
+     * Add new drink
+     * @param doc
+     * @return
+     */
     public String addDrink(Document doc){
 
         boolean already_tried = false;
@@ -106,7 +111,15 @@ class DrinkDao {
         }
     }
 
-    List<Drink> getDrinksByText(String drinkName, int offset, int quantity, JSONObject filters){
+    /***
+     * Get a drinks given a part of drink's name
+     * @param drinkName
+     * @param offset
+     * @param quantity
+     * @param filters
+     * @return
+     */
+    public List<Drink> getDrinksByText(String drinkName, int offset, int quantity, JSONObject filters){
         //create the case Insensitive pattern and perform the mongo query
         List<Drink> returnList = new ArrayList<>();
         List<Document> returnDocList = new ArrayList<>();
@@ -135,6 +148,10 @@ class DrinkDao {
         return returnList;
     }
 
+    /***
+     * caching the drink's search in a key-value DB
+     * @param drinksList
+     */
     public void cacheSearch(List<Document> drinksList){ //caching of drink's search
         for(int i=0; i<drinksList.size(); i++) {
             String idObj = new JSONObject(drinksList.get(i).toJson()).getJSONObject("_id").getString("$oid");
@@ -150,6 +167,29 @@ class DrinkDao {
         }
     }
 
+    /***
+     * Caching the drink just created
+     * @param doc
+     */
+    public void cacheAddedDrink(Document doc){
+        String idObj = doc.getString("_id");
+        byte[] _id = idObj.getBytes(StandardCharsets.UTF_8); //key
+        byte[] objToSave = doc.toJson().getBytes(StandardCharsets.UTF_8); //value
+        try {
+            HaloDBDriver.getObject().addData("drink",_id, objToSave);
+        }catch(HaloDBException ex){
+            LogManager.getLogger("DrinkDao.class").fatal("HaloDB: caching failed");
+            HaloDBDriver.getObject().closeConnection();
+            System.exit(-1);
+        }
+    }
+
+    /***
+     * Add a new like
+     * @param _id
+     * @param user
+     * @return
+     */
     public String addLike(String _id, String user){
 
         boolean already_tried = false;
@@ -202,6 +242,12 @@ class DrinkDao {
         }
     }
 
+    /***
+     * Remove like
+     * @param _id
+     * @param username
+     * @return
+     */
     public String removeLike(String _id, String username){
         boolean already_tried = false;
         //cross-db consistency between neo4j and mongodb
@@ -253,19 +299,6 @@ class DrinkDao {
         }
     }
 
-    public void cacheAddedDrink(Document doc){
-        String idObj = doc.getString("_id");
-        byte[] _id = idObj.getBytes(StandardCharsets.UTF_8); //key
-        byte[] objToSave = doc.toJson().getBytes(StandardCharsets.UTF_8); //value
-        try {
-            HaloDBDriver.getObject().addData("drink",_id, objToSave);
-        }catch(HaloDBException ex){
-            LogManager.getLogger("DrinkDao.class").fatal("HaloDB: caching failed");
-            HaloDBDriver.getObject().closeConnection();
-            System.exit(-1);
-        }
-    }
-
     /***
      * Retrieving drinks from the key-value db
      * @param key
@@ -283,16 +316,24 @@ class DrinkDao {
         return new JSONObject();
     }
 
+    /***
+     * Retrieve drink by id
+     * @param id
+     * @return
+     */
     public Document getDrinkById(String id){
-
+        try {
             Document drink;
-            MongoCursor<Document> cursor  = MongoDriver.getObject()
-            .getCollection(MongoDriver.Collections.DRINKS)
-            .find(eq("_id", new ObjectId(id))).iterator();
+            MongoCursor<Document> cursor = MongoDriver.getObject()
+                    .getCollection(MongoDriver.Collections.DRINKS)
+                    .find(eq("_id", new ObjectId(id))).iterator();
 
             drink = cursor.next();
-
             return drink;
+        }catch(MongoException ex){
+
+        }
+        return null;
     }
 
     /***

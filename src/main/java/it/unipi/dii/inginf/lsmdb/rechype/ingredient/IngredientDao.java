@@ -23,7 +23,13 @@ import static org.neo4j.driver.Values.parameters;
 
 public class IngredientDao {
 
-    // Return a list of ingredients given by the letters of the name
+    /***
+     * Return a list of ingredients given by the letters of the name
+     * @param ingredientName
+     * @param offset
+     * @param quantity
+     * @return
+     */
     public List<Ingredient> getIngredientByText(String ingredientName, int offset, int quantity) {
         List<Ingredient> returnList = new ArrayList<>();
         List<Document> returnDocList = new ArrayList<>();
@@ -41,6 +47,11 @@ public class IngredientDao {
         return returnList;
     }
 
+    /***
+     * retrive cached ingredient
+     * @param key
+     * @return
+     */
     public JSONObject getIngredientByKey(String key) {
         try {
             byte[] byteObj = HaloDBDriver.getObject().getData("ingredient", key.getBytes(StandardCharsets.UTF_8));
@@ -53,6 +64,10 @@ public class IngredientDao {
         return new JSONObject();
     }
 
+    /***
+     * caching the ingredient's search in a key-value DB
+     * @param ingredientsList
+     */
     private void cacheSearch(List<Document> ingredientsList) { //caching of ingredient's search
         for (int i = 0; i < ingredientsList.size(); i++) {
             String idObj = ingredientsList.get(i).getString("_id");

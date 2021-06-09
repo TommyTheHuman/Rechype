@@ -186,6 +186,11 @@ public class RecipeDao {
         return returnList;
     }
 
+    /***
+     * get recipe by key
+     * @param key
+     * @return
+     */
     public JSONObject getRecipeByKey(String key){
         try{
             byte[] byteObj = HaloDBDriver.getObject().getData("recipe", key.getBytes(StandardCharsets.UTF_8));
@@ -198,6 +203,10 @@ public class RecipeDao {
         return new JSONObject();
     }
 
+    /***
+     * caching the recipe's search in a key-value DB
+     * @param recipesList
+     */
     public void cacheSearch(List<Document> recipesList){ //caching of recipe's search
         for(int i=0; i<recipesList.size(); i++) {
             String idObj = new JSONObject(recipesList.get(i).toJson()).getJSONObject("_id").getString("$oid");
@@ -213,6 +222,10 @@ public class RecipeDao {
         }
     }
 
+    /***
+     * Cache the recipe just created
+     * @param doc
+     */
     public void cacheAddedRecipe(Document doc){
         String idObj = doc.getString("_id");
         byte[] _id = idObj.getBytes(StandardCharsets.UTF_8); //key
@@ -388,10 +401,6 @@ public class RecipeDao {
         return recipes;
     }
 
-
-    // ANALYTICS
-
-    // Get user with the higher number of likes by category if specified
 
     /***
      * Analytic. Get a rank of user based on the likes on their recipes. We can filter for category
