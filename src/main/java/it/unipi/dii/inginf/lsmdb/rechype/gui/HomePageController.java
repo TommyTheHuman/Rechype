@@ -63,7 +63,7 @@ public class HomePageController extends JSONAdder implements Initializable {
     private static ObservableList<Node> bestRecipesNodes = FXCollections.observableArrayList();
     private static ObservableList<Node> bestDrinksNodes = FXCollections.observableArrayList();
     private static ObservableList<Node> bestUsersNodes = FXCollections.observableArrayList();
-    private static ObservableList<Node>  bestIngredientsNodes = FXCollections.observableArrayList();
+    private static ObservableList<Node> bestIngredientsNodes = FXCollections.observableArrayList();
     private Timer timer = new Timer();
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
