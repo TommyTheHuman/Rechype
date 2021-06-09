@@ -161,11 +161,6 @@ public class RecipeDao {
                 lvlFilter2 = Filters.lte("pricePerServing", Recipe.symbolToPrice(filters.getString("Price")) + 500);
                 filtersList.add(lvlFilter2);
             }
-
-
-
-            Bson priceFilter = Filters.lte("pricePerServing", Recipe.symbolToPrice(filters.getString("Price")));
-            filtersList.add(priceFilter);
         }
         MongoCursor<Document> recipeCursor;
         if(filters.getBoolean("RecipeSort")) {
