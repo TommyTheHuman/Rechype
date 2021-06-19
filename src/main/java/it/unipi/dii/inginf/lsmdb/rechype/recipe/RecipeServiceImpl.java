@@ -17,8 +17,8 @@ class RecipeServiceImpl implements RecipeService{
         return recipeDao.getRecipesByText(text, offset, quantity, filters);
     }
 
-    public JSONObject getCachedRecipe(String key){
-        return recipeDao.getRecipeByKey(key);
+    public byte[] getCachedImage(String key){
+        return recipeDao.getImgByKey(key);
     }
 
     public void putRecipeInCache(Document recipe){

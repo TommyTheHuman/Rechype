@@ -15,8 +15,8 @@ class DrinkServiceImpl implements DrinkService{
     }
     public String addLike(String _id, String user) { return drinkDao.addLike(_id, user); }
     public String removeLike(String _id, String user){ return drinkDao.removeLike(_id, user); }
-    public JSONObject getCachedDrink(String key){
-        return drinkDao.getDrinkByKey(key);
+    public byte[] getCachedImage(String key){
+        return drinkDao.getImgByKey(key);
     }
     public Document searchDrinkById(String _id) { return drinkDao.getDrinkById(_id); }
     public List<Document> getBestDrinks() { return drinkDao.getBestDrinks(); }

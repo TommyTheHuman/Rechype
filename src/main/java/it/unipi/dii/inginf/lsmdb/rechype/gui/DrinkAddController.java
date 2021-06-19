@@ -23,9 +23,7 @@ import org.bson.Document;
 import org.json.JSONObject;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class DrinkAddController extends JSONAdder implements Initializable {
     @FXML private TextField title;
@@ -81,25 +79,29 @@ public class DrinkAddController extends JSONAdder implements Initializable {
                 String fieldIngredient = ingredients.getText();
                 String[] singleIngredient = fieldIngredient.trim().split(", ");
                 List<String> ingredientNames = new ArrayList<>();
-                List<String> amount = new ArrayList<>();
+                Map<String, String> amount = new HashMap<>();
                 for (String ingr : singleIngredient) {
                     String[] details = ingr.trim().split(":");
                     ingredientNames.add(details[0]);
                     details[1] = details[1].replaceAll("\\s+", "");
-                    amount.add(details[1]);
+                    amount.put(details[0], details[1]);
                 }
 
                 JSONObject jsonIngredient;
                 List<Document> docIngredients = new ArrayList<>();
                 Ingredient auxIngr;
 
-                Integer counter = 0;
                 // Insert ingredients composed by (name, amount) in a Document
-                for (String ingr : ingredientNames) {
+                /*for (String ingr : ingredientNames) {
                     jsonIngredient = ingredientService.getCachedIngredient(ingr);
                     auxIngr = new Ingredient(jsonIngredient);
                     docIngredients.add(new Document().append("ingredient", auxIngr.getName()).append("amount", amount.get(counter)));
                     counter++;
+                }*/
+
+                List<Ingredient> ingredientsList=ingredientService.searchIngredientsList(ingredientNames);
+                for(Ingredient ingr: ingredientsList){
+                    docIngredients.add(new Document().append("ingredient", ingr.getName()).append("amount", amount.get(ingr.getName())));
                 }
 
                 //doc of drink to be inserted
@@ -114,7 +116,6 @@ public class DrinkAddController extends JSONAdder implements Initializable {
                         userService.addNewRecipe(doc, "drink");
                         drinkService.putDrinkInCache(doc);
                         JSONObject par = new JSONObject().put("_id", doc.getString("_id"));
-                        par.put("cached", false);
                         Main.changeScene("DrinkPage", par);
                     } else {
                         LogManager.getLogger("DrinkAddController.class").error("MongoDB: failed to insert drink");

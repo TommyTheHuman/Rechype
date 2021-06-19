@@ -14,7 +14,11 @@ class IngredientServiceImpl implements IngredientService{
         return ingredientDao.getIngredientByText(text, offset, quantity);
     }
 
-    public JSONObject getCachedIngredient(String ingrName){ return ingredientDao.getIngredientByKey(ingrName); }
+    public byte[] getCachedImage(String ingrName){ return ingredientDao.getImgByKey(ingrName); }
 
     public List<Document> getBestIngredients() {return ingredientDao.getBestIngredients();}
+
+    public List<Ingredient> searchIngredientsList(List<String> ingredientsList){
+        return ingredientDao.searchIngredientsList(ingredientsList);
+    }
 }

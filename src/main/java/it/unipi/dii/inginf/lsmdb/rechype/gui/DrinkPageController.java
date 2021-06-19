@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -54,14 +55,8 @@ public class DrinkPageController extends JSONAdder implements Initializable {
     }
 
     public void setGui() {
-        JSONObject jsonDrink;
-        if(jsonParameters.has("cached")){
-            //retrieve from key-value
-            jsonDrink = drinkService.getCachedDrink(jsonParameters.getString("_id"));
-        }else{
-            //retrieve from mongodb
-            jsonDrink = new JSONObject(drinkService.searchDrinkById(jsonParameters.getString("_id")).toJson());
-        }
+        JSONObject jsonDrink
+        = new JSONObject(drinkService.searchDrinkById(jsonParameters.getString("_id")).toJson());
 
         //set all the drink fields
         try {
@@ -87,14 +82,14 @@ public class DrinkPageController extends JSONAdder implements Initializable {
         }
 
         //setting the drink's image
-        InputStream inputStreamImg = null;
-        try {
-            inputStreamImg = new URL(jsonDrink.getString("image")).openStream();
-            DrinkImage.setImage(new Image(inputStreamImg));
-        }catch (IOException ie) {
-            inputStreamImg = DrinkPageController.class.getResourceAsStream("/images/icons/cloche.png");
-            DrinkImage.setImage(new Image(inputStreamImg));
+        InputStream inputStreamImg;
+        byte[] imgBytes=drinkService.getCachedImage(jsonParameters.getString("_id"));
+        if(imgBytes==null){
+            inputStreamImg = GuiElementsBuilder.class.getResourceAsStream("/images/icons/cloche.png");
+        }else{
+            inputStreamImg = new ByteArrayInputStream(imgBytes);
         }
+        DrinkImage.setImage(new Image(inputStreamImg));
 
         //adding the list of ingredients
         JSONArray ingredients = jsonDrink.getJSONArray("ingredients");

@@ -162,7 +162,7 @@ class UserDao {
     }
 
     /***
-     * retrieve the users from mongoDb and cache the search into the key-value DB
+     * retrieve the users from mongoDb
      * @param userName
      * @param offset
      * @param quantity
@@ -208,43 +208,7 @@ class UserDao {
             returnList.add(new User(doc));
 
         }
-        cacheSearch(returnDocList);
         return returnList;
-    }
-
-    /***
-     * retrieving the user's entity from the key-value DB
-     * @param key
-     * @return
-     */
-    public JSONObject getUserByKey(String key){
-        try{
-            byte[] byteObj = HaloDBDriver.getObject().getData("user", key.getBytes(StandardCharsets.UTF_8));
-            return new JSONObject(new String(byteObj));
-        }catch(HaloDBException ex){
-            LogManager.getLogger("UserDao.class").fatal("HaloDB: caching failed");
-            HaloDBDriver.getObject().closeConnection();
-            System.exit(-1);
-        }
-        return new JSONObject();
-    }
-
-    /***
-     * caching the user's search in a key-value DB
-     * @param userList
-     */
-    private void cacheSearch(List<Document> userList){
-        for(int i=0; i<userList.size(); i++) {
-            byte[] username = userList.get(i).getString("_id").getBytes(StandardCharsets.UTF_8); //key
-            byte[] objToSave = userList.get(i).toJson().getBytes(StandardCharsets.UTF_8); //value
-            try{
-                HaloDBDriver.getObject().addData("user", username, objToSave);
-            }catch(Exception e){
-                LogManager.getLogger("UserDao.class").fatal("HaloDB: caching failed");
-                HaloDBDriver.getObject().closeConnection();
-                System.exit(-1);
-            }
-        }
     }
 
     /***

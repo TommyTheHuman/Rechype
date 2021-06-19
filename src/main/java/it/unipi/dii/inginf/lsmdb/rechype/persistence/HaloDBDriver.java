@@ -30,12 +30,12 @@ public class HaloDBDriver {
     }
 
     public void addData(String type, byte[] _id, byte[] obj) throws HaloDBException{
-        String key=type+":"+new String(_id)+":JSONObject";
+        String key=type+":"+new String(_id)+":Image";
         client.put(key.getBytes(StandardCharsets.UTF_8), obj);
     }
 
     public byte[] getData(String type, byte[] _id) throws HaloDBException{
-        String key=type+":"+new String(_id)+":JSONObject";
+        String key=type+":"+new String(_id)+":Image";
         byte[] result=client.get(key.getBytes(StandardCharsets.UTF_8));
         return result;
     }

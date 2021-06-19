@@ -1,9 +1,15 @@
 package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 import it.unipi.dii.inginf.lsmdb.rechype.drink.Drink;
+import it.unipi.dii.inginf.lsmdb.rechype.drink.DrinkService;
+import it.unipi.dii.inginf.lsmdb.rechype.drink.DrinkServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.Ingredient;
+import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientService;
+import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
+import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeService;
+import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -19,6 +25,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.json.JSONObject;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -68,7 +75,7 @@ public class GuiElementsBuilder {
         block.setId(user.getUsername());
 
         block.setOnMouseClicked((MouseEvent e) ->{
-            JSONObject par = new JSONObject().put("_id", user.getUsername()).append("cached", true);
+            JSONObject par = new JSONObject().put("_id", user.getUsername());
             Main.changeScene("UserProfile", par);
         });
         return block;
@@ -79,37 +86,22 @@ public class GuiElementsBuilder {
 
         HBox block = new HBox();
         Text nameNode = new Text(ingredient.getName());
-        String imageUrl;
         Label amount = new Label("");
+        IngredientService ingredientService = IngredientServiceFactory.create().getService();
 
-        if(selectedIngredientVBox == null){
-            imageUrl = ingredient.getImageUrl();
-            String imgOk = imageUrl.replaceAll("\\s", "-");
-            imgOk = imgOk + ".jpg";
-            imageUrl = imgOk;
-            amount.setText(ingredient.getQuantity().toString());
+        //setting image from k-v
+        byte[] imgBytes=ingredientService.getCachedImage(ingredient.getName());
+        InputStream imageStream;
+        if(imgBytes==null){
+            imageStream = GuiElementsBuilder.class.getResourceAsStream("/images/icons/no.png");
         }else{
-            String imageName = ingredient.getImageUrl();
-
-            imageUrl = "https://spoonacular.com/cdn/ingredients_100x100/" + imageName;
-
+            imageStream = new ByteArrayInputStream(imgBytes);
         }
 
-        ImageView imageNode = null;
+        ImageView imageNode =
+        new ImageView(new Image(imageStream, 50, 50, false, false));
 
-        try{
-            InputStream imageStream = new URL(imageUrl).openStream();
-            imageNode = new ImageView(new Image(imageStream, 50,50,false,false));
-        }catch(IOException e){
-            System.out.println("Ingredient's image not found");
-        }
-
-        if(amount.getText().equals("")) {
-            block.getChildren().addAll(imageNode, nameNode);
-        }else{
-            block.getChildren().addAll(imageNode, nameNode, amount);
-        }
-
+        block.getChildren().addAll(imageNode, nameNode, amount);
         block.setAlignment(Pos.CENTER_LEFT);
         block.setSpacing(10.0);
         block.setId(ingredient.getName());
@@ -150,17 +142,8 @@ public class GuiElementsBuilder {
     public HBox createSimpleIngredientBlock(JSONObject ingredient){
         HBox block = new HBox();
         Text nameNode;
-        String imageName;
-        String imageUrl;
+        IngredientService ingredientService = IngredientServiceFactory.create().getService();
         nameNode = new Text(ingredient.getString("ingredient"));
-        if(!ingredient.has("image")) {
-            imageName = ingredient.getString("ingredient").replace(" ", "-");
-            imageUrl = "https://spoonacular.com/cdn/ingredients_100x100/" + imageName+".jpg";
-        }
-        else {
-            imageName = ingredient.getString("image");
-            imageUrl="https://spoonacular.com/cdn/ingredients_100x100/" + imageName;
-        }
         Text amount=null;
         if(ingredient.has("amount")) {
             if (ingredient.get("amount") instanceof String)
@@ -169,15 +152,21 @@ public class GuiElementsBuilder {
                 amount = new Text("Amount: " + ingredient.get("amount"));
         }
 
-        ImageView imageNode;
+        //setting image from k-v
+        byte[] imgBytes;
+        if(ingredient.has("_id"))
+            imgBytes=ingredientService.getCachedImage(ingredient.getString("_id"));
+        else
+            imgBytes=ingredientService.getCachedImage(ingredient.getString("ingredient"));
         InputStream imageStream;
-        try{
-            imageStream = new URL(imageUrl).openStream();
-            imageNode = new ImageView(new Image(imageStream, 50,50,false,false));
-        }catch(IOException e){
+        if(imgBytes==null){
             imageStream = GuiElementsBuilder.class.getResourceAsStream("/images/icons/no.png");
-            imageNode = new ImageView(new Image(imageStream, 50,50,false,false));
+        }else{
+            imageStream = new ByteArrayInputStream(imgBytes);
         }
+        ImageView imageNode =
+        new ImageView(new Image(imageStream, 50, 50, false, false));
+
         if(amount!=null)
             block.getChildren().addAll(imageNode, new VBox(nameNode, amount));
         else
@@ -194,6 +183,7 @@ public class GuiElementsBuilder {
         HBox iconContainer=new HBox();
         ImageView imageRecipe=null;
         InputStream inputStream;
+        RecipeService recipeService = RecipeServiceFactory.create().getService();
 
         //setting all the icons
         if(recipe.isVegan()){
@@ -228,18 +218,15 @@ public class GuiElementsBuilder {
         ImageView dairyIcon=new ImageView(new Image(inputStream, 20, 20, false, false));
         dairyIcon.setCache(true);
 
-        inputStream=GuiElementsBuilder.class.getResourceAsStream("/images/icons/cloche.png");
-        ImageView standardIconRecipe=new ImageView(new Image(inputStream, 50, 50, false, true));
-
-        //setting the recipe's image of the block
-        if(recipe.getImage()!=null) {
-            try {
-                InputStream imageStream = new URL(recipe.getImage()).openStream();
-                imageRecipe=new ImageView(new Image(imageStream, 50, 50, false, true));
-            }catch(IOException ie){
-                imageRecipe = standardIconRecipe;
-            }
+        //setting image from k-v
+        byte[] imgBytes=recipeService.getCachedImage(recipe.getId());
+        InputStream imageStream;
+        if(imgBytes==null){
+            imageStream = GuiElementsBuilder.class.getResourceAsStream("/images/icons/cloche.png");
+        }else{
+            imageStream = new ByteArrayInputStream(imgBytes);
         }
+        imageRecipe = new ImageView(new Image(imageStream, 50, 50, false, false));
 
         //setting the price icon
         Text priceIcon = new Text(Recipe.getPriceSymbol(recipe.getPricePerServing()));
@@ -258,7 +245,7 @@ public class GuiElementsBuilder {
         mainContainer.setId("mainContainer");
 
         mainContainer.setOnMouseClicked((MouseEvent e) ->{
-            JSONObject par = new JSONObject().put("_id", recipe.getId()).append("cached", true);
+            JSONObject par = new JSONObject().put("_id", recipe.getId());
             Main.changeScene("RecipePage", par);
         });
         mainContainer.setStyle("-fx-background-color: white");
@@ -266,16 +253,19 @@ public class GuiElementsBuilder {
     }
 
     public HBox createDrinkBlock(Drink drink){
+        DrinkService drinkService = DrinkServiceFactory.create().getService();
         HBox block=new HBox();
         VBox textBlock=new VBox();
         block.setAlignment(Pos.CENTER_LEFT);
         block.setSpacing(10.0);
         textBlock.getChildren().addAll(new Text("name: "+drink.getName()),new Text("author: "+drink.getAuthor()), new Text("tag: "+drink.getTag()));
+        //setting image from k-v
+        byte[] imgBytes=drinkService.getCachedImage(drink.getId());
         InputStream imageStream;
-        try {
-            imageStream = new URL(drink.getImage()).openStream();
-        }catch (IOException ie) {
+        if(imgBytes==null){
             imageStream = GuiElementsBuilder.class.getResourceAsStream("/images/icons/cloche.png");
+        }else{
+            imageStream = new ByteArrayInputStream(imgBytes);
         }
         ImageView drinkImage = new ImageView(new Image(imageStream, 50, 50, false, false));
         block.getChildren().addAll(drinkImage, textBlock);

@@ -25,6 +25,7 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -71,13 +72,8 @@ public class RecipePageController extends JSONAdder implements Initializable {
 
     public void setGui(){
 
-        if(jsonParameters.has("cached")){
-            //retrieving the recipe from key-value
-            jsonRecipe = recipeService.getCachedRecipe(jsonParameters.getString("_id"));
-        }else {
-            //retrieve from mongoDB
-            jsonRecipe = new JSONObject(recipeService.searchRecipeById(jsonParameters.getString("_id")).toJson());
-        }
+        jsonRecipe = new JSONObject(recipeService.searchRecipeById(jsonParameters.getString("_id")).toJson());
+
         //setting text informations
         try {
             authorLabel.setText("Author: " + jsonRecipe.getString("author"));
@@ -117,20 +113,14 @@ public class RecipePageController extends JSONAdder implements Initializable {
         }
 
         //setting recipe's image
+        byte[] imgBytes=recipeService.getCachedImage(jsonParameters.getString("_id"));
         InputStream inputStream;
-        try {
-            inputStream = new URL(jsonRecipe.getString("image")).openStream();
-            RecipeImage.setImage(new Image(inputStream));
-        }catch(IOException ie){
-            inputStream = null;
-            System.out.println("Recipe's image not found");
+        if(imgBytes==null){
+            inputStream = GuiElementsBuilder.class.getResourceAsStream("/images/icons/cloche.png");
+        }else{
+            inputStream = new ByteArrayInputStream(imgBytes);
         }
-
-        //setting default image if no image are found
-        if(inputStream==null){
-            inputStream=RecipePageController.class.getResourceAsStream("/images/icons/cloche.png");
-            RecipeImage.setImage(new Image(inputStream));
-        }
+        RecipeImage.setImage(new Image(inputStream));
 
         //setting the icons
         if (jsonRecipe.getBoolean("vegan")) {

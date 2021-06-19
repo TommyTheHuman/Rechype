@@ -71,40 +71,6 @@ public class HomePageController extends JSONAdder implements Initializable {
 
     @Override
     public void setGui() {
-        // These analytics will loaded after 7 sec
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> {
-                    bestRecipes = recipeService.getBestRecipes();
-                    bestDrinks = drinkService.getBestDrinks();
-                    bestUsers = userService.getBestUsers();
-                    bestIngredients = ingredientService.getBestIngredients();
-                    for (Document bestRecipe : bestRecipes) {
-                        boxBestRecipes.getChildren().addAll(setRecipe(new Recipe(bestRecipe)),
-                                new Separator(Orientation.HORIZONTAL));
-                        bestRecipesNodes=boxBestRecipes.getChildren();
-                    }
-                    for (Document bestDrink : bestDrinks) {
-                        boxBestDrinks.getChildren().addAll(setDrink(new Drink(bestDrink)),
-                                new Separator(Orientation.HORIZONTAL));
-                        bestDrinksNodes=boxBestDrinks.getChildren();
-                    }
-                    for (Document bestUser : bestUsers) {
-                        boxBestUsers.getChildren().addAll(setUser(new User(bestUser)),
-                                new Separator(Orientation.HORIZONTAL));
-                        bestUsersNodes=boxBestUsers.getChildren();
-                    }
-                    for (Document bestIngredient : bestIngredients) {
-                        boxBestIngredients.getChildren().addAll(setIngredient(new Ingredient(bestIngredient)),
-                                new Separator(Orientation.HORIZONTAL));
-                        bestIngredientsNodes=boxBestIngredients.getChildren();
-                    }
-                });
-            }
-        };
-        timer.schedule(task, 7000);
-
 
         //defining the reload button
         reloadButton.setOnAction(event -> {
@@ -153,6 +119,40 @@ public class HomePageController extends JSONAdder implements Initializable {
                 usersNodes=boxSuggestedUsers.getChildren();
             }
             userService.setLockSuggestions(true);
+
+            //those suggestion will be loaded 7sec later
+            TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    Platform.runLater(() -> {
+                        bestRecipes = recipeService.getBestRecipes();
+                        bestDrinks = drinkService.getBestDrinks();
+                        bestUsers = userService.getBestUsers();
+                        bestIngredients = ingredientService.getBestIngredients();
+                        for (Document bestRecipe : bestRecipes) {
+                            boxBestRecipes.getChildren().addAll(setRecipe(new Recipe(bestRecipe)),
+                                    new Separator(Orientation.HORIZONTAL));
+                            bestRecipesNodes=boxBestRecipes.getChildren();
+                        }
+                        for (Document bestDrink : bestDrinks) {
+                            boxBestDrinks.getChildren().addAll(setDrink(new Drink(bestDrink)),
+                                    new Separator(Orientation.HORIZONTAL));
+                            bestDrinksNodes=boxBestDrinks.getChildren();
+                        }
+                        for (Document bestUser : bestUsers) {
+                            boxBestUsers.getChildren().addAll(setUser(new User(bestUser)),
+                                    new Separator(Orientation.HORIZONTAL));
+                            bestUsersNodes=boxBestUsers.getChildren();
+                        }
+                        for (Document bestIngredient : bestIngredients) {
+                            boxBestIngredients.getChildren().addAll(setIngredient(new Ingredient(bestIngredient)),
+                                    new Separator(Orientation.HORIZONTAL));
+                            bestIngredientsNodes=boxBestIngredients.getChildren();
+                        }
+                    });
+                }
+            };
+            timer.schedule(task, 7000);
         }
     }
 

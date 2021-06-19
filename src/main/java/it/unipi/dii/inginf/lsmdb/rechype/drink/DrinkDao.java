@@ -12,6 +12,9 @@ import com.oath.halodb.HaloDBException;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
+import javafx.scene.image.Image;
+import javafx.scene.image.PixelFormat;
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -24,6 +27,13 @@ import org.neo4j.driver.TransactionWork;
 import org.neo4j.driver.Value;
 import org.neo4j.driver.exceptions.Neo4jException;
 
+import javax.imageio.ImageIO;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -154,35 +164,42 @@ class DrinkDao {
      */
     public void cacheSearch(List<Document> drinksList){ //caching of drink's search
         for(int i=0; i<drinksList.size(); i++) {
-            String idObj = new JSONObject(drinksList.get(i).toJson()).getJSONObject("_id").getString("$oid");
-            byte[] _id = idObj.getBytes(StandardCharsets.UTF_8); //key
-            byte[] objToSave = drinksList.get(i).toJson().getBytes(StandardCharsets.UTF_8); //value
-            try {
-                HaloDBDriver.getObject().addData("drink",_id, objToSave);
-            }catch(HaloDBException ex){
-                LogManager.getLogger("DrinkDao.class").fatal("HaloDB: caching failed");
-                HaloDBDriver.getObject().closeConnection();
-                System.exit(-1);
-            }
+            cacheAddedDrink(drinksList.get(i));
         }
     }
 
     /***
-     * Caching the drink just created
+     * Caching the image of the drink just created
      * @param doc
      */
-    public void cacheAddedDrink(Document doc){
-        String idObj = doc.getString("_id");
+    public boolean cacheAddedDrink(Document doc){
+        String idObj;
+        if(doc.get("_id") instanceof String)
+            idObj=doc.getString("_id");
+        else
+            idObj = new JSONObject(doc.toJson()).getJSONObject("_id").getString("$oid");
         byte[] _id = idObj.getBytes(StandardCharsets.UTF_8); //key
-        byte[] objToSave = doc.toJson().getBytes(StandardCharsets.UTF_8); //value
+        InputStream imgStream;
+        String stringUrl=doc.getString("image");
+        byte[] objToSave;
         try {
-            HaloDBDriver.getObject().addData("drink",_id, objToSave);
+            imgStream = new URL(stringUrl).openStream();
+            objToSave = IOUtils.toByteArray(imgStream);
+        }catch(IOException ie){
+            return false;
+        }
+        try {
+            HaloDBDriver.getObject().addData("drink", _id, objToSave);
+            //byte[] c=HaloDBDriver.getObject().getData("drink", _id);
+            return true;
         }catch(HaloDBException ex){
             LogManager.getLogger("DrinkDao.class").fatal("HaloDB: caching failed");
             HaloDBDriver.getObject().closeConnection();
             System.exit(-1);
+            return false;
         }
     }
+
 
     /***
      * Add a new like
@@ -304,16 +321,16 @@ class DrinkDao {
      * @param key
      * @return
      */
-    public JSONObject getDrinkByKey(String key){
+    public byte[] getImgByKey(String key){
         try{
             byte[] byteObj = HaloDBDriver.getObject().getData("drink", key.getBytes(StandardCharsets.UTF_8));
-            return new JSONObject(new String(byteObj));
+            return byteObj;
         }catch(HaloDBException ex){
             LogManager.getLogger("DrinkDao.class").fatal("HaloDB: caching failed");
             HaloDBDriver.getObject().closeConnection();
             System.exit(-1);
         }
-        return new JSONObject();
+        return null;
     }
 
     /***

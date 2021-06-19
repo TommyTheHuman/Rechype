@@ -9,7 +9,7 @@ public interface DrinkService {
 
     String addDrink(Document doc);
     List<Drink> searchDrink(String text, int offset, int quantity, JSONObject filters);
-    JSONObject getCachedDrink(String key);
+    byte[] getCachedImage(String key);
     void putDrinkInCache(Document drink);
     String addLike(String _id, String username);
     String removeLike(String _id, String username);

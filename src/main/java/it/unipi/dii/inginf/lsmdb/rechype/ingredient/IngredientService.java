@@ -8,9 +8,8 @@ import java.util.List;
 public interface IngredientService {
 
     List<Ingredient> searchIngredients(String text, int offset, int quantity);
-
-    JSONObject getCachedIngredient(String key);
-
+    byte[] getCachedImage(String key);
     List<Document> getBestIngredients();
+    List<Ingredient> searchIngredientsList(List<String> ingredientsList);
 
 }

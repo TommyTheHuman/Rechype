@@ -92,38 +92,40 @@ public class RecipeAddController extends JSONAdder implements Initializable {
                 String fieldIngredient = ingredients.getText();
                 String[] singleIngredient = fieldIngredient.trim().split(", ");
                 List<String> ingredientNames = new ArrayList<>();
-                List<Double> amount = new ArrayList<>();
+                Map<String, Double> amount = new HashMap<>();
                 for(String ingr: singleIngredient){
                     String[] details = ingr.trim().split(":");
                     ingredientNames.add(details[0]);
                     details[1] = details[1].replaceAll("\\s+","");
                     details[1] = details[1].substring(0, details[1].length()-1);
-                    amount.add(Double.parseDouble(details[1]));
+                    amount.put(details[0], Double.parseDouble(details[1]));
                 }
 
-                List<Ingredient> cachedIngredients = new ArrayList<>();
                 JSONObject jsonIngredient;
                 List<Document> docIngredients = new ArrayList<>();
                 List<Document> docNutrients = new ArrayList<>();
                 Ingredient auxIngr;
 
-                Integer counter = 0;
                 // Get cached ingredient using the ingredient's name and then save complete ingredient and amount chose by the user.
-                for(String ingr: ingredientNames){
-                    jsonIngredient = ingredientService.getCachedIngredient(ingr);
+                /*for(String ingr: ingredientNames){
+                    jsonIngredient = ingredientService.g;
                     auxIngr = new Ingredient(jsonIngredient);
                     cachedIngredients.add(auxIngr);
                     docIngredients.add(new Document().append("ingredient", auxIngr.getName()).append("amount", amount.get(counter)));
                     counter++;
+                }*/
+
+                List<Ingredient> ingredientsList=ingredientService.searchIngredientsList(ingredientNames);
+                for(Ingredient ingr: ingredientsList){
+                    docIngredients.add(new Document().append("ingredient", ingr.getName()).append("amount", amount.get(ingr.getName())));
                 }
 
                 String nutrName;
                 Double nutrAmount;
                 String nutrUnit;
                 Double[] nutrientsTotAmount = {0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d, 0.0d};
-                counter = 0;
                 // Get the sum of nutrients of all ingredients selected
-                for(Ingredient ingr: cachedIngredients){
+                for(Ingredient ingr: ingredientsList){
                     if(ingr.getNutrients() != null){
                         for(int i=0; i<ingr.getNutrients().size(); i++) {
                             nutrName = ingr.getNutrients().get(i).getNutrName();
@@ -135,29 +137,28 @@ public class RecipeAddController extends JSONAdder implements Initializable {
                             }
                             if (nutrName.equals("Fiber")) {
                                 // Sum nutrients considering that nutrAmount is for 100g
-                                nutrientsTotAmount[0] += nutrAmount * amount.get(counter) / 100;
+                                nutrientsTotAmount[0] += nutrAmount * amount.get(ingr.getName()) / 100;
                             }
                             if (nutrName.equals("Carbohydrates")) {
-                                nutrientsTotAmount[1] += nutrAmount * amount.get(counter) / 100;
+                                nutrientsTotAmount[1] += nutrAmount * amount.get(ingr.getName()) / 100;
                             }
                             if (nutrName.equals("Calories")) {
-                                nutrientsTotAmount[2] += nutrAmount * amount.get(counter) / 100;
+                                nutrientsTotAmount[2] += nutrAmount * amount.get(ingr.getName()) / 100;
                             }
                             if (nutrName.equals("Sugar")) {
-                                nutrientsTotAmount[3] += nutrAmount * amount.get(counter) / 100;
+                                nutrientsTotAmount[3] += nutrAmount * amount.get(ingr.getName()) / 100;
                             }
                             if (nutrName.equals("Fat")) {
-                                nutrientsTotAmount[4] += nutrAmount * amount.get(counter) / 100;
+                                nutrientsTotAmount[4] += nutrAmount * amount.get(ingr.getName()) / 100;
                             }
                             if (nutrName.equals("Calcium")) {
-                                nutrientsTotAmount[5] += nutrAmount * amount.get(counter) / 100;
+                                nutrientsTotAmount[5] += nutrAmount * amount.get(ingr.getName()) / 100;
                             }
                             if (nutrName.equals("Protein")) {
-                                nutrientsTotAmount[6] += nutrAmount * amount.get(counter) / 100;
+                                nutrientsTotAmount[6] += nutrAmount * amount.get(ingr.getName()) / 100;
                             }
                         }
                     }
-                    counter++;
                 }
 
 
@@ -187,7 +188,7 @@ public class RecipeAddController extends JSONAdder implements Initializable {
                 if(recipeService.addRecipe(doc).equals("RecipeAdded")) {
                     userService.addNewRecipe(doc, "recipe");
                     recipeService.putRecipeInCache(doc);
-                    JSONObject par = new JSONObject().put("_id", doc.getString("_id")).append("cached", true);
+                    JSONObject par = new JSONObject().put("_id", doc.getString("_id"));
                     Main.changeScene("RecipePage", par);
                 }else{
                     LogManager.getLogger("RecipeAddController.class").error("MongoDB: failed to insert recipe");

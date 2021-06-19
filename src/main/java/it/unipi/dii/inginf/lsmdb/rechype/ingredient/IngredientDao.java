@@ -7,6 +7,7 @@ import com.oath.halodb.HaloDBException;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -14,6 +15,9 @@ import org.json.JSONObject;
 import org.neo4j.driver.*;
 import org.neo4j.driver.exceptions.Neo4jException;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,20 +52,20 @@ public class IngredientDao {
     }
 
     /***
-     * retrive cached ingredient
+     * retrieve cached ingredient
      * @param key
      * @return
      */
-    public JSONObject getIngredientByKey(String key) {
+    public byte[] getImgByKey(String key) {
         try {
             byte[] byteObj = HaloDBDriver.getObject().getData("ingredient", key.getBytes(StandardCharsets.UTF_8));
-            return new JSONObject(new String(byteObj));
+            return byteObj;
         } catch (HaloDBException ex) {
             LogManager.getLogger("ingredientsDao.class").fatal("HaloDB: caching failed");
             HaloDBDriver.getObject().closeConnection();
             System.exit(-1);
         }
-        return new JSONObject();
+        return null;
     }
 
     /***
@@ -70,16 +74,37 @@ public class IngredientDao {
      */
     private void cacheSearch(List<Document> ingredientsList) { //caching of ingredient's search
         for (int i = 0; i < ingredientsList.size(); i++) {
-            String idObj = ingredientsList.get(i).getString("_id");
-            byte[] _id = idObj.getBytes(StandardCharsets.UTF_8); //key
-            byte[] objToSave = ingredientsList.get(i).toJson().getBytes(StandardCharsets.UTF_8); //value
-            try {
-                HaloDBDriver.getObject().addData("ingredient", _id, objToSave);
-            } catch (HaloDBException ex) {
-                LogManager.getLogger("IngredientDao.class").fatal("HaloDB: caching failed");
-                HaloDBDriver.getObject().closeConnection();
-                System.exit(-1);
-            }
+            cacheSingleIngredient(ingredientsList.get(i));
+        }
+    }
+
+    private boolean cacheSingleIngredient(Document doc){
+        String idObj = doc.getString("_id");
+        byte[] _id = idObj.getBytes(StandardCharsets.UTF_8); //key
+        InputStream imgStream;
+        String stringUrl;
+        if(doc.containsKey("image")){
+            stringUrl="https://spoonacular.com/cdn/ingredients_100x100/"+doc.getString("image");
+        }
+        else{
+            String imageName=idObj.replace(" ", "-");
+            stringUrl="https://spoonacular.com/cdn/ingredients_100x100/"+imageName+".jpg";
+        }
+        byte[] objToSave;
+        try {
+            imgStream = new URL(stringUrl).openStream();
+            objToSave = IOUtils.toByteArray(imgStream);
+        }catch(IOException ie){
+            return false;
+        }
+        try {
+            HaloDBDriver.getObject().addData("ingredient", _id, objToSave);
+            return true;
+        }catch(HaloDBException ex){
+            LogManager.getLogger("IngredientDao.class").fatal("HaloDB: caching failed");
+            HaloDBDriver.getObject().closeConnection();
+            System.exit(-1);
+            return false;
         }
     }
 
@@ -121,6 +146,22 @@ public class IngredientDao {
                     "global suggestions");
         }
         return ingredients;
+    }
+
+    List<Ingredient> searchIngredientsList(List<String> ingredientsList){
+        List<Ingredient> returnList = new ArrayList<>();
+        List<Document> docList = new ArrayList<>();
+        Bson filter = Filters.in("_id", ingredientsList);
+        MongoCursor<Document> cursor = MongoDriver.getObject().getCollection(MongoDriver.Collections.INGREDIENTS)
+        .find(filter).iterator();
+
+        while (cursor.hasNext()) {
+            Document doc = cursor.next();
+            docList.add(doc);
+            returnList.add(new Ingredient(new JSONObject(doc.toJson())));
+        }
+        cacheSearch(docList);
+        return returnList;
     }
 }
 

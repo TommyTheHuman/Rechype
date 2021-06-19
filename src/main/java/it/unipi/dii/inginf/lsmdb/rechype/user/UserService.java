@@ -19,7 +19,6 @@ public interface UserService {
     boolean getLockSuggestions();
     Document getUserById(String id);
     List<User> searchUser(String text, int offset, int quantity, JSONObject filters);
-    JSONObject getCachedUser(String key);
     String addNewRecipe(Document doc, String type);
     String deleteUser(String username);
     List<Document> getRecipes(String username);

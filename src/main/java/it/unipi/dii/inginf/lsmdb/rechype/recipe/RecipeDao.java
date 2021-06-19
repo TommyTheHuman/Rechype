@@ -9,10 +9,13 @@ import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.InsertOneResult;
 import com.oath.halodb.HaloDB;
 import com.oath.halodb.HaloDBException;
+import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientService;
+import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -25,6 +28,9 @@ import org.neo4j.driver.TransactionWork;
 import org.neo4j.driver.Value;
 import org.neo4j.driver.exceptions.Neo4jException;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -186,16 +192,16 @@ public class RecipeDao {
      * @param key
      * @return
      */
-    public JSONObject getRecipeByKey(String key){
+    public byte[] getImgByKey(String key){
         try{
             byte[] byteObj = HaloDBDriver.getObject().getData("recipe", key.getBytes(StandardCharsets.UTF_8));
-            return new JSONObject(new String(byteObj));
+            return byteObj;
         }catch(HaloDBException ex){
             LogManager.getLogger("RecipeDao.class").fatal("HaloDB: caching failed");
             HaloDBDriver.getObject().closeConnection();
             System.exit(-1);
         }
-        return new JSONObject();
+        return null;
     }
 
     /***
@@ -204,16 +210,7 @@ public class RecipeDao {
      */
     public void cacheSearch(List<Document> recipesList){ //caching of recipe's search
         for(int i=0; i<recipesList.size(); i++) {
-            String idObj = new JSONObject(recipesList.get(i).toJson()).getJSONObject("_id").getString("$oid");
-            byte[] _id = idObj.getBytes(StandardCharsets.UTF_8); //key
-            byte[] objToSave = recipesList.get(i).toJson().getBytes(StandardCharsets.UTF_8); //value
-            try {
-                HaloDBDriver.getObject().addData("recipe", _id, objToSave);
-            }catch(Exception e){
-                LogManager.getLogger("RecipeDao.class").fatal("HaloDB: caching failed");
-                HaloDBDriver.getObject().closeConnection();
-                System.exit(-1);
-            }
+            cacheAddedRecipe(recipesList.get(i));
         }
     }
 
@@ -221,16 +218,31 @@ public class RecipeDao {
      * Cache the recipe just created
      * @param doc
      */
-    public void cacheAddedRecipe(Document doc){
-        String idObj = doc.getString("_id");
+    public boolean cacheAddedRecipe(Document doc){
+        String idObj;
+        if(doc.get("_id") instanceof String)
+            idObj=doc.getString("_id");
+        else
+            idObj = new JSONObject(doc.toJson()).getJSONObject("_id").getString("$oid");
         byte[] _id = idObj.getBytes(StandardCharsets.UTF_8); //key
-        byte[] objToSave = doc.toJson().getBytes(StandardCharsets.UTF_8); //value
+        InputStream imgStream;
+        String stringUrl=doc.getString("image");
+        byte[] objToSave;
+        try {
+            imgStream = new URL(stringUrl).openStream();
+            objToSave = IOUtils.toByteArray(imgStream);
+        }catch(IOException ie){
+            return false;
+        }
         try {
             HaloDBDriver.getObject().addData("recipe", _id, objToSave);
-        }catch(Exception e){
+            //byte[] c=HaloDBDriver.getObject().getData("recipe", _id);
+            return true;
+        }catch(HaloDBException ex){
             LogManager.getLogger("RecipeDao.class").fatal("HaloDB: caching failed");
             HaloDBDriver.getObject().closeConnection();
             System.exit(-1);
+            return false;
         }
     }
 
