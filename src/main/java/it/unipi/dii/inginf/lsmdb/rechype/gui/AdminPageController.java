@@ -14,11 +14,15 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
@@ -29,35 +33,27 @@ import java.util.ResourceBundle;
 public class AdminPageController extends JSONAdder implements Initializable {
 
     @FXML private Button logoutBtn;
-    @FXML private Button goBtnBestUserByLike;
-    @FXML private Button goBtnBestUserByLikeAgeCountry;
-    @FXML private ComboBox<String> comboAge;
-    @FXML private ComboBox<String> comboCategory;
-    @FXML private ComboBox<String> comboNation;
-    @FXML private Button goBtnBestUserByHealth;
-    @FXML private ComboBox<String> comboLevel;
 
-    @FXML private ComboBox<String> comboMinutes;
-    @FXML private Button goBtnPopularIngredient;
-    @FXML private CheckBox checkFat;
-    @FXML private CheckBox checkProtein;
-    @FXML private CheckBox checkCalories;
     @FXML private CheckBox checkRecipes;
     @FXML private CheckBox checkDrinks;
     @FXML private CheckBox checkRecipes1;
     @FXML private CheckBox checkDrinks1;
 
-    @FXML private VBox vboxPopularIngredients;
-    @FXML private VBox vboxBestUserByLikeCat;
+    @FXML private PieChart distributionPie;
+    @FXML private Button goBtnDistr;
+    @FXML private Button goBtnMostUsedIngr;
+    @FXML private VBox vboxMostUsedIngr;
+    @FXML private ComboBox comboIngr;
+    @FXML private Label errLabel;
     @FXML private VBox vboxMostSavedRecipes;
-    @FXML private VBox vboxBestUserByLike;
-    @FXML private VBox vboxBestUserByHealth;
+
     @FXML private Button goBtnMostSavedRecipes;
-    @FXML private Button btnClearUserByLike;
-    @FXML private Button btnClearUserHealth;
+
     @FXML private Button BanButton;
     @FXML private TextField textFieldBan;
     @FXML private Label labelBanned;
+
+    private ObservableList<PieChart.Data> pieData;
 
     private UserService userService;
 
@@ -81,8 +77,8 @@ public class AdminPageController extends JSONAdder implements Initializable {
         logoutBtn.setOnAction(event -> Main.changeScene("Landing", new JSONObject()));
 
 
-        //initialize all the comboboxes
-        comboNation.setItems(LandingPageController.getNations());
+        errLabel.setVisible(false);
+
 
         List<String> listTag = new ArrayList<>();
         listTag.add("cocktail");
@@ -97,113 +93,57 @@ public class AdminPageController extends JSONAdder implements Initializable {
         listCategory.add("glutenFree");
         listCategory.add("dairyFree");
         ObservableList<String> observableListRecipe = FXCollections.observableList(listCategory);
-        comboCategory.setItems(observableListRecipe);
+        comboIngr.setItems(observableListRecipe);
 
-        List<String> listAge = new ArrayList<>();
-        listAge.add("under-24");
-        listAge.add("24-32");
-        listAge.add("32-40");
-        listAge.add("40-over");
-        ObservableList<String> observableList1 = FXCollections.observableList(listAge);
-        comboAge.setItems(observableList1);
+        goBtnDistr.setOnAction(event -> {
+            pieData = FXCollections.observableArrayList();
 
-        List<String> listLevel = new ArrayList<>();
-        listLevel.add("bronze");
-        listLevel.add("silver");
-        listLevel.add("gold");
-        ObservableList<String> observableListLvl = FXCollections.observableList(listLevel);
-        comboLevel.setItems(observableListLvl);
+            List<Document> result = recipeService.getPriceDistribution();
 
-        List<String> listMinutes = new ArrayList<>();
-        listMinutes.add("15");
-        listMinutes.add("30");
-        listMinutes.add("45");
-        ObservableList<String> observableListMin = FXCollections.observableList(listMinutes);
-        comboMinutes.setItems(observableListMin);
-
-        goBtnBestUserByLike.setOnAction(event -> {
-            vboxBestUserByLikeCat.getChildren().clear();
-            String aux = "noCategory";
-            vboxBestUserByLikeCat.setSpacing(15);
-            if(!comboCategory.getSelectionModel().isEmpty()){
-                aux = comboCategory.getValue();
+            List<String> price = new ArrayList<>();
+            price.add(0,"$");
+            price.add(1,"$$");
+            price.add(2,"$$$");
+            price.add(3,"$$$$");
+            for (Document doc : result) {
+                Integer range = doc.getInteger("_id");
+                int sum = doc.getInteger("count");
+                pieData.add(new PieChart.Data(price.get(range-1), sum));
             }
-            List<Document> listDoc;
-            if(checkRecipes.isSelected()){
-                listDoc = recipeService.getUserByLikeAndCategory(aux);
-            }else{
-                listDoc = drinkService.getUserByLikeAndCategory(aux);
-            }
-
-            if(listDoc.size() == 0){
-                HBox hbox = new HBox();
-                Text noResult = new Text();
-                noResult.setText("Not enough data.");
-                hbox.getChildren().add(noResult);
-                vboxBestUserByLikeCat.getChildren().add(hbox);
-                return;
-            }
-
-            for(Integer i = 0; i< listDoc.size(); i++){
-                HBox hbox = new HBox(15);
-                Text name = new Text();
-                Text number = new Text();
-                Text like = new Text();
-                Integer rank = i;
-                rank = rank +1;
-                number.setText(rank.toString() + ") ");
-                name.setText(listDoc.get(i).getString("author"));
-                like.setText("likes:" + listDoc.get(i).getInteger("likes").toString());
-                hbox.getChildren().addAll(number, name, like);
-                vboxBestUserByLikeCat.getChildren().addAll(hbox, new Separator(Orientation.HORIZONTAL));
-            }
+            distributionPie.setData(pieData);
+            distributionPie.setLegendVisible(false);
 
         });
 
 
-        goBtnBestUserByLikeAgeCountry.setOnAction(event -> {
-            vboxBestUserByLike.getChildren().clear();
-            int min, max;
+        goBtnMostUsedIngr.setOnAction(event -> {
+            vboxMostUsedIngr.getChildren().clear();
+            vboxMostUsedIngr.setSpacing(15);
 
-            if(comboAge.getSelectionModel().isEmpty()){
-                min = - 1;
-                max = -1;
-            }else{
-                String aux = comboAge.getValue();
-                String[] tokens = aux.trim().split("-");
-                if(tokens[0].equals("under"))
-                    min = 0;
-                else
-                    min = Integer.parseInt(tokens[0]);
+            List<Document> listRecipes;
 
-                if(tokens[1].equals("over"))
-                    max = 200;
-                else
-                    max = Integer.parseInt(tokens[1]);
-            }
-            String nation;
-            if(!comboNation.getSelectionModel().isEmpty()){
-                nation = comboNation.getValue();
+            String category;
+            if(comboIngr.getSelectionModel().isEmpty()){
+                errLabel.setVisible(true);
+                return;
             }else{
-                nation = "noCountry";
+                category = comboIngr.getValue().toString();
             }
 
-            vboxBestUserByLike.setSpacing(15);
-            List<Document> listDoc;
             if(checkRecipes.isSelected()){
-                listDoc = recipeService.getUserByLikeNumber(min, max, nation);
+                listRecipes = recipeService.getMostUsedIngr(category);
             }else{
-                listDoc = drinkService.getUserByLikeAndNationAndAge(min,max, nation);
+                listRecipes = drinkService.getMostUsedIngr(category);
             }
-            if(listDoc.size() == 0){
+            if(listRecipes.size() == 0){
                 HBox hbox = new HBox();
                 Text noResult = new Text();
                 noResult.setText("Not enough data.");
                 hbox.getChildren().add(noResult);
-                vboxBestUserByLike.getChildren().add(hbox);
+                vboxMostUsedIngr.getChildren().add(hbox);
                 return;
             }
-            for(Integer i=0; i<listDoc.size(); i++){
+            for(Integer i=0; i<listRecipes.size(); i++){
                 HBox hbox = new HBox(15);
                 Text name = new Text();
                 Text number = new Text();
@@ -211,11 +151,13 @@ public class AdminPageController extends JSONAdder implements Initializable {
                 Integer rank = i;
                 rank = rank +1;
                 number.setText(rank.toString() + ") ");
-                name.setText(listDoc.get(i).getString("_id"));
-                like.setText("likes:" + listDoc.get(i).getInteger("likes").toString());
+                name.setText(listRecipes.get(i).getString("_id"));
+                like.setText("in " + listRecipes.get(i).getInteger("count").toString()+ " recipes.");
                 hbox.getChildren().addAll(number, name, like);
-                vboxBestUserByLike.getChildren().addAll(hbox, new Separator(Orientation.HORIZONTAL));
+                vboxMostUsedIngr.getChildren().addAll(hbox, new Separator(Orientation.HORIZONTAL));
             }
+
+
         });
 
 
@@ -252,112 +194,20 @@ public class AdminPageController extends JSONAdder implements Initializable {
             }
         });
 
-        goBtnBestUserByHealth.setOnAction(event -> {
-            vboxBestUserByHealth.getChildren().clear();
-            String level;
-            if(comboLevel.getSelectionModel().isEmpty()){
-                level = "noLevel";
-            }else{
-                level = comboLevel.getValue();
-            }
-
-            vboxBestUserByHealth.setSpacing(15);
-            List<Document> listDoc = userService.getTophealthyUsers(level);
-            if(listDoc.size() == 0){
-                HBox hbox = new HBox();
-                Text noResult = new Text();
-                noResult.setText("Not enough data.");
-                hbox.getChildren().add(noResult);
-                vboxBestUserByHealth.getChildren().add(hbox);
-                return;
-            }
-            for(Integer i=0; i<listDoc.size(); i++){
-                HBox hbox = new HBox(15);
-                Text name = new Text();
-                Text number = new Text();
-                Text like = new Text();
-                Integer rank = i;
-                rank = rank +1;
-                number.setText(rank.toString() + ") ");
-                name.setText(listDoc.get(i).getString("_id"));
-                like.setText("Has " + listDoc.get(i).getInteger("count").toString() + " healthy recipes.");
-                hbox.getChildren().addAll(number, name, like);
-                vboxBestUserByHealth.getChildren().addAll(hbox, new Separator(Orientation.HORIZONTAL));
-            }
-        });
 
 
-        goBtnPopularIngredient.setOnAction(event -> {
-            vboxPopularIngredients.getChildren().clear();
-            int minutes;
-
-            if(comboMinutes.getSelectionModel().isEmpty()){
-                minutes = -1;
-            }else{
-                minutes = Integer.parseInt(comboMinutes.getValue());
-            }
-
-            String nutrients = "noNutrient";
-            if(checkFat.isSelected()){
-                nutrients = "Fat";
-            }else if(checkCalories.isSelected()){
-                nutrients = "Calories";
-            }else if(checkProtein.isSelected()){
-                nutrients = "Protein";
-            }
-            vboxPopularIngredients.setSpacing(15);
-            List<Document> listDoc = recipeService.getPopularIngredient(nutrients, minutes);
-            if(listDoc.size() == 0){
-                HBox hbox = new HBox();
-                Text noResult = new Text();
-                noResult.setText("Not enough data.");
-                hbox.getChildren().add(noResult);
-                vboxPopularIngredients.getChildren().add(hbox);
-                return;
-            }
-            for(Integer i=0; i<listDoc.size(); i++){
-                HBox hbox = new HBox(15);
-                Text name = new Text();
-                Text number = new Text();
-                Text like = new Text();
-                Integer rank = i;
-                rank = rank +1;
-                number.setText(rank.toString() + ") ");
-                name.setText(listDoc.get(i).getString("_id"));
-                like.setText("in " + listDoc.get(i).getInteger("count").toString()+ " recipes.");
-                hbox.getChildren().addAll(number, name, like);
-                vboxPopularIngredients.getChildren().addAll(hbox, new Separator(Orientation.HORIZONTAL));
-            }
-        });
-
-
-        //handle the clear buttons and all the checkboxes
-        btnClearUserByLike.setOnAction(event -> {
-            textFieldBan.setText("");
-            comboNation.setValue("");
-            comboAge.setValue("");
-            comboCategory.setValue("");
-        });
-
-        btnClearUserHealth.setOnAction(event -> {
-            comboLevel.setValue("");
-            comboMinutes.setValue("");
-            checkFat.setSelected(false);
-            checkProtein.setSelected(false);
-            checkCalories.setSelected(false);
-        });
 
         checkRecipes.setSelected(true);
         checkRecipes1.setSelected(true);
 
         checkRecipes.setOnAction((event) ->{
-            comboCategory.setItems(observableListRecipe);
+            comboIngr.setItems(observableListRecipe);
             checkRecipes.setSelected(true);
             checkDrinks.setSelected(false);
         });
 
         checkDrinks.setOnAction((event) ->{
-            comboCategory.setItems(observableListDrink);
+            comboIngr.setItems(observableListDrink);
             checkDrinks.setSelected(true);
             checkRecipes.setSelected(false);
         });
@@ -372,25 +222,7 @@ public class AdminPageController extends JSONAdder implements Initializable {
             checkRecipes1.setSelected(false);
         });
 
-        checkFat.setOnAction((event) ->{
-            checkFat.setSelected(true);
-            checkProtein.setSelected(false);
-            checkCalories.setSelected(false);
-        });
 
-        checkProtein.setOnAction((event) ->{
-
-            checkFat.setSelected(false);
-            checkProtein.setSelected(true);
-            checkCalories.setSelected(false);
-        });
-
-        checkCalories.setOnAction((event) ->{
-
-            checkFat.setSelected(false);
-            checkProtein.setSelected(false);
-            checkCalories.setSelected(true);
-        });
 
         //defining the event for ban button
         BanButton.setOnAction(event -> {

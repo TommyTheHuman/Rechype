@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
@@ -21,93 +22,56 @@
    </children>
    <AnchorPane layoutY="58.0" prefHeight="1188.0" prefWidth="1000.0">
       <children>
-         <ScrollPane hbarPolicy="NEVER" layoutX="4.0" layoutY="4.0" prefHeight="634.0" prefWidth="993.0" vbarPolicy="ALWAYS">
+         <ScrollPane hbarPolicy="NEVER" layoutX="4.0" layoutY="4.0" prefHeight="635.0" prefWidth="993.0" vbarPolicy="ALWAYS">
             <content>
                <VBox prefHeight="630.0" prefWidth="992.0">
                   <children>
                      <AnchorPane minHeight="-Infinity" prefHeight="1980.0" prefWidth="992.0">
                         <children>
-                           <ScrollPane layoutX="35.0" layoutY="141.0" prefHeight="463.0" prefWidth="387.0">
+                           <ScrollPane layoutX="48.0" layoutY="167.0" prefHeight="427.0" prefWidth="387.0">
                               <content>
-                                 <VBox fx:id="vboxBestUserByLike" prefWidth="385.0" />
+                                 <VBox fx:id="vboxMostUsedIngr" prefWidth="385.0" />
                               </content>
                            </ScrollPane>
-                           <Text layoutX="80.0" layoutY="92.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Choose age" />
-                           <ComboBox fx:id="comboNation" layoutX="187.0" layoutY="100.0" prefWidth="150.0" />
-                           <Text layoutX="238.0" layoutY="92.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Nation" />
-                           <ScrollPane layoutX="555.0" layoutY="143.0" prefHeight="461.0" prefWidth="387.0">
-                              <content>
-                                 <VBox fx:id="vboxBestUserByLikeCat" prefWidth="385.0" />
-                              </content>
-                           </ScrollPane>
-                           <Text layoutX="311.0" layoutY="47.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Best User by like  in">
+                           <Text layoutX="31.0" layoutY="112.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Most used ingredients in">
                               <font>
                                  <Font size="33.0" />
                               </font>
                            </Text>
-                           <ComboBox fx:id="comboCategory" layoutX="660.0" layoutY="100.0" prefWidth="150.0" />
-                           <Text layoutX="680.0" layoutY="92.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Choose category" />
-                           <Button fx:id="goBtnBestUserByLikeAgeCountry" layoutX="347.0" layoutY="100.0" mnemonicParsing="false" text="Go" />
-                           <Button fx:id="goBtnBestUserByLike" layoutX="833.0" layoutY="100.0" mnemonicParsing="false" text="Go" />
-                           <ComboBox fx:id="comboAge" layoutX="38.0" layoutY="100.0" prefWidth="150.0" />
-                           <ScrollPane layoutX="62.0" layoutY="756.0" prefHeight="476.0" prefWidth="387.0">
-                              <content>
-                                 <VBox fx:id="vboxBestUserByHealth" prefWidth="385.0" />
-                              </content>
-                           </ScrollPane>
-                           <Text layoutX="61.0" layoutY="664.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Best User by healthy recipes">
+                           <Button fx:id="goBtnMostUsedIngr" layoutX="479.0" layoutY="85.0" mnemonicParsing="false" text="Go" />
+                           <Text layoutX="547.0" layoutY="108.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Recipe price distribution">
                               <font>
                                  <Font size="33.0" />
                               </font>
                            </Text>
-                           <Text layoutX="68.0" layoutY="692.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Choose user level" />
-                           <ComboBox fx:id="comboLevel" layoutX="61.0" layoutY="700.0" prefWidth="150.0" />
-                           <Button fx:id="goBtnBestUserByHealth" layoutX="245.0" layoutY="700.0" mnemonicParsing="false" text="Go" />
-                           <ScrollPane layoutX="555.0" layoutY="756.0" prefHeight="476.0" prefWidth="387.0">
-                              <content>
-                                 <VBox fx:id="vboxPopularIngredients" prefWidth="385.0" />
-                              </content>
-                           </ScrollPane>
-                           <Text layoutX="555.0" layoutY="664.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Popular ingredient">
-                              <font>
-                                 <Font size="33.0" />
-                              </font>
-                           </Text>
-                           <Text layoutX="555.0" layoutY="690.0" strokeType="OUTSIDE" strokeWidth="0.0" text="In recipe ready in minutes (max):" />
-                           <ComboBox fx:id="comboMinutes" layoutX="555.0" layoutY="698.0" prefWidth="150.0" />
-                           <Button fx:id="goBtnPopularIngredient" layoutX="925.0" layoutY="699.0" mnemonicParsing="false" text="Go" />
-                           <CheckBox fx:id="checkCalories" layoutX="714.0" layoutY="677.0" mnemonicParsing="false" text="Low Calories (&lt;250 kcal per 100g)" />
-                           <CheckBox fx:id="checkProtein" layoutX="714.0" layoutY="703.0" mnemonicParsing="false" text="High Protein (&gt;15 g per 100g)" />
-                           <CheckBox fx:id="checkFat" layoutX="714.0" layoutY="731.0" mnemonicParsing="false" text="Low Fat (&lt;15 g per 100g)" />
-                           <ScrollPane layoutX="61.0" layoutY="1439.0" prefHeight="476.0" prefWidth="387.0">
+                           <Button fx:id="goBtnDistr" layoutX="901.0" layoutY="84.0" mnemonicParsing="false" text="Go" />
+                           <ScrollPane layoutX="297.0" layoutY="752.0" prefHeight="476.0" prefWidth="387.0">
                               <content>
                                  <VBox fx:id="vboxMostSavedRecipes" prefWidth="385.0" />
                               </content>
                            </ScrollPane>
-                           <Text layoutX="109.0" layoutY="1373.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Most Saved Recipes in">
+                           <Text layoutX="281.0" layoutY="696.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Most Saved Recipes in">
                               <font>
                                  <Font size="33.0" />
                               </font>
                            </Text>
-                           <Button fx:id="goBtnMostSavedRecipes" layoutX="538.0" layoutY="1349.0" mnemonicParsing="false" text="Go" />
-                           <Button fx:id="btnClearUserByLike" layoutX="445.0" layoutY="101.0" mnemonicParsing="false" text="Clear fields" />
-                           <Button fx:id="btnClearUserHealth" layoutX="400.0" layoutY="700.0" mnemonicParsing="false" text="Clear fields" />
-                           <CheckBox fx:id="checkDrinks" layoutX="591.0" layoutY="14.0" mnemonicParsing="false" text="Drinks">
+                           <Button fx:id="goBtnMostSavedRecipes" layoutX="710.0" layoutY="672.0" mnemonicParsing="false" text="Go" />
+                           <CheckBox fx:id="checkDrinks" layoutX="392.0" layoutY="68.0" mnemonicParsing="false" text="Drinks">
                               <font>
                                  <Font size="15.0" />
                               </font>
                            </CheckBox>
-                           <CheckBox fx:id="checkRecipes" layoutX="591.0" layoutY="48.0" mnemonicParsing="false" text="Recipes">
+                           <CheckBox fx:id="checkRecipes" layoutX="392.0" layoutY="100.0" mnemonicParsing="false" text="Recipes">
                               <font>
                                  <Font size="15.0" />
                               </font>
                            </CheckBox>
-                           <CheckBox fx:id="checkDrinks1" layoutX="440.0" layoutY="1338.0" mnemonicParsing="false" text="Drinks">
+                           <CheckBox fx:id="checkDrinks1" layoutX="612.0" layoutY="661.0" mnemonicParsing="false" text="Drinks">
                               <font>
                                  <Font size="15.0" />
                               </font>
                            </CheckBox>
-                           <CheckBox fx:id="checkRecipes1" layoutX="440.0" layoutY="1372.0" mnemonicParsing="false" text="Recipes">
+                           <CheckBox fx:id="checkRecipes1" layoutX="612.0" layoutY="695.0" mnemonicParsing="false" text="Recipes">
                               <font>
                                  <Font size="15.0" />
                               </font>
@@ -115,6 +79,9 @@
                            <TextField fx:id="textFieldBan" layoutX="80.0" layoutY="23.0" />
                            <Button fx:id="BanButton" layoutX="44.0" layoutY="23.0" mnemonicParsing="false" text="ban" />
                            <Label fx:id="labelBanned" layoutX="83.0" layoutY="50.0" prefHeight="17.0" prefWidth="130.0" />
+                           <PieChart fx:id="distributionPie" layoutX="520.0" layoutY="146.0" prefHeight="372.0" prefWidth="458.0" />
+                           <ComboBox fx:id="comboIngr" layoutX="37.0" layoutY="121.0" prefWidth="150.0" />
+                           <Label fx:id="errLabel" layoutX="215.0" layoutY="125.0" text="Select the Category" textFill="RED" />
                         </children>
                      </AnchorPane>
                   </children>
