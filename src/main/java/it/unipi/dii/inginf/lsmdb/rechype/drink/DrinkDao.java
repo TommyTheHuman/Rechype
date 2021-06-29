@@ -95,9 +95,9 @@ class DrinkDao {
                     tx.run(
                             "MATCH (u:User) WHERE u.username=$owner "+
                             "CREATE (d:Drink { id:$id, name: $name} ) "+
-                            "CREATE (u)-[rel:OWNS {since:date($date)}]->(d) ",
+                            "CREATE (u)-[rel:OWNS]->(d) ",
                             parameters("id", Neo4jId, "name",  doc.getString("name"),
-                            "date", java.time.LocalDate.now().toString(), "owner", doc.getString("author")));
+                            "owner", doc.getString("author")));
                     return null;
                 });
                 return "DrinkAdded";

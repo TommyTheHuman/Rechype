@@ -94,9 +94,9 @@ public class RecipeDao {
                     tx.run(
                             "MATCH (u:User) WHERE u.username=$owner " +
                             "CREATE (ee:Recipe { id:$id, name: $name } ) " +
-                            "CREATE (u)-[rel:OWNS {since:date($date)}]->(ee) ",
+                            "CREATE (u)-[rel:OWNS]->(ee) ",
                             parameters("id", Neo4jId,"name", doc.getString("name"),
-                            "owner", doc.getString("author"), "date", java.time.LocalDate.now().toString()));
+                            "owner", doc.getString("author")));
 
                     return null;
                 });

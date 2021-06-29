@@ -616,8 +616,8 @@ class UserDao {
     }
 
     /***
-     * retrieving the users followed by the user's followed and returning the best ones (users with the highest number
-     * of followers)
+     * retrieving the users followed by the user's followed and returning
+     * the best ones (users with the highest number of followers)
      * @param username
      * @return
      */
@@ -652,7 +652,7 @@ class UserDao {
 
     /***
      * GLOBAL SUGGESTION
-     * retrieving "best users": users that have the highest number of followers
+     * retrieving "best users": users that have gained the highest number of followers in the week
      * @return
      */
     public List<Document> getBestUsers() {
@@ -661,8 +661,10 @@ class UserDao {
             session.readTransaction((TransactionWork<Void>) tx -> {
                 Result res = tx.run(
                         "MATCH (:User)-[f:FOLLOWS]->(u:User) " +
+                              "WHERE date($date)-duration({days:7})<f.since<=date($date)+duration({days:7}) " +
                               "return u AS User, count(f) AS TotalFollows " +
-                              "ORDER BY TotalFollows Desc, User.username ASC LIMIT 10");
+                              "ORDER BY TotalFollows Desc, User.username ASC LIMIT 10",
+                        parameters("date", java.time.LocalDate.now().toString()));
                 while (res.hasNext()) {
                     Record rec = res.next();
                     Value user = rec.get("User");
