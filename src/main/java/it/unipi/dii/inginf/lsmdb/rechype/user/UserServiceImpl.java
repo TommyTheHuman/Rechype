@@ -70,5 +70,6 @@ class UserServiceImpl implements UserService {
     public List<Document> getSuggestedUsers() { return userDao.getSuggestedUsers(getLoggedUser().getUsername()); }
     public List<Document> getBestUsers() { return userDao.getBestUsers(); }
     public List<Document> getMostSavedRecipes(String category) {return userDao.mostSavedRecipes(category);}
+    public Boolean changeCountry(String country, String name) { return userDao.changeCountryToUser(country, name);}
 
 }

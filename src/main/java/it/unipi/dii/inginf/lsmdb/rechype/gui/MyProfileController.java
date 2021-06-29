@@ -9,10 +9,12 @@ import it.unipi.dii.inginf.lsmdb.rechype.profile.ProfileServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;
@@ -35,6 +37,10 @@ public class MyProfileController extends JSONAdder implements Initializable {
     @FXML private VBox vboxFridge;
     @FXML private TabPane tabPane;
 
+    @FXML private ComboBox changeCountry;
+    @FXML private Button changeCountryBtn;
+
+
     private ProfileService profileService;
 
     private UserService userService;
@@ -48,6 +54,17 @@ public class MyProfileController extends JSONAdder implements Initializable {
         vboxMeals.setSpacing(30);
         vboxFridge.setSpacing(20);
         Profile profile = profileService.getProfile(userService.getLoggedUser().getUsername());
+
+        ObservableList<String> nations = LandingPageController.getNations();
+        changeCountry.setItems(nations);
+
+        changeCountryBtn.setOnAction(event -> {
+            if (!changeCountry.getSelectionModel().isEmpty()) {
+                userService.changeCountry(changeCountry.getValue().toString(), profile.getUsername());
+            }
+        });
+
+
         //populate the meals section
         for(int i = 0; i < profile.getMeals().length(); i++){
             VBox vboxMeal = new VBox(5);

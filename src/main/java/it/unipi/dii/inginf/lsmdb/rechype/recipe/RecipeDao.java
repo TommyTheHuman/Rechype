@@ -1,6 +1,9 @@
 package it.unipi.dii.inginf.lsmdb.rechype.recipe;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.MongoException;
+import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
@@ -409,15 +412,49 @@ public class RecipeDao {
     }
 
 
-    /***
-     * Analytic. Get a rank of user based on the likes on their recipes. We can filter for category
-     * @param category
-     * @return
-     */
-    public List<Document> getRankingUserByLikeAndCategory(String category){
+    public List<Document> recipeDistributionByPrice() {
         MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
+
+        List<Bson> stages = new ArrayList<>();
+
+        Document priceSwitch = Document.parse("{\n" +
+                "            $switch: {\n" +
+                "              branches: [\n" +
+                "                  \t{ case: {$and:[{ $gte: [ \"$pricePerServing\", 0 ] }, { $lte: [ \"$pricePerServing\", 500 ] }]}, then: 1 },\n" +
+                "                  \t{ case: {$and:[{ $gt: [ \"$pricePerServing\", 500 ] }, { $lte: [ \"$pricePerServing\", 1000 ] }]}, then: 2 },\n" +
+                "\t\t        { case: {$and:[{ $gt: [ \"$pricePerServing\", 1000 ] }, { $lte: [ \"$pricePerServing\", 1500 ] }]}, then: 3 },\n" +
+                "\t                { case: {$and:[{ $gt: [ \"$pricePerServing\", 1500 ] }]}, then: 4 }\n" +
+                "              ]\n" +
+                "            }\n" +
+                "          }");
+
+        stages.add(project(fields(
+                excludeId(),
+                computed("priceRange", priceSwitch)
+                )
+        ));
+
+        stages.add(group("$priceRange", sum("count", 1)));
+
+        List<Document> results = null;
+        try{
+            results = collRecipe.aggregate(stages).into(new ArrayList<>());
+            //results = collRecipe.aggregate(stages).into(new ArrayList<>());
+        } catch (MongoException ex){
+            ex.printStackTrace();
+            LogManager.getLogger("RecipeDao.class").error("MongoDB: fail analytics: Ranking user by level and healthScore");
+        }
+
+        return results;
+    }
+
+
+    public List<Document> mostUsedIngrByCategory(String category){
+        MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
+
+        List<Bson> stages = new ArrayList<>();
         List<Bson> filters = new ArrayList<>();
-        filters.add(nin("author", "Spoonacular", "PunkAPI", "CocktailDB"));
+
         if(category.equals("vegan")){
             filters.add(eq("vegan", true));
         }
@@ -431,121 +468,20 @@ public class RecipeDao {
             filters.add(eq("glutenFree", true));
         }
 
-        Bson match = match(and(filters));
-        Bson group = group("$author", sum("likes", "$likes"));
-        Bson sort = sort(descending("likes"));
-        Bson project = project(fields(excludeId(), computed("author", "$_id"), include("likes")));
-        Bson limit = limit(20);
-
-        List<Document> results = null;
-        try{
-            results = collRecipe.aggregate(Arrays.asList(match, group, sort, limit, project)).into(new ArrayList<>());
-        } catch (MongoException ex){
-            LogManager.getLogger("RecipeDao.class").error("MongoDB: fail analytics: Ranking user by like and category");
-        }
-
-        return results;
-    }
-
-    /***
-     * Analytic. Get a rank of user based on the likes on their recipes. We can filter for Age range and/or country
-     * @param minAge
-     * @param maxAge
-     * @param country
-     * @return
-     */
-    public List<Document> getUserRankingByLikeNumber(int minAge, int maxAge, String country) {
-        MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
-        List<Bson> stages = new ArrayList<>();
-        List<Bson> filters = new ArrayList<>();
-
-        stages.add(match(nin("author", "Spoonacular", "PunkAPI", "CocktailDB")));
-        //LookUp stage --> attaches a user doc to a recipe doc
-        stages.add(lookup("users", "author", "_id", "user"));
-
-        if(minAge != -1){
-            filters.add(lte("user.age", maxAge));
-            filters.add(gte("user.age", minAge));
-        }
-        if(!country.equals("noCountry")) {
-            filters.add(eq("user.country", country));
-        }
-        if(filters.size() > 0) {
-            // MATCH on Age range and/or Country
-            Bson match = match(and(filters));
-            stages.add(match);
-        }
-
-        //unwind stage
-        stages.add(unwind("$user"));
-
-        //group stage
-        stages.add(group("$user._id", sum("likes", "$likes")));
-
-        stages.add(sort(descending("likes")));
-
-        stages.add(limit(20));
-
-        List<Document> results = null;
-        try{
-            results = collRecipe.aggregate(stages).into(new ArrayList<>());
-        } catch (MongoException ex){
-            ex.printStackTrace();
-            LogManager.getLogger("RecipeDao.class").error("MongoDB: fail analytics: Ranking user by like's number");
-        }
-
-        return results;
-    }
-
-    /***
-     * Analytic. Get a rank of ingredients based on the number of times they are used in recipes. We can set a max preparation time
-     * or we can set a nutrient with a determined characteristic to rank ingredients only on the matched recipes.
-     * @param nutrient
-     * @param minutes
-     * @return
-     */
-    public List<Document> getIngredientRanking(String nutrient, int minutes) {
-        MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
-        List<Bson> stages = new ArrayList<>();
-        List<Bson> filters = new ArrayList<>();
-
-        if(minutes != -1){
-            stages.add(match(lte("readyInMinutes", minutes)));
-        }
+        stages.add(match(and(filters)));
         stages.add(unwind("$ingredients"));
-
-        if(!nutrient.equals("noNutrient")) {
-
-            stages.add(unwind("$nutrients"));
-
-            filters.add(eq("nutrients.name", nutrient));
-            int num;
-            if(nutrient.equals("Fat")){
-                num = 15;
-                filters.add(lte("nutrients.amount", num));
-            }
-            if(nutrient.equals("Calories")){
-                num = 250;
-                filters.add(lte("nutrients.amount", num));
-            }
-            if(nutrient.equals("Protein")){
-                num = 100;
-                filters.add(gte("nutrients.amount", num));
-            }
-            stages.add(match(and(filters)));
-        }
-
         stages.add(group("$ingredients.ingredient", sum("count", 1)));
         stages.add(sort(descending("count")));
-        stages.add(limit(60));
+        stages.add(limit(10));
         List<Document> results = null;
         try{
             results = collRecipe.aggregate(stages).into(new ArrayList<>());
         } catch (MongoException ex){
             ex.printStackTrace();
-            LogManager.getLogger("RecipeDao.class").error("MongoDB: fail analytics: Ranking user by level and healthScore");
+            LogManager.getLogger("RecipeDao.class").error("MongoDB: fail analytics: Most used ingredient");
         }
 
         return results;
     }
+
 }

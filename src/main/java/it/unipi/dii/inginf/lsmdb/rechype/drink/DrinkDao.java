@@ -389,16 +389,12 @@ class DrinkDao {
         return drinks;
     }
 
-    /***
-     * This function returns a list of user ranked by like number received in their drink. We can filter by drink category.
-     * @param category represent the category by which we want to filter.
-     * @return list of document
-     */
+    public List<Document> mostUsedIngrByCategory(String category){
+        MongoCollection<Document> collDrink = MongoDriver.getObject().getCollection(MongoDriver.Collections.DRINKS);
 
-    public List<Document> getRankingUserAndCategory(String category){
-        MongoCollection<Document> collDrinks = MongoDriver.getObject().getCollection(MongoDriver.Collections.DRINKS);
+        List<Bson> stages = new ArrayList<>();
         List<Bson> filters = new ArrayList<>();
-        filters.add(nin("author", "Spoonacular", "PunkAPI", "CocktailDB"));
+
         if(category.equals("cocktail")){
             filters.add(eq("tag", "cocktail"));
         }
@@ -409,64 +405,17 @@ class DrinkDao {
             filters.add(eq("tag", "other"));
         }
 
-        Bson match = match(and(filters));
-        Bson group = group("$author", sum("likes", "$likes"));
-        Bson sort = sort(descending("likes"));
-        Bson project = project(fields(excludeId(), computed("author", "$_id"), include("likes")));
-        Bson limit = limit(20);
-
+        stages.add(match(and(filters)));
+        stages.add(unwind("$ingredients"));
+        stages.add(group("$ingredients.ingredient", sum("count", 1)));
+        stages.add(sort(descending("count")));
+        stages.add(limit(10));
         List<Document> results = null;
         try{
-            results = collDrinks.aggregate(Arrays.asList(match, group, sort, limit, project)).into(new ArrayList<>());
-        } catch (MongoException ex){
-            LogManager.getLogger("DrinkDao.class").error("MongoDB: fail analytics: Ranking user by like and category");
-        }
-
-        return results;
-    }
-
-    /***
-     * This function returns a list of user ranked by like number received in their drink. We can filter by age range and/or country
-     * @param minAge
-     * @param maxAge
-     * @param country
-     * @return
-     */
-    public List<Document> getRankingUserAndNation(int minAge, int maxAge, String country){
-        MongoCollection<Document> collDrinks = MongoDriver.getObject().getCollection(MongoDriver.Collections.DRINKS);
-        List<Bson> stages = new ArrayList<>();
-        List<Bson> filters = new ArrayList<>();
-
-        //LookUp stage --> attaches a user doc to a recipe doc
-        stages.add(lookup("users", "author", "_id", "user"));
-
-        if(minAge != -1){
-            filters.add(lte("user.age", maxAge));
-            filters.add(gte("user.age", minAge));
-        }
-        if(!country.equals("noCountry")) {
-            filters.add(eq("user.country", country));
-        }
-        if(filters.size() > 0) {
-            // MATCH on Age range and/or Country
-            Bson match = match(and(filters));
-            stages.add(match);
-        }
-
-        //unwind stage
-        stages.add(unwind("$user"));
-
-        //group stage
-        stages.add(group("$user._id", sum("likes", "$likes")));
-
-        stages.add(sort(descending("likes")));
-
-        List<Document> results = null;
-        try{
-            results = collDrinks.aggregate(stages).into(new ArrayList<>());
+            results = collDrink.aggregate(stages).into(new ArrayList<>());
         } catch (MongoException ex){
             ex.printStackTrace();
-            LogManager.getLogger("DrinkDao.class").error("MongoDB: fail analytics: Ranking user by like's number");
+            LogManager.getLogger("DrinkDao.class").error("MongoDB: fail analytics: Most used ingredient");
         }
 
         return results;
