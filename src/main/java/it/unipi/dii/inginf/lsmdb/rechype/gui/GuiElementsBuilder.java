@@ -81,6 +81,58 @@ public class GuiElementsBuilder {
         return block;
     }
 
+    public HBox createSimpleBlock(Text text, String id){
+        HBox block = new HBox();
+
+        block.getChildren().addAll(text);
+        block.setStyle("-fx-padding: 10px; -fx-cursor: hand;");
+
+        block.setAlignment(Pos.CENTER_LEFT);
+        block.setSpacing(10.0);
+
+        block.setOnMouseClicked((MouseEvent e) ->{
+            JSONObject par = new JSONObject().put("_id", id);
+            Main.changeScene("UserProfile", par);
+        });
+        return block;
+    }
+
+    public HBox createSimpleUserBlock(User user){
+       HBox block=createSimpleBlock(new Text(user.getUsername()), user.getUsername());
+       ImageView countryNode;
+       InputStream inputFlag;
+       inputFlag = GuiElementsBuilder.class.getResourceAsStream("/images/flags/" + user.getCountry() + ".png");
+       if (inputFlag == null) {
+            inputFlag = GuiElementsBuilder.class.getResourceAsStream("/images/flags/Default.png");
+       }
+       countryNode = new ImageView(new Image(inputFlag));
+       block.getChildren().add(countryNode);
+
+       block.setOnMouseClicked((MouseEvent e) ->{
+            JSONObject par = new JSONObject().put("_id", user.getUsername());
+            Main.changeScene("UserProfile", par);
+       });
+       return block;
+    }
+
+    public HBox createSimpleRecipeBlock(Recipe recipe){
+        HBox block=createSimpleBlock(new Text(recipe.getName()), recipe.getId());
+        block.setOnMouseClicked((MouseEvent e) ->{
+            JSONObject par = new JSONObject().put("_id", recipe.getId());
+            Main.changeScene("RecipePage", par);
+        });
+        return block;
+    }
+
+    public HBox createSimpleDrinkBlock(Drink drink){
+        HBox block = createSimpleBlock(new Text(drink.getName()), drink.getId());
+        block.setOnMouseClicked((MouseEvent e) ->{
+            JSONObject par = new JSONObject().put("_id", drink.getId());
+            Main.changeScene("DrinkPage", par);
+        });
+        return block;
+    }
+
     //creating an ingredient block for a selected search vbox
     public HBox createIngredientBlock(Ingredient ingredient, VBox selectedIngredientVBox){
 

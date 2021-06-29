@@ -44,6 +44,7 @@ class UserDao {
      * @return
      */
     public User checkLogin(String username, String password){
+
         try(MongoCursor<Document> cursor =
         MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS).find(eq("_id", username)).iterator()){
             if(cursor.hasNext()){
@@ -56,7 +57,6 @@ class UserDao {
                     int level = Integer.parseInt(doc.get("level").toString());
 
                     User userLogged = new User(user, country, age, level);
-
                     return userLogged;
                 }
             }
@@ -132,8 +132,8 @@ class UserDao {
             //try Neo4j
             try (Session session = Neo4jDriver.getObject().getDriver().session()) { //try to add
                 session.writeTransaction((TransactionWork<Void>) tx -> {
-                    tx.run("CREATE (ee:User { username: $username, country: $country, level: $level , age:$age})",
-                    parameters("username", username, "country", country, "level", 0, "age", age));
+                    tx.run("CREATE (ee:User { username: $username, country: $country })",
+                    parameters("username", username, "country", country));
                     return null;
                 });
                 Json.put("response", "RegOk");
@@ -289,20 +289,6 @@ class UserDao {
             return "Abort";
         }
 
-        //if the recipe is created by the user the level on neo4j entity is updated
-        if(user.getUsername().equals(recipe.getString("author"))){
-            try (Session session = Neo4jDriver.getObject().getDriver().session()) { //try to add
-                session.writeTransaction((TransactionWork<Void>) tx -> {
-                    tx.run(
-                            "MATCH (u:User) WHERE u.username=$username " +
-                                "SET u.level=u.level+1 ",
-                    parameters("username", user.getUsername()));
-                    return null;
-                });
-            }catch(Neo4jException ne){
-                LogManager.getLogger("UserDao.class").error("Neo4j[PARSE]: user level increment failed"+user.getUsername());
-            }
-        }
         return "RecipeOk";
     }
 
@@ -569,7 +555,7 @@ class UserDao {
                         "MATCH (u:User {username: $username })-[rel:FOLLOWS]->(u2:User) " +
                             "MATCH (u2)-[relLikes:LIKES]->(r:Recipe) " +
                             "WHERE date($date)-duration({days:7})<relLikes.since<=date($date)+duration({days:7}) " +
-                            "AND r.author<>$username " +
+                            "AND NOT (r)<-[:OWNS]-(u) "+
                             "WITH r AS RecipeNode, count(relLikes) AS likesNumber "+
                             "RETURN RecipeNode, sum(likesNumber) as totalLikes "+
                             "ORDER BY totalLikes DESC, RecipeNode.name ASC LIMIT 10",
@@ -579,15 +565,8 @@ class UserDao {
                     Record rec=res.next();
                     Value recipe=rec.get("RecipeNode");
                     Document doc=new Document();
-                    doc.put("author", recipe.get("author").asString());
-                    doc.put("dairyFree", recipe.get("dairyFree").asBoolean());
-                    doc.put("glutenFree", recipe.get("glutenFree").asBoolean());
-                    doc.put("vegan", recipe.get("vegan").asBoolean());
-                    doc.put("vegetarian", recipe.get("vegetarian").asBoolean());
                     doc.put("_id", new ObjectId(recipe.get("id").asString()).toString());
-                    doc.put("image", recipe.get("imageUrl").asString());
                     doc.put("name", recipe.get("name").asString());
-                    doc.put("pricePerServing", recipe.get("pricePerServing").asDouble());
                     recipes.add(doc);
                 }
                 return null;
@@ -613,7 +592,7 @@ class UserDao {
                         "MATCH (u:User {username: $username })-[rel:FOLLOWS]->(u2:User) " +
                                 "MATCH (u2)-[relLikes:LIKES]->(d:Drink) " +
                                 "WHERE date($date)-duration({days:7})<relLikes.since<=date($date)+duration({days:7}) " +
-                                "AND d.author<>$username " +
+                                "AND NOT (d)<-[:OWNS]-(u) " +
                                 "WITH d AS DrinkNode, count(relLikes) AS likesNumber "+
                                 "RETURN DrinkNode, sum(likesNumber) as totalLikes "+
                                 "ORDER BY totalLikes DESC, DrinkNode.name ASC LIMIT 10",
@@ -622,11 +601,8 @@ class UserDao {
                     //building each recipe's document
                     Value drink=res.next().get("DrinkNode");
                     Document doc=new Document();
-                    doc.put("author", drink.get("author").asString());
                     doc.put("_id", new ObjectId(drink.get("id").asString()).toString());
-                    doc.put("image", drink.get("imageUrl").asString());
                     doc.put("name", drink.get("name").asString());
-                    doc.put("tag", drink.get("tag").asString());
                     drinks.add(doc);
                 }
                 return null;
@@ -662,9 +638,7 @@ class UserDao {
                     Value user = rec.get("newUser");
                     Document doc = new Document();
                     doc.put("country", user.get("country").asString());
-                    doc.put("level", user.get("level").asInt());
                     doc.put("_id", user.get("username").asString());
-                    doc.put("age", user.get("age").asInt());
                     users.add(doc);
                 }
                 return null;
@@ -678,36 +652,23 @@ class UserDao {
 
     /***
      * GLOBAL SUGGESTION
-     * retrieving "best users": the user's that have created the highest number of recipes/drink in the week and that have
-     * received the highest number of likes on those recipes in the week. The user MUST create at least one recipe and one
-     * drink (globally, not in the week) to appear in the "best users".
+     * retrieving "best users": users that have the highest number of followers
      * @return
      */
     public List<Document> getBestUsers() {
-        String todayDate = java.time.LocalDate.now().toString();
         List<Document> users = new ArrayList<>();
         try (Session session = Neo4jDriver.getObject().getDriver().session()) {
             session.readTransaction((TransactionWork<Void>) tx -> {
                 Result res = tx.run(
-                        "MATCH (u:User)-[:OWNS]->(r:Recipe) " + //user must have at least one recipe
-                                "OPTIONAL MATCH (:User)-[owns1:OWNS]->(r)<-[likes1:LIKES]-(:User) "+ //optional matching on last week's recipes
-                                "WHERE date($date)-duration({days:7})<owns1.since<=date($date)+duration({days:7}) " +
-                                "WITH u, count(likes1) as RecipesLikes " + //counting likes of last week's recipes
-                                "MATCH (u)-[:OWNS]->(d:Drink) " + //same
-                                "OPTIONAL MATCH (:User)-[owns2:OWNS]->(d)<-[likes2:LIKES]-(:User) " +
-                                "WHERE date($date)-duration({days:7})<owns2.since<=date($date)+duration({days:7}) " +
-                                "WITH u, count(likes2)+RecipesLikes as totalLikes " + //counting total likes of recipes and drinks for a user
-                                "return u AS User, totalLikes " +
-                                "ORDER BY totalLikes DESC, User.username ASC LIMIT 10",
-                        parameters("date", todayDate));
+                        "MATCH (:User)-[f:FOLLOWS]->(u:User) " +
+                              "return u AS User, count(f) AS TotalFollows " +
+                              "ORDER BY TotalFollows Desc, User.username ASC LIMIT 10");
                 while (res.hasNext()) {
                     Record rec = res.next();
                     Value user = rec.get("User");
                     Document doc = new Document();
                     doc.put("country", user.get("country").asString());
-                    doc.put("level", user.get("level").asInt());
                     doc.put("_id", user.get("username").asString());
-                    doc.put("age", user.get("age").asInt());
                     users.add(doc);
                 }
                 return null;

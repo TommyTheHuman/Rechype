@@ -14,7 +14,6 @@ public interface RecipeService {
     String addLike(String _id, String username);
     Document searchRecipeById(String id);
     String removeLike(String _id, String username);
-    List<Document> getBestRecipes();
     List<Document> getPriceDistribution();
     List<Document> getMostUsedIngr(String category);
 

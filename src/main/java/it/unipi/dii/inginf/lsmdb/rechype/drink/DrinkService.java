@@ -14,7 +14,6 @@ public interface DrinkService {
     String addLike(String _id, String username);
     String removeLike(String _id, String username);
     Document searchDrinkById(String _id);
-    List<Document> getBestDrinks();
     List<Document> getMostUsedIngr(String category);
 
 }

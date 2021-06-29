@@ -20,8 +20,8 @@ public class User implements Serializable {
     public User(Document doc){
         this.username = doc.get("_id").toString();
         this.country = doc.get("country").toString();
-        this.age = Integer.parseInt(doc.get("age").toString());
-        this.level = Integer.parseInt(doc.get("level").toString());
+        this.age = doc.get("age")!=null? Integer.parseInt(doc.get("age").toString()): 0;
+        this.level = doc.get("level")!=null? Integer.parseInt(doc.get("level").toString()): 0;
     }
 
     public String getUsername(){

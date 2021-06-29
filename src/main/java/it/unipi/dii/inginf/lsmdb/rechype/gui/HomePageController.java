@@ -38,25 +38,16 @@ import java.util.TimerTask;
 public class HomePageController extends JSONAdder implements Initializable {
 
     UserService userService = UserServiceFactory.create().getService();
-    RecipeService recipeService = RecipeServiceFactory.create().getService();
-    DrinkService drinkService = DrinkServiceFactory.create().getService();
-    IngredientService ingredientService = IngredientServiceFactory.create().getService();
     GuiElementsBuilder builder = new GuiElementsBuilder();
     @FXML private VBox boxSuggestedRecipes;
     @FXML private VBox boxSuggestedDrinks;
     @FXML private VBox boxSuggestedUsers;
-    @FXML private VBox boxBestRecipes;
-    @FXML private VBox boxBestDrinks;
     @FXML private VBox boxBestUsers;
-    @FXML private VBox boxBestIngredients;
     @FXML private Button reloadButton;
     private static List<Document> recipes;
     private static List<Document> drinks;
     private static List<Document> users;
-    private static List<Document> bestRecipes;
-    private static List<Document> bestDrinks;
     private static List<Document> bestUsers;
-    private static List<Document> bestIngredients;
     private static ObservableList<Node> recipesNodes = FXCollections.observableArrayList();
     private static ObservableList<Node> drinksNodes = FXCollections.observableArrayList();
     private static ObservableList<Node> usersNodes = FXCollections.observableArrayList();
@@ -83,24 +74,25 @@ public class HomePageController extends JSONAdder implements Initializable {
             boxSuggestedRecipes.getChildren().addAll(recipesNodes);
             boxSuggestedDrinks.getChildren().addAll(drinksNodes);
             boxSuggestedUsers.getChildren().addAll(usersNodes);
-            boxBestRecipes.getChildren().addAll(bestRecipesNodes);
-            boxBestDrinks.getChildren().addAll(bestDrinksNodes);
             boxBestUsers.getChildren().addAll(bestUsersNodes);
-            boxBestIngredients.getChildren().addAll(bestIngredientsNodes);
             recipesNodes = boxSuggestedRecipes.getChildren();
             drinksNodes = boxSuggestedDrinks.getChildren();
             usersNodes = boxSuggestedUsers.getChildren();
-            bestRecipesNodes = boxBestRecipes.getChildren();
-            bestDrinksNodes = boxBestDrinks.getChildren();
             bestUsersNodes = boxBestUsers.getChildren();
-            bestIngredientsNodes = boxBestIngredients.getChildren();
         }
         //load for the first time the suggestion or reloading it
         else {
             recipes = userService.getSuggestedRecipes();
             drinks = userService.getSuggestedDrinks();
             users = userService.getSuggestedUsers();
+            bestUsers = userService.getBestUsers();
 
+            //calling global suggestion functions
+            for (Document bestUser : bestUsers) {
+                boxBestUsers.getChildren().addAll(setUser(new User(bestUser)),
+                        new Separator(Orientation.HORIZONTAL));
+                bestUsersNodes = boxBestUsers.getChildren();
+            }
 
             //calling all the suggested functions
             for (Document recipe : recipes) {
@@ -119,75 +111,24 @@ public class HomePageController extends JSONAdder implements Initializable {
                 usersNodes=boxSuggestedUsers.getChildren();
             }
             userService.setLockSuggestions(true);
-
-            //those suggestion will be loaded 7sec later
-            TimerTask task = new TimerTask() {
-                @Override
-                public void run() {
-                    Platform.runLater(() -> {
-                        bestRecipes = recipeService.getBestRecipes();
-                        bestDrinks = drinkService.getBestDrinks();
-                        bestUsers = userService.getBestUsers();
-                        bestIngredients = ingredientService.getBestIngredients();
-                        for (Document bestRecipe : bestRecipes) {
-                            boxBestRecipes.getChildren().addAll(setRecipe(new Recipe(bestRecipe)),
-                                    new Separator(Orientation.HORIZONTAL));
-                            bestRecipesNodes=boxBestRecipes.getChildren();
-                        }
-                        for (Document bestDrink : bestDrinks) {
-                            boxBestDrinks.getChildren().addAll(setDrink(new Drink(bestDrink)),
-                                    new Separator(Orientation.HORIZONTAL));
-                            bestDrinksNodes=boxBestDrinks.getChildren();
-                        }
-                        for (Document bestUser : bestUsers) {
-                            boxBestUsers.getChildren().addAll(setUser(new User(bestUser)),
-                                    new Separator(Orientation.HORIZONTAL));
-                            bestUsersNodes=boxBestUsers.getChildren();
-                        }
-                        for (Document bestIngredient : bestIngredients) {
-                            boxBestIngredients.getChildren().addAll(setIngredient(new Ingredient(bestIngredient)),
-                                    new Separator(Orientation.HORIZONTAL));
-                            bestIngredientsNodes=boxBestIngredients.getChildren();
-                        }
-                    });
-                }
-            };
-            timer.schedule(task, 7000);
         }
     }
 
     //add the eventListener on the boxes
     private HBox setRecipe(Recipe recipe){
-        HBox recipeBlock=builder.createRecipeBlock(recipe);
-        recipeBlock.setOnMouseClicked((MouseEvent e) ->{
-            JSONObject par = new JSONObject().put("_id", recipe.getId());
-            Main.changeScene("RecipePage", par);
-        });
+        HBox recipeBlock=builder.createSimpleRecipeBlock(recipe);
+
         return recipeBlock;
     }
 
     private HBox setDrink(Drink drink){
-        HBox drinkBlock=builder.createDrinkBlock(drink);
-        drinkBlock.setOnMouseClicked((MouseEvent e) ->{
-            JSONObject par = new JSONObject().put("_id", drink.getId());
-            Main.changeScene("DrinkPage", par);
-        });
+        HBox drinkBlock=builder.createSimpleDrinkBlock(drink);
         return drinkBlock;
     }
 
     private HBox setUser(User user){
-        HBox userBlock=builder.createUserBlock(user);
-        userBlock.setOnMouseClicked((MouseEvent e) ->{
-            JSONObject par = new JSONObject().put("_id", user.getUsername());
-            Main.changeScene("UserProfile", par);
-        });
+        HBox userBlock=builder.createSimpleUserBlock(user);
         return userBlock;
-    }
-
-    private HBox setIngredient(Ingredient ingredient){
-        HBox ingredientBlock=builder.createSimpleIngredientBlock(
-        new JSONObject().put("ingredient", ingredient.getName()).put("image", ingredient.getImageUrl()));
-        return ingredientBlock;
     }
 
     public static void flushSuggestion(){

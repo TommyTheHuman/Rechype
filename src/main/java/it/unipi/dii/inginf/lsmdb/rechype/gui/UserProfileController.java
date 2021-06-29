@@ -14,6 +14,8 @@ import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -21,6 +23,7 @@ import javafx.scene.text.Text;
 import org.bson.Document;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -31,6 +34,9 @@ public class UserProfileController extends JSONAdder implements Initializable {
     @FXML private VBox recipeVBox;
     @FXML private Button followBtn;
     @FXML private Label errMsg;
+    @FXML private Label userAge;
+    @FXML private ImageView userCountry;
+    @FXML private ImageView userLevel;
 
     private GuiElementsBuilder builder;
 
@@ -49,7 +55,30 @@ public class UserProfileController extends JSONAdder implements Initializable {
         JSONObject fields = new JSONObject(userService.getUserById(jsonParameters.getString("_id")).toJson());
 
         userText.setText(fields.getString("_id"));
+        userAge.setText("Age: "+fields.getInt("age"));
         User user = userService.getLoggedUser();
+
+        //setting country flag
+        InputStream inputFlag;
+        inputFlag = GuiElementsBuilder.class.getResourceAsStream("/images/flags/" + user.getCountry() + ".png");
+
+        if (inputFlag == null) {
+            inputFlag = GuiElementsBuilder.class.getResourceAsStream("/images/flags/Default.png");
+        }
+        userCountry.setImage(new Image(inputFlag));
+
+        //set profile image based on level
+        InputStream inputImage = GuiElementsBuilder.class.getResourceAsStream("/images/levels/0.png");
+        if(user.getLevel()<=5){
+            inputImage = GuiElementsBuilder.class.getResourceAsStream("/images/levels/0.png");
+        }
+        else if(user.getLevel()<=10 && user.getLevel()>5){
+            inputImage = GuiElementsBuilder.class.getResourceAsStream("/images/levels/1.png");
+        }
+        else if(user.getLevel()>10){
+            inputImage = GuiElementsBuilder.class.getResourceAsStream("/images/levels/2.png");
+        }
+        userLevel.setImage(new Image(inputImage));
 
         builder = new GuiElementsBuilder();
         List<Document> recipeList = userService.getRecipes(userText.getText());
@@ -80,7 +109,6 @@ public class UserProfileController extends JSONAdder implements Initializable {
                 drinkBlock.setStyle("-fx-background-color: white");
                 recipeVBox.getChildren().addAll(drinkBlock, new Separator(Orientation.HORIZONTAL));
             }
-
         }
 
         //you can't follow yourself

@@ -93,7 +93,7 @@ public class IngredientDao {
         byte[] objToSave;
         try {
             imgStream = new URL(stringUrl).openStream();
-            objToSave = IOUtils.toByteArray(imgStream);
+            objToSave = imgStream.readAllBytes();
         }catch(IOException ie){
             return false;
         }
@@ -106,46 +106,6 @@ public class IngredientDao {
             System.exit(-1);
             return false;
         }
-    }
-
-    /***
-     * GLOBAL SUGGESTION
-     * retrieving "best ingredients": the most used ingredients in the week
-     * @return
-     */
-    public List<Document> getBestIngredients() {
-        List<Document> ingredients = new ArrayList<>();
-        String todayDate = java.time.LocalDate.now().toString();
-        try (Session session = Neo4jDriver.getObject().getDriver().session()) {
-            session.readTransaction((TransactionWork<Void>) tx -> {
-                Result res = tx.run(
-                        "MATCH (i:Ingredient) " +
-                                "OPTIONAL MATCH (:User)-[owns:OWNS]->(r:Recipe)-[con:CONTAINS]->(i) " +
-                                "WHERE date($date)-duration({days:7})<owns.since<=date($date)+duration({days:7}) " +
-                                "WITH i, count(con) as RecipesAdding " +
-                                "OPTIONAL MATCH (:User)-[owns2:OWNS]->(d:Drink)-[con2:CONTAINS]->(i) " +
-                                "WHERE date($date)-duration({days:7})<owns2.since<=date($date)+duration({days:7}) " +
-                                "WITH i, count(con2)+RecipesAdding as totalAdding " +
-                                "return i AS Ingredient, totalAdding " +
-                                "ORDER BY totalAdding DESC, i.id ASC LIMIT 10",
-                        parameters("date", todayDate));
-                while (res.hasNext()) {
-                    Record rec = res.next();
-                    Value ingredient = rec.get("Ingredient");
-                    Document doc = new Document();
-                    doc.put("image", ingredient.get("imageUrl").asString());
-                    doc.put("_id", ingredient.get("id").asString());
-                    ingredients.add(doc);
-                }
-                return null;
-            });
-
-        }catch(Neo4jException ne){
-            ne.printStackTrace();
-            System.out.println("Neo4j was not able to retrieve the ingredient's " +
-                    "global suggestions");
-        }
-        return ingredients;
     }
 
     List<Ingredient> searchIngredientsList(List<String> ingredientsList){

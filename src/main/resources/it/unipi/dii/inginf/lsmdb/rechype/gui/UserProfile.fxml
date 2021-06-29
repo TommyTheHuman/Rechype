@@ -31,9 +31,10 @@
                      <Font size="36.0" />
                   </font>
                </Text>
-               <ImageView fitHeight="39.0" fitWidth="52.0" layoutX="24.0" layoutY="36.0" pickOnBounds="true" preserveRatio="true" />
+               <ImageView fx:id="userLevel" fitHeight="70.0" fitWidth="70.0" layoutX="14.0" layoutY="21.0" pickOnBounds="true" preserveRatio="true" />
+               <ImageView fx:id="userCountry" fitHeight="25.0" fitWidth="38.0" layoutX="138.0" layoutY="50.0" pickOnBounds="true" preserveRatio="true" />
+               <Label fx:id="userAge" layoutX="196.0" layoutY="54.0" prefHeight="17.0" prefWidth="50.0" />
                <Button fx:id="followBtn" layoutX="618.0" layoutY="43.0" mnemonicParsing="false" text="Follow" />
-               <Text layoutX="24.0" layoutY="107.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Recipes:" wrappingWidth="76.92578125" />
                <Label fx:id="errMsg" layoutX="629.0" layoutY="79.0" />
             </children>
          </Pane>

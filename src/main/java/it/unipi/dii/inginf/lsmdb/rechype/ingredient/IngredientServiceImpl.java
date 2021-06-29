@@ -16,8 +16,6 @@ class IngredientServiceImpl implements IngredientService{
 
     public byte[] getCachedImage(String ingrName){ return ingredientDao.getImgByKey(ingrName); }
 
-    public List<Document> getBestIngredients() {return ingredientDao.getBestIngredients();}
-
     public List<Ingredient> searchIngredientsList(List<String> ingredientsList){
         return ingredientDao.searchIngredientsList(ingredientsList);
     }

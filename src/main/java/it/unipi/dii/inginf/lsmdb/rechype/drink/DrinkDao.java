@@ -12,8 +12,7 @@ import com.oath.halodb.HaloDBException;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
-import javafx.scene.image.Image;
-import javafx.scene.image.PixelFormat;
+import javafx.scene.image.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
@@ -37,6 +36,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -88,29 +88,16 @@ class DrinkDao {
                 }
             }
 
-            // Add some fields of recipe in neo4j
+            // Add drink to neo4j
             try (Session session = Neo4jDriver.getObject().getDriver().session()) { //try to add
                 String Neo4jId = id;
                 session.writeTransaction((TransactionWork<Void>) tx -> {
-                    //creating the string for adding all the ingredient's relation
-                    String totalQueryMatch="";
-                    String totalQueryCreate="";
-                    JSONArray ingredientsJson=new JSONObject(doc.toJson()).getJSONArray("ingredients");
-                    for(int i=0; i<ingredientsJson.length(); i++){
-                        totalQueryMatch=totalQueryMatch+"MATCH(i"+i+":Ingredient) WHERE i"+i+".id=\""
-                                +ingredientsJson.getJSONObject(i).getString("ingredient")+"\" ";
-                        totalQueryCreate=totalQueryCreate+"CREATE (d)-[:CONTAINS]->(i"+i+") ";
-                    }
                     tx.run(
                             "MATCH (u:User) WHERE u.username=$owner "+
-                            totalQueryMatch+
-                            "CREATE (d:Drink { id:$id, name: $name, author: $author, imageUrl: $imageUrl, " +
-                            "tag: $tag}) "+
-                            "CREATE (u)-[rel:OWNS {since:date($date)}]->(d) "+
-                            totalQueryCreate,
-                            parameters("id", Neo4jId,"name", doc.getString("name"), "author", doc.getString("author"),
-                                    "imageUrl", doc.getString("image"), "tag", doc.getString("tag"), "owner", doc.getString("author"),
-                                    "date", java.time.LocalDate.now().toString()));
+                            "CREATE (d:Drink { id:$id, name: $name} ) "+
+                            "CREATE (u)-[rel:OWNS {since:date($date)}]->(d) ",
+                            parameters("id", Neo4jId, "name",  doc.getString("name"),
+                            "date", java.time.LocalDate.now().toString(), "owner", doc.getString("author")));
                     return null;
                 });
                 return "DrinkAdded";
@@ -184,13 +171,13 @@ class DrinkDao {
         byte[] objToSave;
         try {
             imgStream = new URL(stringUrl).openStream();
-            objToSave = IOUtils.toByteArray(imgStream);
+            objToSave=imgStream.readAllBytes();
+            imgStream.close();
         }catch(IOException ie){
             return false;
         }
         try {
             HaloDBDriver.getObject().addData("drink", _id, objToSave);
-            //byte[] c=HaloDBDriver.getObject().getData("drink", _id);
             return true;
         }catch(HaloDBException ex){
             LogManager.getLogger("DrinkDao.class").fatal("HaloDB: caching failed");
@@ -354,41 +341,10 @@ class DrinkDao {
     }
 
     /***
-     * GLOBAL SUGGESTION: best drinks, the drinks with the highest number of likes obtained in the week
-     * @return
+     * This function returns a list of user ranked by like number received in their drink. We can filter by drink category.
+     * @param category represent the category by which we want to filter.
+     * @return list of document
      */
-    public List<Document> getBestDrinks(){
-        List<Document> drinks = new ArrayList<>();
-        String todayDate = java.time.LocalDate.now().toString();
-        try (Session session = Neo4jDriver.getObject().getDriver().session()) {
-            session.readTransaction((TransactionWork<Void>) tx -> {
-                Result res = tx.run(
-                        "MATCH (:User)-[likes:LIKES]->(d:Drink) " +
-                                "WHERE date($date)-duration({days:7})<likes.since<=date($date)+duration({days:7}) " +
-                                "return d AS DrinkNode, count(likes) AS totalLikes " +
-                                "ORDER BY totalLikes DESC, DrinkNode.name ASC LIMIT 10",
-                        parameters("date", todayDate));
-                while(res.hasNext()){
-                    //building each recipe's document
-                    Value drink=res.next().get("DrinkNode");
-                    Document doc=new Document();
-                    doc.put("author", drink.get("author").asString());
-                    doc.put("_id", new ObjectId(drink.get("id").asString()).toString());
-                    doc.put("image", drink.get("imageUrl").asString());
-                    doc.put("name", drink.get("name").asString());
-                    doc.put("tag", drink.get("tag").asString());
-                    drinks.add(doc);
-                }
-                return null;
-            });
-        }catch(Neo4jException ne){
-            ne.printStackTrace();
-            System.out.println("Neo4j was not able to retrieve the drink's " +
-            "global suggestions");
-        }
-        return drinks;
-    }
-
     public List<Document> mostUsedIngrByCategory(String category){
         MongoCollection<Document> collDrink = MongoDriver.getObject().getCollection(MongoDriver.Collections.DRINKS);
 

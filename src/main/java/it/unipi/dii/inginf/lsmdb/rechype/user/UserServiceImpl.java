@@ -38,6 +38,7 @@ class UserServiceImpl implements UserService {
     }
 
     public User getLoggedUser(){
+        setLockSuggestions(false);
         return loggedUser;
     }
 
