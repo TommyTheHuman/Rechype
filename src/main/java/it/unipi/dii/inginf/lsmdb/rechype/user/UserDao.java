@@ -876,4 +876,30 @@ class UserDao {
 
         return results;
     }
+
+    public Boolean changeCountryToUser(String country, String username){
+        MongoCollection<Document> collUser = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
+        try {
+            collUser.updateOne(eq("_id", username), Updates.set("country", country));
+        }catch (MongoException me){
+            LogManager.getLogger("UserDao.class").error("MongoDB: failed to change the country");
+            return false;
+        }
+
+        try (Session session = Neo4jDriver.getObject().getDriver().session()) {
+            session.readTransaction((TransactionWork<Void>) tx -> {
+                Result res = tx.run(
+                        "MATCH (u:User) " +
+                                "WHERE u.username=$username " +
+                                "SET u.country=$country",
+                        parameters("username", username, "country", country));
+
+                return null;
+            });
+
+        } catch (Neo4jException ne) {
+            LogManager.getLogger("UserDao.class").error("Neo4j [PARSE]: error updating country " + username + " " + country);
+        }
+        return true;
+    }
 }
