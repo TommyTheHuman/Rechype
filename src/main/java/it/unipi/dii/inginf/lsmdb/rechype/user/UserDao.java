@@ -553,12 +553,11 @@ class UserDao {
             session.readTransaction((TransactionWork<Void>) tx -> {
                 Result res = tx.run(
                         "MATCH (u:User {username: $username })-[rel:FOLLOWS]->(u2:User) " +
-                            "MATCH (u2)-[relLikes:LIKES]->(r:Recipe) " +
-                            "WHERE date($date)-duration({days:7})<relLikes.since<=date($date)+duration({days:7}) " +
-                            "AND NOT (r)<-[:OWNS]-(u) "+
-                            "WITH r AS RecipeNode, count(relLikes) AS likesNumber "+
-                            "RETURN RecipeNode, sum(likesNumber) as totalLikes "+
-                            "ORDER BY totalLikes DESC, RecipeNode.name ASC LIMIT 10",
+                              "MATCH (u2)-[relLikes:LIKES]->(r:Recipe) " +
+                              "WHERE date($date)-duration({days:7})<relLikes.since<=date($date)+duration({days:7}) " +
+                              "AND NOT (r)<-[:OWNS]-(u) " +
+                              "RETURN r AS RecipeNode, count(relLikes) AS likesNumber "+
+                              "ORDER BY likesNumber DESC, RecipeNode.name ASC LIMIT 10",
                         parameters("username", username, "date", todayDate));
                 while(res.hasNext()){
                     //building each recipe's document
@@ -593,9 +592,8 @@ class UserDao {
                                 "MATCH (u2)-[relLikes:LIKES]->(d:Drink) " +
                                 "WHERE date($date)-duration({days:7})<relLikes.since<=date($date)+duration({days:7}) " +
                                 "AND NOT (d)<-[:OWNS]-(u) " +
-                                "WITH d AS DrinkNode, count(relLikes) AS likesNumber "+
-                                "RETURN DrinkNode, sum(likesNumber) as totalLikes "+
-                                "ORDER BY totalLikes DESC, DrinkNode.name ASC LIMIT 10",
+                                "RETURN d AS DrinkNode, count(relLikes) AS likesNumber "+
+                                "ORDER BY likesNumber DESC, DrinkNode.name ASC LIMIT 10",
                         parameters("username", username, "date", todayDate));
                 while(res.hasNext()){
                     //building each recipe's document

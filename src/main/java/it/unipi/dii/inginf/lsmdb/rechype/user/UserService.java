@@ -35,7 +35,6 @@ public interface UserService {
     List<Document> getSuggestedUsers();
     List<Document> getBestUsers();
     List<Document> getDrinks(String text);
-    List<Document> getTophealthyUsers(String level);
     List<Document> getMostSavedRecipes(String category);
     Boolean changeCountry(String country, String name);
 }
