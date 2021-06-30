@@ -6,7 +6,6 @@ import it.unipi.dii.inginf.lsmdb.rechype.drink.DrinkServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.Ingredient;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientService;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientServiceFactory;
-import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
@@ -90,14 +89,6 @@ public class DrinkAddController extends JSONAdder implements Initializable {
                 JSONObject jsonIngredient;
                 List<Document> docIngredients = new ArrayList<>();
                 Ingredient auxIngr;
-
-                // Insert ingredients composed by (name, amount) in a Document
-                /*for (String ingr : ingredientNames) {
-                    jsonIngredient = ingredientService.getCachedIngredient(ingr);
-                    auxIngr = new Ingredient(jsonIngredient);
-                    docIngredients.add(new Document().append("ingredient", auxIngr.getName()).append("amount", amount.get(counter)));
-                    counter++;
-                }*/
 
                 List<Ingredient> ingredientsList=ingredientService.searchIngredientsList(ingredientNames);
                 for(Ingredient ingr: ingredientsList){

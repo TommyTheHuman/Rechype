@@ -4,7 +4,6 @@ import it.unipi.dii.inginf.lsmdb.rechype.util.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.Ingredient;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientService;
 import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientServiceFactory;
-import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeService;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;

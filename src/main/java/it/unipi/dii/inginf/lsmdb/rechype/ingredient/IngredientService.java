@@ -1,8 +1,5 @@
 package it.unipi.dii.inginf.lsmdb.rechype.ingredient;
 
-import org.bson.Document;
-import org.json.JSONObject;
-
 import java.util.List;
 
 public interface IngredientService {

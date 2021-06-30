@@ -2,18 +2,10 @@ package it.unipi.dii.inginf.lsmdb.rechype.gui;
 
 import it.unipi.dii.inginf.lsmdb.rechype.util.JSONAdder;
 import it.unipi.dii.inginf.lsmdb.rechype.drink.Drink;
-import it.unipi.dii.inginf.lsmdb.rechype.drink.DrinkService;
-import it.unipi.dii.inginf.lsmdb.rechype.drink.DrinkServiceFactory;
-import it.unipi.dii.inginf.lsmdb.rechype.ingredient.Ingredient;
-import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientService;
-import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.recipe.Recipe;
-import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeService;
-import it.unipi.dii.inginf.lsmdb.rechype.recipe.RecipeServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.user.User;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserService;
 import it.unipi.dii.inginf.lsmdb.rechype.user.UserServiceFactory;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -22,7 +14,6 @@ import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.bson.Document;
@@ -32,7 +23,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Timer;
-import java.util.TimerTask;
 
 
 public class HomePageController extends JSONAdder implements Initializable {

@@ -2,10 +2,7 @@ package it.unipi.dii.inginf.lsmdb.rechype.persistence;
 
 import com.oath.halodb.*;
 import org.apache.logging.log4j.LogManager;
-
-import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 
 public class HaloDBDriver {

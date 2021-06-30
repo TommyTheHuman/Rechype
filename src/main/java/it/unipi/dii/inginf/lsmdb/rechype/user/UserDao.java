@@ -6,9 +6,6 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.DeleteResult;
-import com.oath.halodb.HaloDB;
-import com.oath.halodb.HaloDBException;
-import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +17,6 @@ import org.json.JSONObject;
 import org.neo4j.driver.*;
 import org.neo4j.driver.exceptions.Neo4jException;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;

@@ -1,34 +1,23 @@
 package it.unipi.dii.inginf.lsmdb.rechype.recipe;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.MongoException;
-import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.model.Updates;
 import com.mongodb.client.result.InsertOneResult;
-import com.oath.halodb.HaloDB;
 import com.oath.halodb.HaloDBException;
-import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientService;
-import it.unipi.dii.inginf.lsmdb.rechype.ingredient.IngredientServiceFactory;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
-import it.unipi.dii.inginf.lsmdb.rechype.user.User;
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
-import org.json.JSONArray;
 import org.json.JSONObject;
-import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.TransactionWork;
-import org.neo4j.driver.Value;
 import org.neo4j.driver.exceptions.Neo4jException;
 
 import java.io.IOException;
@@ -36,7 +25,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 

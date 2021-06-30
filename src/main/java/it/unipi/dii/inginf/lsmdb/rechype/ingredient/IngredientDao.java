@@ -2,18 +2,13 @@ package it.unipi.dii.inginf.lsmdb.rechype.ingredient;
 
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
-import com.oath.halodb.HaloDB;
 import com.oath.halodb.HaloDBException;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.HaloDBDriver;
 import it.unipi.dii.inginf.lsmdb.rechype.persistence.MongoDriver;
-import it.unipi.dii.inginf.lsmdb.rechype.persistence.Neo4jDriver;
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.json.JSONObject;
-import org.neo4j.driver.*;
-import org.neo4j.driver.exceptions.Neo4jException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,8 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import static org.neo4j.driver.Values.parameters;
 
 public class IngredientDao {
 
