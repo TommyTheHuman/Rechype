@@ -704,71 +704,6 @@ class UserDao {
         return returnDrinkList;
     }
 
-    /***
-     * Analytic. Rank the users by the number of healthy recipes. A recipe is "Healthy" if its healthIndex <= 0.8. The healthIndex
-     * is calculated in this way: weightPerServing/Calories.amount.
-     * @param level
-     * @return
-     */
-    public List<Document> getHealthRankByLevel(String level){
-        MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
-        List<Bson> stages = new ArrayList<>();
-        List<Bson> filters = new ArrayList<>();
-        if(!level.equals("noLevel")) {
-            Bson lvlFilter1;
-            Bson lvlFilter2;
-            if(User.levelToInt(level)==0)
-                lvlFilter1=Filters.gte("level", User.levelToInt(level));
-            else {
-                lvlFilter1=Filters.gt("level", User.levelToInt(level));
-            }
-            if((User.levelToInt(level)!=10)) {
-                lvlFilter2 = Filters.lte("level", User.levelToInt(level) + 5);
-                filters.add(lvlFilter2);
-            }
-            filters.add(lvlFilter1);
-        }
-        if(filters.size() > 0){
-            stages.add(match(and(filters)));
-        }
-
-        stages.add(lookup("recipes", "_id", "author", "recipe"));
-
-        stages.add(unwind("$recipe"));
-
-        stages.add(unwind("$recipe.nutrients"));
-
-        stages.add(match(eq("recipe.nutrients.name", "Calories")));
-
-        stages.add(match(gt("recipe.nutrients.amount", 0)));
-
-        Document healthIndex = Document.parse("{$divide:[\"$recipe.weightPerServing\", \"$recipe.nutrients.amount\"]}");
-
-        stages.add(project(fields(
-                excludeId(),
-                include("_id"),
-                computed("healthIndex", healthIndex)
-                )
-        ));
-
-        stages.add(match(lte("healthIndex", 0.8)));
-
-        stages.add(group("$_id", sum("count", 1)));
-
-        stages.add(sort(descending("count")));
-
-        stages.add(limit(20));
-
-        List<Document> results = null;
-        try{
-            results = collRecipe.aggregate(stages).into(new ArrayList<>());
-        } catch (MongoException ex){
-            ex.printStackTrace();
-            LogManager.getLogger("RecipeDao.class").error("MongoDB: fail analytics: Ranking user by level and healthScore");
-        }
-
-        return results;
-    }
 
     /***
      * Analytic. This function ranks the recipes by the number of times a recipe is added to favourites by the users.
@@ -779,7 +714,6 @@ class UserDao {
     public List<Document> mostSavedRecipes(String category) {
         MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.USERS);
         List<Bson> stages = new ArrayList<>();
-        List<Bson> filters = new ArrayList<>();
 
         if(category.equals("drinks")){
             stages.add(unwind("$drinks"));

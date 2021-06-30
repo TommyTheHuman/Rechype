@@ -358,9 +358,10 @@ public class RecipeDao {
 
     }
 
-
-
-
+    /***
+     * Analytic: get the distribution of price
+     * @return
+     */
     public List<Document> recipeDistributionByPrice() {
         MongoCollection<Document> collRecipe = MongoDriver.getObject().getCollection(MongoDriver.Collections.RECIPES);
 
